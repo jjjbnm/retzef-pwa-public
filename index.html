@@ -1312,17 +1312,27 @@ function updateWalletUI(wallet){const el=document.getElementById('profileWalletB
     </div>
   </section>
   <!-- CONTACT -->
-  <footer id="contact" class="tab-panel">
+  <section id="contact" class="tab-panel">
     <div class="contact-card glass">
-      <h2 data-i18n="contact_title">צריך עזרה?</h2>
-      <p data-i18n="contact_sub">לשאלות על סטטוס, מנויים או חוקים — פנו ישירות.</p>
-      <div class="cta-row">
-        <a href="https://www.tiktok.com/@user613987579196?_r=1&_t=ZS-99MugNRg5zk" target="_blank" class="btn btn-primary" style="width:100%; justify-content:center;">✉️ עלי לפנות לתמיכה</a>
-        <a href="#" id="tiktokGroupLink" class="btn btn-ghost glass">עמוד הקבוצה ב-TikTok</a>
-      </div>
+      <span class="eyebrow">מרכז פניות</span>
+      <h2 class="sec-title">יצירת קשר</h2>
+      <p class="sec-sub">מלאו את הפרטים ונעביר את הפנייה לצוות התמיכה.</p>
+      <form id="contactForm" class="glass" style="padding:22px; display:grid; gap:14px; text-align:right;">
+        <label style="display:grid; gap:6px;">שם משתמש *<input id="contactUsername" name="username" required maxlength="60" pattern="[A-Za-z0-9._-]{2,60}" placeholder="username" dir="ltr"></label>
+        <label style="display:grid; gap:6px;">שם <span style="color:var(--muted); font-size:12px;">(אופציונלי)</span><input id="contactName" name="name" maxlength="80" placeholder="איך לפנות אליכם?"></label>
+        <label style="display:grid; gap:6px;">מייל ליצירת קשר <span style="color:var(--muted); font-size:12px;">(אופציונלי)</span><input id="contactEmail" name="email" type="email" maxlength="160" placeholder="you@example.com" dir="ltr"></label>
+        <label style="display:grid; gap:6px;">איזה מכשיר? <span style="color:var(--muted); font-size:12px;">(אופציונלי)</span><select id="contactDevice" name="device"><option value="">בחרו מכשיר</option><option>Android</option><option>iPhone / iPad</option><option>Windows / Mac</option><option>אחר</option></select></label>
+        <label style="display:grid; gap:6px;">קטגוריה *<select id="contactCategory" name="category" required><option value="">בחרו קטגוריה</option><option value="account">פרצו לי לחשבון</option><option value="login">בעיית התחברות</option><option value="app">תקלה באפליקציה</option><option value="payments">מנויים ותשלומים</option><option value="community">קבוצה, סטטוס או משתמש</option><option value="other">נושא אחר</option></select></label>
+        <label style="display:grid; gap:6px;">מה קרה? *<select id="contactReason" name="reason" required disabled><option value="">בחרו קודם קטגוריה</option></select></label>
+        <label style="display:grid; gap:6px;">הסבר <span style="color:var(--muted); font-size:12px;">(חובה)</span><textarea id="contactDescription" name="description" required maxlength="3000" rows="5" placeholder="כתבו כאן מה קרה, מתי זה התחיל ומה ניסיתם לעשות"></textarea></label>
+        <button type="submit" class="btn btn-primary" style="justify-content:center;">שליחת פנייה</button>
+        <p id="contactFormMessage" role="status" style="min-height:22px; margin:0; color:var(--muted);"></p>
+      </form>
     </div>
-    <p class="fine">רצף · בית תמיכה — עדכן קישורים, מחיר מנוי הפלוס ופרטי יצירת קשר לפני פרסום.</p>
-  </footer>
+  </section>
+  <script>
+  (()=>{const form=document.getElementById('contactForm');if(!form)return;const category=document.getElementById('contactCategory');const reason=document.getElementById('contactReason');const message=document.getElementById('contactFormMessage');const reasons={account:[['hacked','חשבון נפרץ'],['password','שכחתי סיסמה'],['locked','החשבון ננעל'],['details','שונו פרטים בלי אישור']],login:[['failed','לא מצליח/ה להתחבר'],['code','קוד התחברות לא הגיע'],['tiktok','TikTok לא נפתח']],app:[['broken','האפליקציה לא עובדת'],['blank','מסך לבן או טעינה שלא נגמרת'],['button','כפתור לא מגיב'],['error','מופיעה שגיאה']],payments:[['subscription','בעיה במנוי'],['payment','תשלום נכשל'],['charge','חיוב לא מוכר']],community:[['status','שאלה על סטטוס או באן'],['rules','שאלה על חוקי הקבוצה'],['user','דיווח על משתמש']],other:[['question','שאלה כללית'],['suggestion','הצעה לשיפור'],['other','משהו אחר']]};function updateReasons(){const items=reasons[category.value]||[];reason.innerHTML=items.length?'<option value="">בחרו מה קרה</option>'+items.map(([value,label])=>`<option value="${value}">${label}</option>`).join(''):'<option value="">בחרו קודם קטגוריה</option>';reason.disabled=!items.length;}category.addEventListener('change',updateReasons);form.addEventListener('submit',async e=>{e.preventDefault();message.textContent='שולח...';const data={action:'supportForm',username:document.getElementById('contactUsername').value.trim().replace(/^@/,''),name:document.getElementById('contactName').value.trim(),email:document.getElementById('contactEmail').value.trim(),device:document.getElementById('contactDevice').value,category:category.value,reason:reason.value,description:document.getElementById('contactDescription').value.trim()};try{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const d=await r.json();if(!r.ok)throw new Error(d.error||'support_failed');message.textContent='✅ הפנייה נשלחה בהצלחה. נחזור אליכם בהקדם.';form.reset();updateReasons();}catch(err){message.textContent=err.message==='invalid_support_details'?'❌ בדקו ששם המשתמש, הקטגוריה וההסבר מולאו כראוי.':'❌ לא ניתן לשלוח כרגע. נסו שוב מאוחר יותר.';}});})();
+  </script>
 
 
 </div>

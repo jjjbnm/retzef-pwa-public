@@ -32,6 +32,23 @@ module.exports = async (req, res) => {
     ]);
     return res.status(200).json({ loggedOut: true });
   }
+  if (req.method === 'POST' && action === 'supportForm') {
+    try {
+      const username = String(input.username || '').trim().replace(/^@/, '').slice(0, 60).toLowerCase();
+      const name = String(input.name || '').trim().slice(0, 80);
+      const email = String(input.email || '').trim().slice(0, 160);
+      const device = String(input.device || '').trim().slice(0, 80);
+      const category = String(input.category || '').trim();
+      const reason = String(input.reason || '').trim().slice(0, 80);
+      const description = String(input.description || '').trim().slice(0, 3000);
+      const categories = ['account', 'login', 'app', 'payments', 'community', 'other'];
+      if (!/^[a-z0-9._-]{2,60}$/i.test(username) || (email && !/^\S+@\S+\.\S+$/.test(email)) || !categories.includes(category) || !reason || !description) return res.status(400).json({ error: 'invalid_support_details' });
+      const item = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, from: cookie(req, 'retzef_profile_id').toLowerCase() || null, username, name: name || 'לא נמסר', email, device: device || 'לא נמסר', category, reason, description, quote: description, createdAt: new Date().toISOString(), status: 'new' };
+      await redis('lpush', 'retzef:support:requests', JSON.stringify(item)); await redis('ltrim', 'retzef:support:requests', '0', '199');
+      try { await sendTo('user613987579196', { title: 'פניית תמיכה חדשה', body: `פנייה חדשה מ־@${username}: ${reason}`, url: '/' }); } catch (_) {}
+      return res.status(201).json({ forwarded: true, request: item });
+    } catch (e) { console.error('support form:', e.message); return res.status(503).json({ error: e.message === 'storage_not_configured' ? e.message : 'storage_error' }); }
+  }
   const me = cookie(req, 'retzef_profile_id').toLowerCase();
   if (req.method === 'GET' && input.joinMine === '1') { try { const id = cookie(req, 'retzef_join_id'); const rows = await joinRequests(); return res.status(200).json({ requests: id ? rows.filter(x => x.id === id).map(x => ({ id: x.id, status: x.status, reason: x.reason || '', createdAt: x.createdAt })) : [] }); } catch (_) { return res.status(503).json({ error: 'storage_error' }); } }
   if (!me) return res.status(401).json({ error: 'tiktok_login_required' });
