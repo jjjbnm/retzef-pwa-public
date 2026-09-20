@@ -4,7 +4,7 @@ const ROLES = {
   'הבאן המקורי': 'owner',
   'oobbn98': 'admin',
   'shirel': 'admin',
-  'user613987579196': 'admin',
+  'retzef_support': 'admin',
   'קבוצת רצף תמיכה': 'admin',
 };
 function resolveRole(username) {
