@@ -1369,7 +1369,8 @@ function updateWalletUI(wallet){const el=document.getElementById('profileWalletB
   const TIKTOK_GROUP_URL = "https://tiktok.me/group/ZSfhTkvp4/";
   const TIKTOK_REDIRECT_URI = "https://chi-liart-74.vercel.app/api/callback";
 
-  document.getElementById('tiktokGroupLink').href = TIKTOK_GROUP_URL;
+  const tiktokGroupLink = document.getElementById('tiktokGroupLink');
+  if (tiktokGroupLink) tiktokGroupLink.href = TIKTOK_GROUP_URL;
 
   document.getElementById('tiktokLoginBtn').addEventListener('click', function(){ startTikTokLogin(false); });
   const profileMenu=document.getElementById('profileMenu');
