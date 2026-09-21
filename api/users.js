@@ -46,7 +46,14 @@ module.exports = async (req, res) => {
       const item = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, from: cookie(req, 'retzef_profile_id').toLowerCase() || null, username, name: name || 'לא נמסר', email, device: device || 'לא נמסר', category, reason, description, quote: description, createdAt: new Date().toISOString(), status: 'new' };
       await redis('lpush', 'retzef:support:requests', JSON.stringify(item)); await redis('ltrim', 'retzef:support:requests', '0', '199');
       try { await sendTo('retzef_support', { title: 'פניית תמיכה חדשה', body: `פנייה חדשה מ־@${username}: ${reason}`, url: '/' }); } catch (_) {}
-      return res.status(201).json({ forwarded: true, request: item });
+      const appsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
+      if (appsScriptUrl) {
+        const mailResponse = await fetch(appsScriptUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ username, name, email, device, category, reason, description }) });
+        const mailResult = await mailResponse.json();
+        if (!mailResult.ok) throw new Error(mailResult.error || 'email_delivery_failed');
+        return res.status(201).json({ forwarded: true, submitted: true, ticketNumber: mailResult.ticketNumber, request: item });
+      }
+      return res.status(201).json({ forwarded: true, submitted: true, ticketNumber: item.id, request: item });
     } catch (e) { console.error('support form:', e.message); return res.status(503).json({ error: e.message === 'storage_not_configured' ? e.message : 'storage_error' }); }
   }
   const me = cookie(req, 'retzef_profile_id').toLowerCase();
