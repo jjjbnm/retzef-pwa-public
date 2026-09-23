@@ -537,6 +537,15 @@
   @keyframes anniversaryConfetti{0%{background-position:0 0,0 0,0 0,0 0}100%{background-position:35px 100px,-50px 80px,60px 90px,-40px 120px}}
   @media (prefers-reduced-motion:reduce){.anniversary-balloon,.anniversary-confetti{animation:none}}
 
+
+  .assistant-card{padding:24px;max-width:760px;margin:0 auto}
+  .assistant-messages{min-height:220px;max-height:420px;overflow:auto;display:flex;flex-direction:column;gap:10px;margin:16px 0;padding:14px;border-radius:16px;background:var(--bg2);border:1px solid var(--glass-border)}
+  .assistant-message{padding:11px 14px;border-radius:14px;line-height:1.55;white-space:pre-wrap;max-width:88%}
+  .assistant-message.bot{align-self:flex-start;background:rgba(91,140,255,.12)}
+  .assistant-message.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+  .assistant-form{display:flex;gap:9px}.assistant-form input{flex:1;min-width:0;padding:13px 14px;border-radius:13px;border:1px solid var(--glass-border);background:var(--bg2);color:var(--text);font:inherit}.assistant-form button{border:0;border-radius:13px;padding:0 20px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font:700 15px Assistant;cursor:pointer}
+  @media(max-width:520px){.assistant-form{flex-direction:column}.assistant-form button{padding:12px}}
+
 </style>
 </head>
 <body>
