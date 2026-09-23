@@ -515,6 +515,13 @@
   .retzef-entry-actions button{width:100%;min-height:48px;border:0;border-radius:13px;padding:11px 16px;font:inherit;font-weight:800;cursor:pointer}
   #retzefEntryTikTok{background:#111827;color:#fff}
   #retzefEntryGuest{background:transparent;color:var(--text,#161a26);border:1px solid var(--glass-border,rgba(20,23,40,.12))!important}
+
+  .seo-intro{padding:24px 26px;margin:10px auto 18px;max-width:820px;text-align:right;background:rgba(255,255,255,.72)}
+  .seo-intro h2{font-size:clamp(23px,4vw,32px);margin:0 0 10px}
+  .seo-intro p{color:var(--muted);line-height:1.75;margin:7px 0;font-size:15px}
+  .seo-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+  .seo-links a{color:var(--accent2);font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:13px}
+
 </style>
 </head>
 <body>
@@ -713,6 +720,20 @@
       אין לה גישה לפרסום, הודעות, עוקבים או כל פעולה בחשבון שלכם.
     </p>
   </header>
+
+  <section class="seo-intro glass" aria-labelledby="seo-intro-title">
+    <span class="eyebrow">קהילת רצף</span>
+    <h2 id="seo-intro-title">רצף — בית התמיכה הרשמי</h2>
+    <p>ברוכים הבאים לאתר הרשמי של רצף. כאן אפשר למצוא מידע על קהילת רצף ב־TikTok, חוקי הקבוצה, מערכת הסטטוסים, מנויים, עדכונים, תמיכה ומידע שימושי לחברים.</p>
+    <p>באתר רצף אפשר לבדוק את מצב המשתמש, לקרוא את חוקי הקהילה, לקבל עזרה בבעיות התחברות או חשבון, ולשלוח פנייה מסודרת לצוות התמיכה של רצף.</p>
+    <div class="seo-links" aria-label="קישורים חשובים">
+      <a href="#status" class="tab-jump" data-target="status">בדיקת סטטוס</a>
+      <a href="#rules" class="tab-jump" data-target="rules">חוקי הקהילה</a>
+      <a href="#contact" class="tab-jump" data-target="contact">יצירת קשר</a>
+      <a href="/privacy-policy/">מדיניות פרטיות</a>
+      <a href="/terms-of-service/">תנאי שימוש</a>
+    </div>
+  </section>
 
   <nav class="tabs-nav glass">
     <button class="tab-btn active" data-target="home" data-i18n="nav_home">🏠 בית</button>
