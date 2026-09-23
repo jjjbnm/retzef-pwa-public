@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
       const category = String(input.category || '').trim();
       const reason = String(input.reason || '').trim().slice(0, 80);
       const description = String(input.description || '').trim().slice(0, 3000);
-      const categories = ['account', 'login', 'app', 'payments', 'community', 'other'];
+      const categories = ['account', 'login', 'app', 'payments', 'privacy', 'suggestions', 'content', 'managers', 'accessibility', 'cooperation', 'general', 'community', 'other'];
       if (!/^[a-z0-9._-]{2,60}$/i.test(username) || (!email || !/^\S+@\S+\.\S+$/.test(email)) || !categories.includes(category) || !device || !reason || !description) return res.status(400).json({ error: 'invalid_support_details' });
       const item = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, from: cookie(req, 'retzef_profile_id').toLowerCase() || null, username, name: name || 'לא נמסר', email, device: device || 'לא נמסר', category, reason, description, quote: description, createdAt: new Date().toISOString(), status: 'new' };
       await redis('lpush', 'retzef:support:requests', JSON.stringify(item)); await redis('ltrim', 'retzef:support:requests', '0', '199');
