@@ -1704,7 +1704,7 @@
       return data.profile || null;
     } catch (_) { return null; }
   }
-  window.__retzefProfileReady=loadServerProfile();
+  window.__retzefProfileReady=loadServerProfile(); window.refreshRetzefProfile=loadServerProfile; setInterval(loadServerProfile, 60000);
 
 
   // === day streak — anchored so it always increases by 1 per calendar day ===
