@@ -63,8 +63,10 @@ module.exports = async (req, res) => {
       return res.redirect(302, `/?tiktok_error=${encodeURIComponent(userData.error.code)}`);
     }
     const displayName = user.display_name || user.username || '';
-    const username = user.username || displayName || user.open_id || '';
-    const existingProfile = await getProfile(username);
+    const rawUsername = user.username || displayName || user.open_id || '';
+    const username = String(rawUsername).toLowerCase() === 'user613987579196' ? 'retzef_support' : rawUsername;
+    const existingProfile = await getProfile(username) || (username === 'retzef_support' ? await getProfile(rawUsername) : null);
+    const profileAvatar = username === 'retzef_support' ? '/icons/icon-192.png' : (user.avatar_url || '');
     if (existingProfile?.banned === true) return res.redirect(302, `/?tiktok_error=${encodeURIComponent('account_banned')}&ban_reason=${encodeURIComponent(existingProfile.banReason || 'החשבון נחסם')}`);
     const joinRequest = await getJoinRequest(username);
     if (joinRequest && joinRequest.status !== 'approved') return res.redirect(302, `/?tiktok_error=${encodeURIComponent(joinRequest.status === 'denied' ? 'join_denied' : 'join_pending')}&ban_reason=${encodeURIComponent(joinRequest.reason || 'יש להמתין לאישור הבאן המקורי')}`);
@@ -77,11 +79,11 @@ module.exports = async (req, res) => {
       tiktok_ok: '1',
       username,
       display_name: displayName,
-      avatar: user.avatar_url || '',
+      avatar: profileAvatar,
       role: resolveRole(username),
     });
     try {
-      await saveProfile(username, { ...(existingProfile || {}), username, displayName, avatarUrl: user.avatar_url || '', role: resolveRole(username), age: Number(joinRequest?.age || existingProfile?.age || 0), accountCountry, loginCountry, banned: false, banReason: '' });
+      await saveProfile(username, { ...(existingProfile || {}), username, displayName, avatarUrl: profileAvatar, role: resolveRole(username), age: Number(joinRequest?.age || existingProfile?.age || 0), accountCountry, loginCountry, banned: false, banReason: '' });
     } catch (storageError) {
       console.error('Profile storage unavailable; continuing login:', storageError.message);
     }
