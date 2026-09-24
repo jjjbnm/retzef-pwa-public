@@ -566,6 +566,9 @@
 
   .discount-banner{display:flex;flex-direction:column;gap:4px;margin:0 0 20px;padding:14px 16px;border:2px solid #b91c1c;border-radius:12px;background:#fee2e2;color:#7f1d1d;line-height:1.6}.discount-banner strong{color:#991b1b;font-size:16px}.discount-banner span{font-size:13px}.price s{color:var(--muted);font-size:.82em;margin-inline-end:4px}.tier s{color:var(--muted);font-size:.82em;margin-inline-end:4px}
 
+
+  .daily-word-card{margin:22px auto 10px;max-width:720px;padding:22px 20px;text-align:center;border:1px solid rgba(91,140,255,.35);background:linear-gradient(135deg,rgba(91,140,255,.14),rgba(139,92,246,.12));border-radius:20px;box-shadow:0 12px 28px rgba(40,60,130,.12)}.daily-word-kicker{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--accent);margin-bottom:12px}.daily-word-en{font-size:clamp(21px,4vw,32px);font-weight:900;letter-spacing:.04em;color:var(--text)}.daily-word-he{font-size:clamp(17px,3vw,23px);font-weight:700;margin-top:7px;color:var(--muted)}.daily-word-date{font-size:12px;margin-top:12px;color:var(--muted)}
+
 </style>
 </head>
 <body>
@@ -806,6 +809,13 @@
 
   <!-- HOME -->
   <section id="home" class="tab-panel active">
+    <div class="daily-word-card glass" aria-live="polite">
+      <div class="daily-word-kicker">📖 מילת היום · WORD OF THE DAY</div>
+      <div class="daily-word-en" id="dailyWordEn">RETZEF NEVER DIE</div>
+      <div class="daily-word-he" id="dailyWordHe">רצף לעולם לא מת</div>
+      <div class="daily-word-date" id="dailyWordDate"></div>
+    </div>
+
     <span class="eyebrow" data-i18n="home_eyebrow">ברוכים הבאים</span>
     <h2 class="sec-title" data-i18n="home_title">בית</h2>
     <p class="sec-sub" data-i18n="home_sub">כל מה שצריך לדעת על רצף, במקום אחד.</p>
@@ -2568,5 +2578,33 @@ function openPaypalModal(itemName, price){
   </script>
 <div id="legalLinks" dir="rtl" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px auto;padding:12px;font-size:13px;"><a href="/terms-of-service/">תנאי שימוש</a><a href="/privacy-policy/">מדיניות פרטיות</a><a href="/cookie-policy/">מדיניות עוגיות</a><a href="/refund-and-cancellation/">ביטולים והחזרים</a><a href="/subscription-terms/">תנאי מנוי</a><a href="/community-guidelines/">כללי קהילה</a><a href="/managers-terms/">תנאי שימוש למנהלים</a></div>
 <div id="supportLegalLinks" dir="rtl" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px auto;padding:12px;font-size:13px;"><a href="/terms-of-use-for-support/">Terms of Use for Support</a><a href="/terms-of-service-for-support/">Terms of Service for Support</a><a href="/managers-terms-of-service/">Terms of Service for Managers</a></div>
+
+<script>
+(function(){
+  const en=document.getElementById('dailyWordEn'), he=document.getElementById('dailyWordHe'), date=document.getElementById('dailyWordDate');
+  if(!en||!he)return;
+  const words=[
+    ['RETZEF NEVER DIE','רצף לעולם לא מת'],
+    ['ONE YEAR — TIME FLIES FAST','שנה אחת — הזמן טס מהר'],
+    ['TOGETHER','ביחד'],
+    ['KEEP GOING','ממשיכים קדימה'],
+    ['COMMUNITY','קהילה'],
+    ['LOYALTY','נאמנות'],
+    ['COURAGE','אומץ'],
+    ['RESPECT','כבוד'],
+    ['CREATE','יוצרים'],
+    ['MEMORIES','זיכרונות'],
+    ['STRONGER TOGETHER','חזקים ביחד'],
+    ['THE FUTURE IS OURS','העתיד שלנו']
+  ];
+  const now=new Date();
+  const start=new Date(now.getFullYear(),0,1);
+  const day=Math.floor((now-start)/86400000);
+  const word=words[((day%words.length)+words.length)%words.length];
+  en.textContent=word[0]; he.textContent=word[1];
+  if(date)date.textContent=now.toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'});
+})();
+</script>
+
 </body>
   </html>
