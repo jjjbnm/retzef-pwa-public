@@ -546,6 +546,13 @@
   .assistant-form{display:flex;gap:9px}.assistant-form input{flex:1;min-width:0;padding:13px 14px;border-radius:13px;border:1px solid var(--glass-border);background:var(--bg2);color:var(--text);font:inherit}.assistant-form button{border:0;border-radius:13px;padding:0 20px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font:700 15px Assistant;cursor:pointer}
   @media(max-width:520px){.assistant-form{flex-direction:column}.assistant-form button{padding:12px}}
 
+
+  .rules-card ol[aria-label="סעיפי חוקי הקבוצה"]{display:flex;flex-direction:column;gap:10px;padding:0;margin:0}
+  .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li{display:flex;flex-direction:column;gap:6px;padding:16px 16px 16px 58px;border:1px solid rgba(91,140,255,.18);border-radius:14px;background:rgba(91,140,255,.045)}
+  .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li::before{top:16px;inset-inline-start:16px}
+  .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li strong{font-size:16px;color:var(--text)}
+  .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li span{font-size:14px;line-height:1.65;color:var(--muted)}
+
 </style>
 </head>
 <body>
@@ -948,10 +955,13 @@
 
 
     <div class="rules-card glass">
-      <ol>
-        <li>לא לספים.</li>
-        <li>לא לקלל את היוצר, המנהלים, או כל חבר אחר בקבוצה.</li>
-        <li>אסור לשנות את השם או את התמונה של הקבוצה.</li>
+      <ol aria-label="סעיפי חוקי הקבוצה">
+        <li><strong>סעיף 1 — בלי ספאם</strong><span>אין לשלוח הודעות חוזרות, פרסומים מציפים או תוכן שמפריע להתנהלות הקבוצה.</span></li>
+        <li><strong>סעיף 2 — כבוד הדדי</strong><span>אסור לקלל, להטריד או לפגוע ביוצר, במנהלים או בכל חבר אחר בקבוצה.</span></li>
+        <li><strong>סעיף 3 — אין לשנות פרטי קבוצה</strong><span>אסור לשנות את שם הקבוצה, תמונת הקבוצה או פרטים רשמיים בלי אישור מתאים.</span></li>
+        <li><strong>סעיף 4 — תוכן אסור</strong><span>אסור לשלוח או להזכיר תוכן הקשור לעזה, פלסטין, לבנון, איראן או עיראק. סעיף זה אינו כולל את רוסיה, סין או צפון קוריאה.</span></li>
+        <li><strong>סעיף 5 — אחריות לדיווח</strong><span>מי שנפגע מהתנהגות אסורה רשאי לפנות למנהל עם הוכחות. דיווחים ייבדקו לפני קבלת החלטה.</span></li>
+        <li><strong>סעיף 6 — אכיפה</strong><span>הפרה יכולה להוביל לאזהרה, הורדת סטטוס, הגבלת פעילות או באן, בהתאם לחומרת המקרה ולהחלטת המנהלים.</span></li>
       </ol>
       <div class="rules-note">
         קללה כלפי מנהל יכולה להוריד ישר לסטטוס סיכון, סכנה או באן — תלוי אם יש חרטה. אם מישהו מקלל בפרטי אבל הוא בקבוצה, המנהל שנפגע צריך להעביר הוכחות; אם זה מאומת, המקלל מקבל באן.
