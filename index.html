@@ -609,7 +609,7 @@
     if(entry)entry.classList.add('is-visible');
   }
   document.body.classList.add('entry-screen-active');
-  setTimeout(showChoice,1100);
+  Promise.race([window.__retzefProfileReady||Promise.resolve(),new Promise(resolve=>setTimeout(resolve,2500))]).then(showChoice);
   window.__retzefCloseEntryScreens=closeScreens;
   if(tikTok) tikTok.addEventListener('click',()=>{closeScreens();if(typeof startTikTokLogin==='function'){startTikTokLogin(false);}else{const button=document.getElementById('tiktokLoginBtn');if(button)button.click();}});
   if(guest) guest.addEventListener('click',closeScreens);
@@ -1704,7 +1704,7 @@
       return data.profile || null;
     } catch (_) { return null; }
   }
-  loadServerProfile();
+  window.__retzefProfileReady=loadServerProfile();
 
 
   // === day streak — anchored so it always increases by 1 per calendar day ===
