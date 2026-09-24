@@ -1520,6 +1520,7 @@
     quickModal.classList.add('open');
     document.getElementById('addTikTokAccount').addEventListener('click',()=>{quickModal.classList.remove('open');closeConsentModal();startTikTokLogin(true);});
   }
+  window.openAccountManager = openAccountManager;
   function openProfileAction(action){
     const profile=window.__retzefProfile||{};
     const username=profile.username||'לא מחובר';
@@ -1645,7 +1646,12 @@
       }
     } else if (params.get('tiktok_error')) {
       const statusEl2 = document.getElementById('tiktokAuthStatus');
-      const loginError=params.get('tiktok_error'); statusEl2.textContent = loginError === 'account_banned' ? '🚫 החשבון נחסם. ' + (params.get('ban_reason') || 'אין אפשרות להתחבר או לצפות בתוכן המוגן.') : loginError === 'join_pending' ? '⏳ החשבון ממתין לאישור הבאן המקורי.' : loginError === 'join_denied' ? '🚫 בקשת ההצטרפות נדחתה. ' + (params.get('ban_reason') || '') : 'ההתחברות נכשלה (' + loginError + '), נסו שוב.';
+      const loginError=params.get('tiktok_error');
+      if(loginError === 'account_banned'){
+        statusEl2.textContent = '🚫 החשבון נחסם. ' + (params.get('ban_reason') || 'אין אפשרות להתחבר או לצפות בתוכן המוגן.');
+        const switchButton=document.createElement('button'); switchButton.type='button'; switchButton.textContent='🔄 החלף חשבון'; switchButton.style.cssText='display:block;margin:12px auto 0;padding:10px 16px;border:0;border-radius:10px;background:#1d4ed8;color:#fff;font-weight:800;cursor:pointer;';
+        switchButton.onclick=()=>{if(typeof window.openAccountManager==='function') window.openAccountManager(); else if(typeof startTikTokLogin==='function') startTikTokLogin(true);}; statusEl2.appendChild(switchButton);
+      } else statusEl2.textContent = loginError === 'join_pending' ? '⏳ החשבון ממתין לאישור הבאן המקורי.' : loginError === 'join_denied' ? '🚫 בקשת ההצטרפות נדחתה. ' + (params.get('ban_reason') || '') : 'ההתחברות נכשלה (' + loginError + '), נסו שוב.';
       statusEl2.style.display = 'block';
     }
     if (params.has('tiktok_ok') || params.has('tiktok_error') || params.has('username') || params.has('avatar') || params.has('role')) {
