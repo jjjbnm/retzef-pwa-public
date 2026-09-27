@@ -24,13 +24,16 @@ export default async function handler(req, res) {
     const connection = geo.connection || {};
     const networkText = [geo.isp, geo.org, geo.organization, connection.isp, connection.org, connection.organization, geo.asn].filter(Boolean).join(' ');
     const providerDetected = VPN_PROVIDER_PATTERN.test(networkText);
-    if (security.vpn || security.proxy || security.tor || security.hosting || security.datacenter || providerDetected) {
-      return res.status(403).json({ allowed: false, error: 'vpn_detected', countryCode: String(geo.country_code || vercelCountry || '').toUpperCase() });
-    }
     const countryCode = String(geo.country_code || vercelCountry || '').toUpperCase();
     if (!countryCode) return res.status(503).json({ allowed: false, error: 'country_unknown' });
+    // Israeli VPN/proxy addresses are allowed: the country restriction is the
+    // requirement, not the type of network used to reach the site.
     if (countryCode !== 'IL') return res.status(403).json({ allowed: false, error: 'region_not_allowed', countryCode });
-    return res.status(200).json({ allowed: true, countryCode: 'IL', vpnDetected: false });
+    return res.status(200).json({
+      allowed: true,
+      countryCode: 'IL',
+      vpnDetected: Boolean(security.vpn || security.proxy || security.tor || security.hosting || security.datacenter || providerDetected),
+    });
   } catch (error) {
     return res.status(503).json({ allowed: false, error: 'region_check_failed' });
   }
