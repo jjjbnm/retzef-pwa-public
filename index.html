@@ -1937,10 +1937,11 @@
 
   // === tab switching
   const tabBtns = document.querySelectorAll('.tab-btn');
-  const panels = document.querySelectorAll('.tab-panel');
+  // The AI panel is declared later in the document, so query panels at click time.
+  const getPanels = () => document.querySelectorAll('.tab-panel');
   // כל הטאבים פתוחים לצפייה לכל המבקרים; פעולות כתיבה וניהול עדיין מוגנות בשרת.
   function activateTab(target){
-    panels.forEach(p => p.classList.toggle('active', p.id === target));
+    getPanels().forEach(p => p.classList.toggle('active', p.id === target));
     tabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
     window.scrollTo({top: 0, behavior:'smooth'});
   }
