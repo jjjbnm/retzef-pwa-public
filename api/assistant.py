@@ -117,7 +117,48 @@ def model_answer(data):
     return usable_answer("".join(values))
 
 
+def ask_anthropic(question, profile, key):
+    profile_text = (
+        f"הפרופיל המחובר: display name={profile.get('displayName', '')}, username=@{profile.get('username', '')}, role={profile.get('role', 'member')}."
+        if profile else "אין פרופיל TikTok מחובר."
+    )
+    system = (
+        "אתה העוזר של רצף. הבן את הכוונה המלאה של המשתמש וענה על כל שאלה או בקשה, "
+        "לא רק על מילות מפתח. ענה בעברית, בקצרה ובדיוק. אל תמציא מידע אישי. "
+        "מידע קבוע: גיל כניסה 15- כרגע ו-16- ב-2027; הבעלים הוא הבאן המקורי; "
+        f"המנהלת היא shirel; APK וקובץ מעל 100MB אסורים. {profile_text}"
+    )
+    payload = {
+        "model": os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5"),
+        "max_tokens": 1000,
+        "system": system,
+        "messages": [{"role": "user", "content": question}],
+    }
+    request = urllib.request.Request(
+        os.environ.get("ANTHROPIC_API_URL", "https://api.anthropic.com/v1/messages"),
+        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        headers={
+            "x-api-key": key,
+            "anthropic-version": "2023-06-01",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            data = json.loads(response.read().decode("utf-8"))
+        content = data.get("content") or []
+        return usable_answer("".join(str(item.get("text") or "") for item in content if isinstance(item, dict)))
+    except Exception:
+        return ""
+
+
 def ask_model(question, profile):
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
+    if anthropic_key:
+        answer = ask_anthropic(question, profile, anthropic_key)
+        if answer:
+            return answer
     key = os.environ.get("OPENAI_API_KEY") or os.environ.get("BUILT_IN_FORGE_API_KEY")
     if not key:
         return ""
