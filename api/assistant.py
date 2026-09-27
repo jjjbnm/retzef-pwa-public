@@ -138,7 +138,8 @@ def ask_model(question, profile):
     payload = {
         "model": os.environ.get("AI_MODEL", "gpt-5-mini"),
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": question}],
-        "max_completion_tokens": 700,
+        "max_tokens": 700,
+        "reasoning_effort": "low",
     }
     request = urllib.request.Request(
         endpoint,
