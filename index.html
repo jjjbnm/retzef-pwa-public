@@ -569,7 +569,7 @@
 
   .daily-word-card{margin:22px auto 10px;max-width:720px;padding:22px 20px;text-align:center;border:1px solid rgba(91,140,255,.35);background:linear-gradient(135deg,rgba(91,140,255,.14),rgba(139,92,246,.12));border-radius:20px;box-shadow:0 12px 28px rgba(40,60,130,.12)}.daily-word-kicker{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--accent);margin-bottom:12px}.daily-word-en{font-size:clamp(21px,4vw,32px);font-weight:900;letter-spacing:.04em;color:var(--text)}.daily-word-he{font-size:clamp(17px,3vw,23px);font-weight:700;margin-top:7px;color:var(--muted)}.daily-word-date{font-size:12px;margin-top:12px;color:var(--muted)}
 
-</style>
+<style>.x-video-embed{margin:12px 0;display:flex;justify-content:center;overflow:hidden}.x-video-embed .twitter-tweet{margin:0!important;max-width:100%!important}</style>
 </head>
 <body>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
@@ -2507,11 +2507,27 @@ function openPaypalModal(itemName, price){
       await load(board);
     }catch(e){alert(e.message==='invalid_update_code'?'קוד עדכון שגוי':e.message==='tiktok_login_required'?'צריך להתחבר עם TikTok':'המחיקה נכשלה, נסו שוב');}
   }
+  function formatBoardLink(link){
+    const value=String(link||'').trim();
+    const match=value.match(/^https?:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/[^\/]+\/status\/(\d+)/i);
+    if(match){
+      const safe=esc(value);
+      return `<div class="x-video-embed"><blockquote class="twitter-tweet"><a href="${safe}" target="_blank" rel="noopener">צפייה בפוסט ב־X</a></blockquote></div>`;
+    }
+    return value?`<a href="${esc(value)}" target="_blank" rel="noopener">🔗 לפרטים נוספים</a>`:'';
+  }
+  function loadXEmbeds(target){
+    if(!document.getElementById('x-widgets-script')){
+      const script=document.createElement('script');script.id='x-widgets-script';script.async=true;script.src='https://platform.twitter.com/widgets.js';document.head.appendChild(script);
+    }
+    if(window.twttr?.widgets) window.twttr.widgets.load(target);
+  }
   function render(board,items){
     const target=document.getElementById(board==='updates'?'updatesList':'announcementsList');
     if(!items.length){target.innerHTML='<p class="board-empty">אין עדיין פרסומים בלוח הזה.</p>';return;}
-    target.innerHTML=items.map(item=>`<article class="board-card"><h4>${esc(item.description)}</h4><div class="board-meta"><span class="board-tag">${esc(item.postType||'הודעה')}</span><span class="board-tag">${esc(item.category)}</span><span>👤 ${esc(item.author)}${item.authorUsername ? ` <b dir="ltr">(@${esc(item.authorUsername)})</b>` : ''}</span><span>📅 ${new Date(item.createdAt).toLocaleDateString('he-IL')}</span>${item.publishedAt?`<span>יצא: ${esc(item.publishedAt)}</span>`:''}${item.expiresAt?`<span>נגמר: ${esc(item.expiresAt)}</span>`:''}</div>${formatPostContent(item)}${item.image?`<img src="${esc(item.image)}" alt="">`:''}${item.link?`<a href="${esc(item.link)}" target="_blank" rel="noopener">🔗 לפרטים נוספים</a>`:''}<button type="button" class="btn btn-ghost board-delete-btn" data-board="${board}" data-id="${esc(item.id)}">🗑️ מחק</button></article>`).join('');
+    target.innerHTML=items.map(item=>`<article class="board-card"><h4>${esc(item.description)}</h4><div class="board-meta"><span class="board-tag">${esc(item.postType||'הודעה')}</span><span class="board-tag">${esc(item.category)}</span><span>👤 ${esc(item.author)}${item.authorUsername ? ` <b dir="ltr">(@${esc(item.authorUsername)})</b>` : ''}</span><span>📅 ${new Date(item.createdAt).toLocaleDateString('he-IL')}</span>${item.publishedAt?`<span>יצא: ${esc(item.publishedAt)}</span>`:''}${item.expiresAt?`<span>נגמר: ${esc(item.expiresAt)}</span>`:''}</div>${formatPostContent(item)}${item.image?`<img src="${esc(item.image)}" alt="">`:''}${formatBoardLink(item.link)}<button type="button" class="btn btn-ghost board-delete-btn" data-board="${board}" data-id="${esc(item.id)}">🗑️ מחק</button></article>`).join('');
     target.querySelectorAll('.board-delete-btn').forEach(button=>button.addEventListener('click',()=>deletePost(button.dataset.board,button.dataset.id)));
+    loadXEmbeds(target);
   }
   async function load(board){try{const r=await fetch(`${api}?board=${board}`,{cache:'no-store'});const d=await r.json();if(r.ok)render(board,d.items||[]);else throw new Error(d.error||'error')}catch(e){document.getElementById(board==='updates'?'updatesList':'announcementsList').innerHTML='<p class="board-empty">לא ניתן לטעון כרגע. נסו שוב מאוחר יותר.</p>';}}
   document.querySelectorAll('.board-open').forEach(button=>button.addEventListener('click',()=>{type.value=button.dataset.board;postTypeSelect.value='';syncPostTypeFields();document.getElementById('boardComposerTitle').textContent=button.dataset.board==='updates'?'פרסום עדכון':'פרסום מודעה';document.getElementById('updateOnlyFields').style.display=button.dataset.board==='updates'?'block':'none';message.textContent='';composer.style.display='block';composer.scrollIntoView({behavior:'smooth',block:'start'});}));
