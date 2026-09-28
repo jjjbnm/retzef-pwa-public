@@ -573,16 +573,14 @@
 </head>
 <body>
 <style>
-#retzef-welcome-video{position:fixed;inset:0;z-index:2147483000;background:#090b16;color:#fff;display:flex;align-items:center;justify-content:center;padding:18px;overflow:hidden;font-family:inherit}
-#retzef-welcome-video .retzef-welcome-card{width:min(760px,100%);text-align:center}
+#retzef-welcome-video{position:fixed;inset:0;z-index:2147483000;background:#090b16;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden;font-family:inherit}
+#retzef-welcome-video .retzef-welcome-card{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 #retzef-welcome-video h1{margin:0 0 6px;font-size:clamp(42px,10vw,88px);font-weight:900;letter-spacing:.02em;background:linear-gradient(135deg,#70a7ff,#b35cff);-webkit-background-clip:text;background-clip:text;color:transparent}
 #retzef-welcome-video p{margin:0 0 18px;font-size:clamp(18px,4vw,28px);opacity:.9}
-#retzef-welcome-video video{display:block;width:100%;max-height:72vh;object-fit:contain;border-radius:22px;background:#000;box-shadow:0 18px 70px #000b}
+#retzef-welcome-video video{display:block;width:100%;max-height:100vh;object-fit:contain;border-radius:22px;background:#000;box-shadow:0 18px 70px #000b}
 </style>
-<div id="retzef-welcome-video" dir="rtl" role="dialog" aria-modal="true" aria-label="ברוכים הבאים לרצף">
+<div id="retzef-welcome-video" dir="rtl" role="dialog" aria-modal="true">
   <div class="retzef-welcome-card">
-    <h1>רצף</h1>
-    <p>ברוכים הבאים לרצף</p>
     <video autoplay muted loop playsinline controls poster="https://pbs.twimg.com/amplify_video_thumb/2096277013728477184/img/8MVOt76l7f23F1T1.jpg"><source src="https://video.twimg.com/amplify_video/2096277013728477184/vid/avc1/1152x648/bJvTEhKWUaG_ETJQ.mp4?tag=29" type="video/mp4"></video>
   </div>
 </div>
