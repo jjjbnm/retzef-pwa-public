@@ -553,23 +553,7 @@
   .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li strong{font-size:16px;color:var(--text)}
   .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li span{font-size:14px;line-height:1.65;color:var(--muted)}
 
-
-  .annual-discount{display:inline-block;margin-inline-start:6px;padding:3px 7px;border-radius:999px;background:#b91c1c;color:#fff;font-size:10px;font-weight:800}
-  .tier s{color:var(--muted);font-size:.82em;margin-inline-end:4px}
-
-
-  .all-products-discount{display:flex;flex-direction:column;gap:4px;margin:0 0 20px;padding:14px 16px;border:2px solid #b91c1c;border-radius:12px;background:#fee2e2;color:#7f1d1d;line-height:1.6}.all-products-discount strong{color:#991b1b}.all-products-discount span{font-size:13px}
-
-
-  .discount-banner{display:flex;flex-direction:column;gap:4px;margin:0 0 20px;padding:14px 16px;border:2px solid #b91c1c;border-radius:12px;background:#fee2e2;color:#7f1d1d;line-height:1.6}.discount-banner strong{color:#991b1b;font-size:16px}.discount-banner span{font-size:13px}.price s{color:var(--muted);font-size:.82em;margin-inline-end:4px}.tier s{color:var(--muted);font-size:.82em;margin-inline-end:4px}
-
-
-  .discount-banner{display:flex;flex-direction:column;gap:4px;margin:0 0 20px;padding:14px 16px;border:2px solid #b91c1c;border-radius:12px;background:#fee2e2;color:#7f1d1d;line-height:1.6}.discount-banner strong{color:#991b1b;font-size:16px}.discount-banner span{font-size:13px}.price s{color:var(--muted);font-size:.82em;margin-inline-end:4px}.tier s{color:var(--muted);font-size:.82em;margin-inline-end:4px}
-
-
-  .daily-word-card{margin:22px auto 10px;max-width:720px;padding:22px 20px;text-align:center;border:1px solid rgba(91,140,255,.35);background:linear-gradient(135deg,rgba(91,140,255,.14),rgba(139,92,246,.12));border-radius:20px;box-shadow:0 12px 28px rgba(40,60,130,.12)}.daily-word-kicker{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--accent);margin-bottom:12px}.daily-word-en{font-size:clamp(21px,4vw,32px);font-weight:900;letter-spacing:.04em;color:var(--text)}.daily-word-he{font-size:clamp(17px,3vw,23px);font-weight:700;margin-top:7px;color:var(--muted)}.daily-word-date{font-size:12px;margin-top:12px;color:var(--muted)}
-
-<style>.x-video-embed{margin:12px 0;display:flex;justify-content:center;overflow:hidden}.x-video-embed .twitter-tweet{margin:0!important;max-width:100%!important}</style>
+</style>
 </head>
 <body>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
@@ -609,7 +593,7 @@
     if(entry)entry.classList.add('is-visible');
   }
   document.body.classList.add('entry-screen-active');
-  Promise.race([window.__retzefProfileReady||Promise.resolve(),new Promise(resolve=>setTimeout(resolve,2500))]).then(showChoice);
+  setTimeout(showChoice,1100);
   window.__retzefCloseEntryScreens=closeScreens;
   if(tikTok) tikTok.addEventListener('click',()=>{closeScreens();if(typeof startTikTokLogin==='function'){startTikTokLogin(false);}else{const button=document.getElementById('tiktokLoginBtn');if(button)button.click();}});
   if(guest) guest.addEventListener('click',closeScreens);
@@ -809,13 +793,6 @@
 
   <!-- HOME -->
   <section id="home" class="tab-panel active">
-    <div class="daily-word-card glass" aria-live="polite">
-      <div class="daily-word-kicker">📖 מילת היום · WORD OF THE DAY</div>
-      <div class="daily-word-en" id="dailyWordEn">RETZEF NEVER DIE</div>
-      <div class="daily-word-he" id="dailyWordHe">רצף לעולם לא מת</div>
-      <div class="daily-word-date" id="dailyWordDate"></div>
-    </div>
-
     <span class="eyebrow" data-i18n="home_eyebrow">ברוכים הבאים</span>
     <h2 class="sec-title" data-i18n="home_title">בית</h2>
     <p class="sec-sub" data-i18n="home_sub">כל מה שצריך לדעת על רצף, במקום אחד.</p>
@@ -1024,8 +1001,7 @@
     <button type="button" id="checkSubStatusBtn" class="btn btn-ghost glass" style="width:100%; justify-content:center; font-size:13px;">🔄 בדוק סטטוס מנוי</button>
   </div>
 
-  <div class="all-products-discount" role="note"><strong>🏷️ 26% הנחה על כל המוצרים והמסלולים בתשלום</strong><span>המחיר החדש מוצג במסך הרכישה. המחירים החינמיים אינם משתנים.</span></div>
-    <!-- VIDEO POSTING SUBSCRIPTIONS -->
+  <!-- VIDEO POSTING SUBSCRIPTIONS -->
   <section id="video-subs">
     <span class="eyebrow" data-i18n="videosubs_eyebrow">הרשאת פרסום סרטונים</span>
     <h2 class="sec-title" data-i18n="videosubs_title">מנוי סרטון</h2>
@@ -1042,9 +1018,9 @@
           <li class="no">− אפשר לשלוח סרטונים של כולם</li>
           <li class="yes">+ אפשר לשלוח סרטונים שלנו</li>
         </ul>
-        <button type="button" class="buy-btn" data-item="מנוי סרטון רגיל (חודש)" data-price="3.70" style="margin-top:14px;">🛒 קנה</button>
+        <button type="button" class="buy-btn" data-item="מנוי סרטון רגיל (חודש)" data-price="5" style="margin-top:14px;">🛒 קנה</button>
         <button type="button" class="subscribe-btn" data-item="מנוי סרטון רגיל (חודשי, מתחדש)" data-plan="video_regular_month" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">🔁 הרשמה כמנוי מתחדש</button>
-        <button type="button" class="add-to-cart-btn" data-item="מנוי סרטון רגיל (חודש)" data-price="3.70" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="add-to-cart-btn" data-item="מנוי סרטון רגיל (חודש)" data-price="5" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="plan glass highlight">
         <span class="tag">מורחב</span>
@@ -1055,9 +1031,9 @@
           <li class="yes">+ אפשר לשלוח סרטונים שלנו</li>
           <li class="yes">+ אפשר לשלוח סרטונים של כולם</li>
         </ul>
-        <button type="button" class="buy-btn" data-item="מנוי סרטון פלוס (חודש)" data-price="7.40" style="margin-top:14px;">🛒 קנה</button>
+        <button type="button" class="buy-btn" data-item="מנוי סרטון פלוס (חודש)" data-price="10" style="margin-top:14px;">🛒 קנה</button>
         <button type="button" class="subscribe-btn" data-item="מנוי סרטון פלוס (חודשי, מתחדש)" data-plan="video_plus_month" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">🔁 הרשמה כמנוי מתחדש</button>
-        <button type="button" class="add-to-cart-btn" data-item="מנוי סרטון פלוס (חודש)" data-price="7.40" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="add-to-cart-btn" data-item="מנוי סרטון פלוס (חודש)" data-price="10" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
     </div>
 
@@ -1081,7 +1057,6 @@
     </div>
   </section>
 
-  <div class="discount-banner" role="note"><strong>🏷️ 26% הנחה על הכול</strong><span>ההנחה חלה על המנויים, על מסלולי שבוע/חודש/3 ימים ועל כל מוצרי החנות.</span></div>
   <!-- PLANS -->
   <section id="plans">
     <span class="eyebrow" data-i18n="plans_eyebrow">הטבות קהילה</span>
@@ -1101,14 +1076,14 @@
           <li>אפשר לשלוח רק סרטונים שלנו</li>
         </ul>
         <div class="price-tiers">
-          \1<s>₪12.45</s> ₪9.21\3</button><button type="button" class="subscribe-btn" data-item="רצף פלוס (חודש) (מתחדש)" data-plan="retzef_plus_month" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
-          <button type="button" class="tier buy-tier" data-item="רצף פלוס (שנה) — 26% הנחה" data-price="13.32"><span>שנה <b class="annual-discount">26% הנחה</b></span><span><s>₪18</s> ₪13.32</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס (שנה) (מתחדש)" data-plan="retzef_plus_year" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
-          \1<s>₪4.95</s> ₪3.66\3</button><button type="button" class="subscribe-btn" data-item="רצף פלוס (שבוע) (מתחדש)" data-plan="retzef_plus_week" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
-          \1<s>₪2.95</s> ₪2.18\3</button><button type="button" class="subscribe-btn" data-item="רצף פלוס (3 ימים) (מתחדש)" data-plan="retzef_plus_day" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס (חודש)" data-price="12.45"><span>חודש</span><span>₪12.45</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס (חודש) (מתחדש)" data-plan="retzef_plus_month" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס (שנה)" data-price="18"><span>שנה</span><span>₪18</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס (שנה) (מתחדש)" data-plan="retzef_plus_year" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס (שבוע)" data-price="4.95"><span>שבוע</span><span>₪4.95</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס (שבוע) (מתחדש)" data-plan="retzef_plus_week" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס (3 ימים)" data-price="2.95"><span>3 ימים</span><span>₪2.95</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס (3 ימים) (מתחדש)" data-plan="retzef_plus_day" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
           <div class="tier"><span>יום</span><span>חינם (באישור בלבד)</span></div>
         </div>
-        <button type="button" class="buy-btn" data-item="רצף פלוס (חודש)" data-price="9.21" style="margin-top:14px;">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="רצף פלוס (חודש)" data-price="9.21" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="רצף פלוס (חודש)" data-price="12.45" style="margin-top:14px;">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="רצף פלוס (חודש)" data-price="12.45" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
 
       <div class="plan glass highlight">
@@ -1123,14 +1098,14 @@
           <li>אפשר לשלוח כל סרטון</li>
         </ul>
         <div class="price-tiers">
-          \1<s>₪18</s> ₪13.32\3</button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (חודש) (מתחדש)" data-plan="retzef_premium_month" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
-          <button type="button" class="tier buy-tier" data-item="רצף פלוס פרימיום (שנה) — 26% הנחה" data-price="14.80"><span>שנה <b class="annual-discount">26% הנחה</b></span><span><s>₪20</s> ₪14.80</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (שנה) (מתחדש)" data-plan="retzef_premium_year" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
-          \1<s>₪9.95</s> ₪7.36\3</button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (שבוע) (מתחדש)" data-plan="retzef_premium_week" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
-          \1<s>₪5.95</s> ₪4.40\3</button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (3 ימים) (מתחדש)" data-plan="retzef_premium_day" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס פרימיום (חודש)" data-price="18"><span>חודש</span><span>₪18</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (חודש) (מתחדש)" data-plan="retzef_premium_month" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס פרימיום (שנה)" data-price="20"><span>שנה</span><span>₪20</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (שנה) (מתחדש)" data-plan="retzef_premium_year" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס פרימיום (שבוע)" data-price="9.95"><span>שבוע</span><span>₪9.95</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (שבוע) (מתחדש)" data-plan="retzef_premium_week" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
+          <button type="button" class="tier buy-tier" data-item="רצף פלוס פרימיום (3 ימים)" data-price="5.95"><span>3 ימים</span><span>₪5.95</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (3 ימים) (מתחדש)" data-plan="retzef_premium_day" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
           <div class="tier"><span>10 שעות</span><span>חינם (באישור בלבד)</span></div>
         </div>
-        <button type="button" class="buy-btn" data-item="רצף פלוס פרימיום (חודש)" data-price="13.32" style="margin-top:14px;">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="רצף פלוס פרימיום (חודש)" data-price="13.32" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="רצף פלוס פרימיום (חודש)" data-price="18" style="margin-top:14px;">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="רצף פלוס פרימיום (חודש)" data-price="18" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
 
       <div class="plan glass">
@@ -1187,7 +1162,6 @@
   </section>
 
   <!-- SHOP -->
-  <div class="discount-banner" role="note"><strong>🏷️ 26% הנחה על הכול</strong><span>ההנחה חלה על המנויים, על מסלולי שבוע/חודש/3 ימים ועל כל מוצרי החנות.</span></div>
   <section id="shop" class="tab-panel">
     <span class="eyebrow" data-i18n="shop_eyebrow">חנות רצף</span>
     <h2 class="sec-title" data-i18n="shop_title">מה אפשר לקנות</h2>
@@ -1198,20 +1172,20 @@
       <div class="shop-item glass">
         <span class="name">🏷️ תג תורם</span>
         <span class="price">₪1</span>
-        <button type="button" class="buy-btn" data-item="תג תורם" data-price="0.74">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="תג תורם" data-price="0.74" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="תג תורם" data-price="1">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="תג תורם" data-price="1" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="shop-item glass">
         <span class="name">💎 תג עשיר</span>
         <span class="price">₪10</span>
-        <button type="button" class="buy-btn" data-item="תג עשיר" data-price="7.40">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="תג עשיר" data-price="7.40" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="תג עשיר" data-price="10">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="תג עשיר" data-price="10" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="shop-item glass">
         <span class="name">📢 לקבל ערעור</span>
         <span class="price">₪5</span>
-        <button type="button" class="buy-btn" data-item="לקבל ערעור" data-price="3.70">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="לקבל ערעור" data-price="3.70" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="לקבל ערעור" data-price="5">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="לקבל ערעור" data-price="5" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="shop-item glass">
         <span class="name">🛡️ תג מנהל</span>
@@ -1222,33 +1196,33 @@
         <span class="name">✏️ שינוי שם/תמונת קבוצה</span>
         <span class="price">₪10</span>
         <span class="note">חד פעמי</span>
-        <button type="button" class="buy-btn" data-item="שינוי שם/תמונת קבוצה" data-price="7.40">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="שינוי שם/תמונת קבוצה" data-price="7.40" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="שינוי שם/תמונת קבוצה" data-price="10">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="שינוי שם/תמונת קבוצה" data-price="10" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="shop-item glass">
         <span class="name">🗑️ מחיקת הקבוצה</span>
         <span class="price">₪1000</span>
-        <button type="button" class="buy-btn" data-item="מחיקת הקבוצה" data-price="740.00">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="מחיקת הקבוצה" data-price="740.00" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="מחיקת הקבוצה" data-price="1000">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="מחיקת הקבוצה" data-price="1000" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="shop-item glass">
         <span class="name">👢 הקיק אנשים</span>
         <span class="price">₪500</span>
-        <button type="button" class="buy-btn" data-item="הקיק אנשים" data-price="370.00">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="הקיק אנשים" data-price="370.00" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="הקיק אנשים" data-price="500">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="הקיק אנשים" data-price="500" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="shop-item glass">
         <span class="name">👑 להיות בעלים חדש</span>
         <span class="price">₪700</span>
-        <button type="button" class="buy-btn" data-item="להיות בעלים חדש" data-price="518.00">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="להיות בעלים חדש" data-price="518.00" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="להיות בעלים חדש" data-price="700">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="להיות בעלים חדש" data-price="700" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
       <div class="shop-item glass">
         <span class="name">🎲 להיות מנהל בלי ניסיון</span>
         <span class="price">₪50</span>
         <span class="note warn">⚠️ יכול לגרום לחסימה</span>
-        <button type="button" class="buy-btn" data-item="להיות מנהל בלי ניסיון" data-price="37.00">🛒 קנה</button>
-        <button type="button" class="add-to-cart-btn" data-item="להיות מנהל בלי ניסיון" data-price="37.00" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
+        <button type="button" class="buy-btn" data-item="להיות מנהל בלי ניסיון" data-price="50">🛒 קנה</button>
+        <button type="button" class="add-to-cart-btn" data-item="להיות מנהל בלי ניסיון" data-price="50" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
     </div>
 
@@ -1256,14 +1230,14 @@
       <h3>🧮 מחשבון מחיר</h3>
       <div style="display:flex; flex-direction:column; gap:12px;">
         <select id="tsCalcItem" style="padding:10px; border-radius:10px; border:1px solid var(--glass-border); background:var(--bg); color:var(--text); font-family:'Assistant';">
-          <option value="0.74">תג תורם — ₪0.74 (26% הנחה)</option>
-          <option value="7.40">תג עשיר — ₪7.40 (26% הנחה)</option>
-          <option value="3.70">לקבל ערעור — ₪3.70 (26% הנחה)</option>
-          <option value="7.40">שינוי שם/תמונת קבוצה — ₪7.40 (26% הנחה)</option>
-          <option value="740.00">מחיקת הקבוצה — ₪740.00 (26% הנחה)</option>
-          <option value="370.00">הקיק אנשים — ₪370.00 (26% הנחה)</option>
-          <option value="518.00">להיות בעלים חדש — ₪518.00 (26% הנחה)</option>
-          <option value="37.00">להיות מנהל בלי ניסיון — ₪37.00 (26% הנחה)</option>
+          <option value="1">תג תורם — ₪1</option>
+          <option value="10">תג עשיר — ₪10</option>
+          <option value="5">לקבל ערעור — ₪5</option>
+          <option value="10">שינוי שם/תמונת קבוצה — ₪10</option>
+          <option value="1000">מחיקת הקבוצה — ₪1000</option>
+          <option value="500">הקיק אנשים — ₪500</option>
+          <option value="700">להיות בעלים חדש — ₪700</option>
+          <option value="50">להיות מנהל בלי ניסיון — ₪50</option>
         </select>
         <div class="toggle-row">
           <span style="font-size:14px; color:var(--muted);">אני מנהל (הנחת 2₪)</span>
@@ -1520,7 +1494,6 @@
     quickModal.classList.add('open');
     document.getElementById('addTikTokAccount').addEventListener('click',()=>{quickModal.classList.remove('open');closeConsentModal();startTikTokLogin(true);});
   }
-  window.openAccountManager = openAccountManager;
   function openProfileAction(action){
     const profile=window.__retzefProfile||{};
     const username=profile.username||'לא מחובר';
@@ -1646,12 +1619,7 @@
       }
     } else if (params.get('tiktok_error')) {
       const statusEl2 = document.getElementById('tiktokAuthStatus');
-      const loginError=params.get('tiktok_error');
-      if(loginError === 'account_banned'){
-        statusEl2.textContent = '🚫 החשבון נחסם. ' + (params.get('ban_reason') || 'אין אפשרות להתחבר או לצפות בתוכן המוגן.');
-        const switchButton=document.createElement('button'); switchButton.type='button'; switchButton.textContent='🔄 החלף חשבון'; switchButton.style.cssText='display:block;margin:12px auto 0;padding:10px 16px;border:0;border-radius:10px;background:#1d4ed8;color:#fff;font-weight:800;cursor:pointer;';
-        switchButton.onclick=()=>{if(typeof window.openAccountManager==='function') window.openAccountManager(); else if(typeof startTikTokLogin==='function') startTikTokLogin(true);}; statusEl2.appendChild(switchButton);
-      } else statusEl2.textContent = loginError === 'join_pending' ? '⏳ החשבון ממתין לאישור הבאן המקורי.' : loginError === 'join_denied' ? '🚫 בקשת ההצטרפות נדחתה. ' + (params.get('ban_reason') || '') : 'ההתחברות נכשלה (' + loginError + '), נסו שוב.';
+      const loginError=params.get('tiktok_error'); statusEl2.textContent = loginError === 'account_banned' ? '🚫 החשבון נחסם. ' + (params.get('ban_reason') || 'אין אפשרות להתחבר או לצפות בתוכן המוגן.') : loginError === 'join_pending' ? '⏳ החשבון ממתין לאישור הבאן המקורי.' : loginError === 'join_denied' ? '🚫 בקשת ההצטרפות נדחתה. ' + (params.get('ban_reason') || '') : 'ההתחברות נכשלה (' + loginError + '), נסו שוב.';
       statusEl2.style.display = 'block';
     }
     if (params.has('tiktok_ok') || params.has('tiktok_error') || params.has('username') || params.has('avatar') || params.has('role')) {
@@ -1710,7 +1678,7 @@
       return data.profile || null;
     } catch (_) { return null; }
   }
-  window.__retzefProfileReady=loadServerProfile(); window.refreshRetzefProfile=loadServerProfile; setInterval(loadServerProfile, 60000);
+  loadServerProfile();
 
 
   // === day streak — anchored so it always increases by 1 per calendar day ===
@@ -1937,11 +1905,15 @@
 
   // === tab switching
   const tabBtns = document.querySelectorAll('.tab-btn');
-  // The AI panel is declared later in the document, so query panels at click time.
-  const getPanels = () => document.querySelectorAll('.tab-panel');
-  // כל הטאבים פתוחים לצפייה לכל המבקרים; פעולות כתיבה וניהול עדיין מוגנות בשרת.
+  const panels = document.querySelectorAll('.tab-panel');
+  const protectedTabs = new Set(['boards', 'subs', 'shop']);
   function activateTab(target){
-    getPanels().forEach(p => p.classList.toggle('active', p.id === target));
+    if (protectedTabs.has(target) && !window.__retzefProfile) {
+      if (typeof openConsentModal === 'function') openConsentModal();
+      else alert('כדי להיכנס לטאב הזה צריך להתחבר עם TikTok.');
+      return;
+    }
+    panels.forEach(p => p.classList.toggle('active', p.id === target));
     tabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
     window.scrollTo({top: 0, behavior:'smooth'});
   }
@@ -2507,27 +2479,11 @@ function openPaypalModal(itemName, price){
       await load(board);
     }catch(e){alert(e.message==='invalid_update_code'?'קוד עדכון שגוי':e.message==='tiktok_login_required'?'צריך להתחבר עם TikTok':'המחיקה נכשלה, נסו שוב');}
   }
-  function formatBoardLink(link){
-    const value=String(link||'').trim();
-    const match=value.match(/^https?:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/[^\/]+\/status\/(\d+)/i);
-    if(match){
-      const safe=esc(value);
-      return `<div class="x-video-embed"><blockquote class="twitter-tweet"><a href="${safe}" target="_blank" rel="noopener">צפייה בפוסט ב־X</a></blockquote></div>`;
-    }
-    return value?`<a href="${esc(value)}" target="_blank" rel="noopener">🔗 לפרטים נוספים</a>`:'';
-  }
-  function loadXEmbeds(target){
-    if(!document.getElementById('x-widgets-script')){
-      const script=document.createElement('script');script.id='x-widgets-script';script.async=true;script.src='https://platform.twitter.com/widgets.js';document.head.appendChild(script);
-    }
-    if(window.twttr?.widgets) window.twttr.widgets.load(target);
-  }
   function render(board,items){
     const target=document.getElementById(board==='updates'?'updatesList':'announcementsList');
     if(!items.length){target.innerHTML='<p class="board-empty">אין עדיין פרסומים בלוח הזה.</p>';return;}
-    target.innerHTML=items.map(item=>`<article class="board-card"><h4>${esc(item.description)}</h4><div class="board-meta"><span class="board-tag">${esc(item.postType||'הודעה')}</span><span class="board-tag">${esc(item.category)}</span><span>👤 ${esc(item.author)}${item.authorUsername ? ` <b dir="ltr">(@${esc(item.authorUsername)})</b>` : ''}</span><span>📅 ${new Date(item.createdAt).toLocaleDateString('he-IL')}</span>${item.publishedAt?`<span>יצא: ${esc(item.publishedAt)}</span>`:''}${item.expiresAt?`<span>נגמר: ${esc(item.expiresAt)}</span>`:''}</div>${formatPostContent(item)}${item.image?`<img src="${esc(item.image)}" alt="">`:''}${formatBoardLink(item.link)}<button type="button" class="btn btn-ghost board-delete-btn" data-board="${board}" data-id="${esc(item.id)}">🗑️ מחק</button></article>`).join('');
+    target.innerHTML=items.map(item=>`<article class="board-card"><h4>${esc(item.description)}</h4><div class="board-meta"><span class="board-tag">${esc(item.postType||'הודעה')}</span><span class="board-tag">${esc(item.category)}</span><span>👤 ${esc(item.author)}${item.authorUsername ? ` <b dir="ltr">(@${esc(item.authorUsername)})</b>` : ''}</span><span>📅 ${new Date(item.createdAt).toLocaleDateString('he-IL')}</span>${item.publishedAt?`<span>יצא: ${esc(item.publishedAt)}</span>`:''}${item.expiresAt?`<span>נגמר: ${esc(item.expiresAt)}</span>`:''}</div>${formatPostContent(item)}${item.image?`<img src="${esc(item.image)}" alt="">`:''}${item.link?`<a href="${esc(item.link)}" target="_blank" rel="noopener">🔗 לפרטים נוספים</a>`:''}<button type="button" class="btn btn-ghost board-delete-btn" data-board="${board}" data-id="${esc(item.id)}">🗑️ מחק</button></article>`).join('');
     target.querySelectorAll('.board-delete-btn').forEach(button=>button.addEventListener('click',()=>deletePost(button.dataset.board,button.dataset.id)));
-    loadXEmbeds(target);
   }
   async function load(board){try{const r=await fetch(`${api}?board=${board}`,{cache:'no-store'});const d=await r.json();if(r.ok)render(board,d.items||[]);else throw new Error(d.error||'error')}catch(e){document.getElementById(board==='updates'?'updatesList':'announcementsList').innerHTML='<p class="board-empty">לא ניתן לטעון כרגע. נסו שוב מאוחר יותר.</p>';}}
   document.querySelectorAll('.board-open').forEach(button=>button.addEventListener('click',()=>{type.value=button.dataset.board;postTypeSelect.value='';syncPostTypeFields();document.getElementById('boardComposerTitle').textContent=button.dataset.board==='updates'?'פרסום עדכון':'פרסום מודעה';document.getElementById('updateOnlyFields').style.display=button.dataset.board==='updates'?'block':'none';message.textContent='';composer.style.display='block';composer.scrollIntoView({behavior:'smooth',block:'start'});}));
@@ -2564,7 +2520,7 @@ function openPaypalModal(itemName, price){
     <p class="sec-sub">שאלו שאלה על האפליקציה, הסטטוס, החוקים, המנויים או התמיכה.</p>
     <div id="retzef-ai-panel" style="display:flex;width:100%;height:520px;margin-top:20px;"><div id="retzef-ai-head">🤖 עוזר AI</div><div id="retzef-ai-messages"><div class="retzef-ai-msg retzef-ai-bot">היי! אני עוזר ה־AI של רצף, איך אפשר לעזור?</div></div><form id="retzef-ai-form"><input id="retzef-ai-input" autocomplete="off" placeholder="כתבו שאלה..."><button id="retzef-ai-send" type="submit">שלח</button></form></div>
   </section>
-<script>(function(){const panel=document.getElementById('retzef-ai-panel'),form=document.getElementById('retzef-ai-form'),input=document.getElementById('retzef-ai-input'),messages=document.getElementById('retzef-ai-messages');input.focus();function localAnswer(q){const t=String(q||'').toLowerCase();if(t.trim()==='הבאן המקורי')return '🥚 מצאת Easter egg! עוד סוד קטן: מתחילת 1 באוקטובר לא צריך לקנות מנוי כדי לשלוח סרטון יותר.';if(/^\s*(היי|שלום|הי|אהלן)/.test(t)&&!/מנוי|משתמש|מחובר/.test(t))return 'היי! אני עוזר ה־AI של רצף, איך אפשר לעזור?';if(/לאיזה משתמש|מי אני|מחובר בתור|איזה משתמש/.test(t))return 'כדי לזהות את המשתמש המחובר, התחבר עם TikTok.';if(/איזה מנוי|המנוי שלי/.test(t))return 'אין לי כרגע נתוני מנוי אישיים. אפשר לבדוק בטאב מנויים.';if(/גיל|בן כמה|לאיזה גיל/.test(t))return 'גיל הכניסה לקבוצה הוא 15- כרגע, והוא יעלה ל-16- בשנת 2027.';if(/סטטוס|סולם/.test(t))return 'סולם הסטטוס: 🟢 הכול טוב, 🟡 אזהרה ראשונה, 🟠 בסיכון, 🔴 בסכנה, ⚫ באן, ☠️ חסימה לצמיתות.';if(/חוק|חוקים/.test(t))return 'החוקים: לא לספים, לא לקלל, לא לשנות שם או תמונת קבוצה, ואסור להזכיר את המדינות האסורות.';if(/סקר/.test(t))return 'סקר זמין רק בלוח העדכונים וכולל שאלה, תשובות וכפתור להוספת תשובה.';if(/אירוע/.test(t))return 'אירוע כולל שם, תיאור, מתי יתחיל ומתי ייגמר.';if(/קובץ|apk|100mb/.test(t))return 'אסור להעלות APK או קובץ מעל 100MB.';if(/חנות|paypal|תשלום/.test(t))return 'החנות כוללת תגים ושירותים, והתשלום מתבצע דרך PayPal.';return 'הבנתי. במה תרצה שאעזור? אפשר לכתוב שאלה או בקשה מלאה.';}function requestedTab(q){const t=String(q||'').toLowerCase();const maps=[['boards',/מודעות|לוח עדכונים|לוח מודעות/],['subs',/מנויים|מנוי/],['shop',/חנות/],['status',/סטטוס/],['rules',/חוקים/],['team',/בעלים|מנהלים/],['scope',/גיל ותנאים|גיל כניסה/],['settings',/הגדרות/],['about',/אודות|גרסה/],['contact',/יצירת קשר|תמיכה/],['home',/בית/]];if(!/תעביר|להעביר|פתח|לפתוח|עבור|לעבור|לך ל|קח אותי|תראה לי/.test(t))return '';const found=maps.find(x=>x[1].test(t));return found?found[0]:null;}function isSupportRequest(q){return /תמיכה|מנהל מערכת תמיכה|לדווח|דיווח|בעיה|תקלה|שגיאה|עזרה/.test(String(q||'').toLowerCase());}function add(text,who){const el=document.createElement('div');el.className='retzef-ai-msg '+(who==='user'?'retzef-ai-user':'retzef-ai-bot');el.textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight;return el;}function addSupportButton(quote){const button=document.createElement('button');button.type='button';button.className='quick-action';button.textContent='📩 העבר את הציטוט למנהל מערכת התמיכה';button.onclick=async()=>{button.disabled=true;button.textContent='שולח...';try{const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'support',quote})});const d=await r.json().catch(()=>({}));button.textContent=r.ok?'✅ הציטוט הועבר למערכת התמיכה':'❌ לא ניתן להעביר כרגע';if(!r.ok&&d.error==='tiktok_login_required')button.textContent='🔐 צריך להתחבר עם TikTok כדי לפנות לתמיכה';}catch(_){button.disabled=false;button.textContent='נסה שוב להעביר לתמיכה';}};messages.appendChild(button);messages.scrollTop=messages.scrollHeight;}function normalizeAnswer(value){if(Array.isArray(value))value=value.map(item=>typeof item==='string'?item:item?.text||item?.content||'').join('');if(value&&typeof value==='object')value=value.text||value.content||value.answer||'';const answer=String(value||'').trim();return answer&&!/^(n\s*\/\s*a|n\/|null|undefined|empty)$/i.test(answer)?answer:'';}async function requestAnswer(question){const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);try{const r=await fetch('/api/assistant',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({message:question}),signal:controller.signal});const raw=await r.text();let data={};try{data=JSON.parse(raw||'{}');}catch(_){data={answer:raw};}if(!r.ok)throw new Error(data.error||'assistant_request_failed');const answer=normalizeAnswer(data.answer??data.response??data.output_text??data);if(!answer)throw new Error('assistant_empty_response');return answer;}finally{clearTimeout(timer);}}form.addEventListener('submit',async e=>{e.preventDefault();const question=input.value.trim();if(!question)return;input.value='';add(question,'user');const target=requestedTab(question);if(target){if(typeof window.activateTab==='function')window.activateTab(target);panel.scrollIntoView({behavior:'smooth',block:'start'});return;}const wait=add('חושב...','bot');try{wait.textContent=await requestAnswer(question);}catch(_){wait.textContent=localAnswer(question);}if(isSupportRequest(question)){add('אם תרצה, אפשר להעביר את הציטוט הזה למנהל מערכת התמיכה.','bot');addSupportButton(question);}});})();</script>
+<script>(function(){const panel=document.getElementById('retzef-ai-panel'),form=document.getElementById('retzef-ai-form'),input=document.getElementById('retzef-ai-input'),messages=document.getElementById('retzef-ai-messages');input.focus();function localAnswer(q){const t=String(q||'').toLowerCase();if(t.trim()==='הבאן המקורי')return '🥚 מצאת Easter egg! עוד סוד קטן: מתחילת 1 באוקטובר לא צריך לקנות מנוי כדי לשלוח סרטון יותר.';if(/^\s*(היי|שלום|הי|אהלן)/.test(t)&&!/מנוי|משתמש|מחובר/.test(t))return 'היי! אני עוזר ה־AI של רצף, איך אפשר לעזור?';if(/לאיזה משתמש|מי אני|מחובר בתור|איזה משתמש/.test(t))return 'כדי לזהות את המשתמש המחובר, התחבר עם TikTok.';if(/איזה מנוי|המנוי שלי/.test(t))return 'אין לי כרגע נתוני מנוי אישיים. אפשר לבדוק בטאב מנויים.';if(/גיל|בן כמה|לאיזה גיל/.test(t))return 'גיל הכניסה לקבוצה הוא 15- כרגע, והוא יעלה ל-16- בשנת 2027.';if(/סטטוס|סולם/.test(t))return 'סולם הסטטוס: 🟢 הכול טוב, 🟡 אזהרה ראשונה, 🟠 בסיכון, 🔴 בסכנה, ⚫ באן, ☠️ חסימה לצמיתות.';if(/חוק|חוקים/.test(t))return 'החוקים: לא לספים, לא לקלל, לא לשנות שם או תמונת קבוצה, ואסור להזכיר את המדינות האסורות.';if(/סקר/.test(t))return 'סקר זמין רק בלוח העדכונים וכולל שאלה, תשובות וכפתור להוספת תשובה.';if(/אירוע/.test(t))return 'אירוע כולל שם, תיאור, מתי יתחיל ומתי ייגמר.';if(/קובץ|apk|100mb/.test(t))return 'אסור להעלות APK או קובץ מעל 100MB.';if(/חנות|paypal|תשלום/.test(t))return 'החנות כוללת תגים ושירותים, והתשלום מתבצע דרך PayPal.';return 'הבנתי. במה תרצה שאעזור? אפשר לכתוב שאלה או בקשה מלאה.';}function requestedTab(q){const t=String(q||'').toLowerCase();const maps=[['boards',/מודעות|לוח עדכונים|לוח מודעות/],['subs',/מנויים|מנוי/],['shop',/חנות/],['status',/סטטוס/],['rules',/חוקים/],['team',/בעלים|מנהלים/],['scope',/גיל ותנאים|גיל כניסה/],['settings',/הגדרות/],['about',/אודות|גרסה/],['contact',/יצירת קשר|תמיכה/],['home',/בית/]];if(!/תעביר|להעביר|פתח|לפתוח|עבור|לעבור|לך ל|קח אותי|תראה לי/.test(t))return '';const found=maps.find(x=>x[1].test(t));return found?found[0]:null;}function isSupportRequest(q){return /תמיכה|מנהל מערכת תמיכה|לדווח|דיווח|בעיה|תקלה|שגיאה|עזרה/.test(String(q||'').toLowerCase());}function add(text,who){const el=document.createElement('div');el.className='retzef-ai-msg '+(who==='user'?'retzef-ai-user':'retzef-ai-bot');el.textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight;return el;}function addSupportButton(quote){const button=document.createElement('button');button.type='button';button.className='quick-action';button.textContent='📩 העבר את הציטוט למנהל מערכת התמיכה';button.onclick=async()=>{button.disabled=true;button.textContent='שולח...';try{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'support',quote})});const d=await r.json();button.textContent=r.ok?'✅ הציטוט הועבר למערכת התמיכה':'❌ לא ניתן להעביר כרגע';if(!r.ok&&d.error==='tiktok_login_required')button.textContent='🔐 צריך להתחבר עם TikTok כדי לפנות לתמיכה';}catch(_){button.disabled=false;button.textContent='נסה שוב להעביר לתמיכה';}};messages.appendChild(button);messages.scrollTop=messages.scrollHeight;}form.addEventListener('submit',async e=>{e.preventDefault();const question=input.value.trim();if(!question)return;input.value='';add(question,'user');const target=requestedTab(question);if(target){if(['boards','subs','shop'].includes(target)&&!window.__retzefProfile){add('כדי לפתוח את הטאב הזה צריך להתחבר עם TikTok.','bot');return;}if(typeof window.activateTab==='function')window.activateTab(target);panel.scrollIntoView({behavior:'smooth',block:'start'});return;}const wait=add('חושב...','bot');try{const r=await fetch('/api/assistant',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:question})});const d=await r.json();wait.textContent=d.answer||localAnswer(question);if(isSupportRequest(question)){const note=add('אם תרצה, אפשר להעביר את הציטוט הזה למנהל מערכת התמיכה.','bot');addSupportButton(question);}}catch(_){wait.textContent=localAnswer(question);if(isSupportRequest(question)){add('אפשר להעביר את הציטוט למנהל מערכת התמיכה:','bot');addSupportButton(question);}}});})();</script>
 <script>
 (function(){const callBtn=document.getElementById('voiceCallBtn'),moreBtn=document.getElementById('voiceMoreBtn'),moreMenu=document.getElementById('voiceMoreMenu'),recordBtn=document.getElementById('voiceRecordBtn'),speakerBtn=document.getElementById('voiceSpeakerBtn'),muteBtn=document.getElementById('voiceMuteBtn'),bluetoothBtn=document.getElementById('voiceBluetoothBtn'),messageBtn=document.getElementById('voiceMessageBtn'),input=document.getElementById('hubChatInput'),title=document.getElementById('hubChatTitle');let pc=null,stream=null,remoteStream=null,recorder=null,recorded=[],callId='',target='',seen=new Set(),poller=null;const me=()=>String(window.__retzefProfile?.username||'').toLowerCase();const targetFromTitle=()=>{const m=(title?.textContent||'').match(/@([A-Za-z0-9._-]+)/);return m?m[1].toLowerCase():''};async function event(action,data){if(!target)return {ok:false};const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:target,callAction:action,callId,data:data||null})});let d={};try{d=await r.json();}catch(_){}return {ok:r.ok,data:d};}function reset(){if(stream)stream.getTracks().forEach(t=>t.stop());if(pc)pc.close();pc=null;stream=null;remoteStream=null;callId='';callBtn.textContent='📞 שיחה קולית';}async function start(){target=targetFromTitle();if(!target||target===me())return alert('פתח קודם צ׳אט עם משתמש.');callId=Math.random().toString(36).slice(2);try{stream=await navigator.mediaDevices.getUserMedia({audio:true});pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});stream.getTracks().forEach(t=>pc.addTrack(t,stream));pc.ontrack=e=>{remoteStream=e.streams[0];const audio=new Audio();audio.autoplay=true;audio.srcObject=remoteStream;window.__retzefVoiceAudio=audio;};const offer=await pc.createOffer();await pc.setLocalDescription(offer);await event('invite',{sdp:offer});callBtn.textContent='☎️ ניתוק';}catch(e){alert('אין הרשאה למיקרופון או שהשיחה לא זמינה.');reset();}}async function answer(ev){target=ev.from;callId=ev.callId;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});stream.getTracks().forEach(t=>pc.addTrack(t,stream));pc.ontrack=e=>{remoteStream=e.streams[0];const audio=new Audio();audio.autoplay=true;audio.srcObject=remoteStream;window.__retzefVoiceAudio=audio;};await pc.setRemoteDescription(ev.data.sdp);const offer=await pc.createAnswer();await pc.setLocalDescription(offer);const sent=await event('answer',{sdp:offer});if(!sent.ok){alert(sent.data?.message||'המתקשר חייב להיות מחובר כדי לענות לשיחה.');reset();return;}callBtn.textContent='☎️ ניתוק';}catch(_){await event('reject',{reason:'microphone_denied'});reset();}}function showIncoming(ev){const old=document.getElementById('incomingVoiceCall');if(old)old.remove();let ctx;try{ctx=new AudioContext();const osc=ctx.createOscillator();const gain=ctx.createGain();osc.frequency.value=720;gain.gain.value=.05;osc.connect(gain);gain.connect(ctx.destination);osc.start();setTimeout(()=>{osc.stop();ctx.close();},1200);}catch(_){}if(navigator.vibrate)navigator.vibrate([300,150,300]);const box=document.createElement('div');box.id='incomingVoiceCall';box.style='position:fixed;inset:0;z-index:11000;background:rgba(7,10,20,.72);display:flex;align-items:center;justify-content:center;padding:20px;direction:rtl';box.innerHTML='<div style="background:var(--bg2,#fff);color:var(--text,#111);border-radius:24px;padding:28px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 70px #0008"><div style="font-size:58px">📞</div><h2>שיחה נכנסת</h2><p>@'+ev.from+' מתקשר/ת אליך</p><div style="display:flex;gap:10px;justify-content:center"><button id="answerVoice" class="hub-btn">ענה</button><button id="rejectVoice" class="hub-btn secondary">דחה</button></div></div>';document.body.appendChild(box);document.getElementById('answerVoice').onclick=async()=>{box.remove();await answer(ev);};document.getElementById('rejectVoice').onclick=async()=>{target=ev.from;callId=ev.callId;await event('reject',{reason:'declined'});box.remove();};}async function poll(){try{const r=await fetch('/api/chat?callInbox=1');const d=await r.json();for(const ev of d.events||[]){const id=ev.callId+'|'+ev.action+'|'+ev.from;if(seen.has(id)||ev.to!==me())continue;seen.add(id);if(ev.action==='invite'&&ev.from!==me()){showIncoming(ev);}else if(ev.action==='answer'&&pc&&ev.callId===callId)await pc.setRemoteDescription(ev.data.sdp);else if(ev.action==='reject'&&ev.callId===callId){alert('השיחה נדחתה או שלא ניתן לענות כרגע.');reset();}else if(ev.action==='end'&&ev.callId===callId)reset();}}catch(_){}}moreBtn.onclick=()=>{moreMenu.style.display=moreMenu.style.display==='flex'?'none':'flex';};callBtn.onclick=()=>pc? (event('end'),reset()) : start();recordBtn.onclick=()=>{if(recorder?.state==='recording'){recorder.stop();recordBtn.textContent='⏺ הקלטה';return;}if(!remoteStream&&!stream)return alert('אין שיחה פעילה.');const source=remoteStream||stream;try{recorder=new MediaRecorder(source);recorded=[];recorder.ondataavailable=e=>e.data.size&&recorded.push(e.data);recorder.onstop=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(recorded,{type:'audio/webm'}));a.download='retzef-call-'+Date.now()+'.webm';a.click();};recorder.start();recordBtn.textContent='⏹ עצור והורד הקלטה';}catch(_){alert('הקלטה אינה נתמכת בדפדפן זה.');}};speakerBtn.onclick=()=>{const a=window.__retzefVoiceAudio;if(a&&a.setSinkId){a.setSinkId('default');speakerBtn.textContent='🔊 רמקול פעיל';}else alert('בחירת רמקול אינה נתמכת בדפדפן זה.');};muteBtn.onclick=()=>{if(stream){const t=stream.getAudioTracks()[0];t.enabled=!t.enabled;muteBtn.textContent=t.enabled?'🎙 השתק':'🔇 מושתק';}};bluetoothBtn.onclick=async()=>{if(!navigator.bluetooth)return alert('Bluetooth אינו נתמך בדפדפן זה.');try{await navigator.bluetooth.requestDevice({acceptAllDevices:true});bluetoothBtn.textContent='🎧 Bluetooth מחובר';}catch(_){}};messageBtn.onclick=()=>{input.focus();};window.addEventListener('beforeunload',()=>{if(pc)event('end');reset();});const heartbeat=setInterval(()=>fetch('/api/profile',{credentials:'include',cache:'no-store'}).catch(()=>{}),60000);poller=setInterval(poll,2500);})();
 </script>
@@ -2601,33 +2557,5 @@ function openPaypalModal(itemName, price){
   </script>
 <div id="legalLinks" dir="rtl" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px auto;padding:12px;font-size:13px;"><a href="/terms-of-service/">תנאי שימוש</a><a href="/privacy-policy/">מדיניות פרטיות</a><a href="/cookie-policy/">מדיניות עוגיות</a><a href="/refund-and-cancellation/">ביטולים והחזרים</a><a href="/subscription-terms/">תנאי מנוי</a><a href="/community-guidelines/">כללי קהילה</a><a href="/managers-terms/">תנאי שימוש למנהלים</a></div>
 <div id="supportLegalLinks" dir="rtl" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px auto;padding:12px;font-size:13px;"><a href="/terms-of-use-for-support/">Terms of Use for Support</a><a href="/terms-of-service-for-support/">Terms of Service for Support</a><a href="/managers-terms-of-service/">Terms of Service for Managers</a></div>
-
-<script>
-(function(){
-  const en=document.getElementById('dailyWordEn'), he=document.getElementById('dailyWordHe'), date=document.getElementById('dailyWordDate');
-  if(!en||!he)return;
-  const words=[
-    ['RETZEF NEVER DIE','רצף לעולם לא מת'],
-    ['ONE YEAR — TIME FLIES FAST','שנה אחת — הזמן טס מהר'],
-    ['TOGETHER','ביחד'],
-    ['KEEP GOING','ממשיכים קדימה'],
-    ['COMMUNITY','קהילה'],
-    ['LOYALTY','נאמנות'],
-    ['COURAGE','אומץ'],
-    ['RESPECT','כבוד'],
-    ['CREATE','יוצרים'],
-    ['MEMORIES','זיכרונות'],
-    ['STRONGER TOGETHER','חזקים ביחד'],
-    ['THE FUTURE IS OURS','העתיד שלנו']
-  ];
-  const now=new Date();
-  const start=new Date(now.getFullYear(),0,1);
-  const day=Math.floor((now-start)/86400000);
-  const word=words[((day%words.length)+words.length)%words.length];
-  en.textContent=word[0]; he.textContent=word[1];
-  if(date)date.textContent=now.toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'});
-})();
-</script>
-
 </body>
   </html>
