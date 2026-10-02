@@ -22,7 +22,11 @@ async function saveProfile(username, profile) {
   });
   if (!response.ok) throw new Error('profile_storage_error');
 }
-async function getProfile(username) { const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL; const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN; if (!url || !token) return null; const r = await fetch(`${url}/get/${encodeURIComponent(`retzef:profile:${username.toLowerCase()}`)}`, { headers: { Authorization: `Bearer ${token}` } }); const d = await r.json(); return d.result ? (typeof d.result === 'string' ? JSON.parse(d.result) : d.result) : null; }
+async function getProfile(username) { const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL; const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN; if (!url || !token || !username) return null; const r = await fetch(`${url}/get/${encodeURIComponent(`retzef:profile:${String(username).toLowerCase()}`)}`, { headers: { Authorization: `Bearer ${token}` } }); const d = await r.json(); return d.result ? (typeof d.result === 'string' ? JSON.parse(d.result) : d.result) : null; }
+async function deleteProfile(username) { if (!username) return; const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL; const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN; if (!url || !token) return; await fetch(`${url}/del/${encodeURIComponent(`retzef:profile:${String(username).toLowerCase()}`)}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } }); }
+async function getProfileByTikTokId(openId) { if (!openId) return null; const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL; const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN; if (!url || !token) return null; const r = await fetch(`${url}/get/${encodeURIComponent(`retzef:tiktok:open_id:${openId}`)}`, { headers: { Authorization: `Bearer ${token}` } }); const d = await r.json(); const username = d.result ? String(d.result) : ''; return username ? { username, profile: await getProfile(username) } : null; }
+async function saveTikTokIndex(openId, username) { if (!openId || !username) return; const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL; const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN; if (!url || !token) return; await fetch(`${url}/set/${encodeURIComponent(`retzef:tiktok:open_id:${openId}`)}/${encodeURIComponent(String(username).toLowerCase())}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } }); }
+function getCookie(req, name) { const raw = req.headers?.cookie || ''; const hit = raw.split(';').map(x => x.trim()).find(x => x.startsWith(`${name}=`)); return hit ? decodeURIComponent(hit.slice(name.length + 1)) : ''; }
 async function getJoinRequest(username) { const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL; const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN; if (!url || !token) return null; const r = await fetch(`${url}/lrange/retzef%3Ajoin%3Arequests/0/199`, { headers: { Authorization: `Bearer ${token}` } }); const d = await r.json(); return (d.result || []).map(x => { try { return typeof x === 'string' ? JSON.parse(x) : x; } catch (_) { return null; } }).find(x => x && String(x.username || '').toLowerCase() === String(username || '').toLowerCase()) || null; }
 
 module.exports = async (req, res) => {
@@ -65,9 +69,14 @@ module.exports = async (req, res) => {
     }
     const displayName = user.display_name || user.username || '';
     const rawUsername = user.username || displayName || user.open_id || '';
-    const username = rawUsername;
-    const existingProfile = await getProfile(username);
-    const profileAvatar = username === 'retzef_support' ? '/icons/icon-192.png' : (user.avatar_url || '');
+    const username = String(rawUsername).trim();
+    if (!username) return res.redirect(302, '/?tiktok_error=missing_username');
+    const addAccountFlow = String(query.state || '') === 'retzef_add_account';
+    const previousUsername = addAccountFlow ? '' : getCookie(req, 'retzef_profile_id');
+    const indexed = await getProfileByTikTokId(user.open_id);
+    const existingProfile = indexed?.profile || (previousUsername ? await getProfile(previousUsername) : null) || await getProfile(username);
+    const oldUsername = indexed?.username || (existingProfile && previousUsername ? previousUsername : (existingProfile?.username || ''));
+    const profileAvatar = username === 'retzef_support' ? '/icons/icon-192.png' : (user.avatar_url || existingProfile?.avatarUrl || '');
     if (existingProfile?.banned === true) return res.redirect(302, `/?tiktok_error=${encodeURIComponent('account_banned')}&ban_reason=${encodeURIComponent(existingProfile.banReason || 'החשבון נחסם')}`);
     const joinRequest = await getJoinRequest(username);
     if (joinRequest && joinRequest.status !== 'approved') return res.redirect(302, `/?tiktok_error=${encodeURIComponent(joinRequest.status === 'denied' ? 'join_denied' : 'join_pending')}&ban_reason=${encodeURIComponent(joinRequest.reason || 'יש להמתין לאישור הבאן המקורי')}`);
@@ -84,7 +93,9 @@ module.exports = async (req, res) => {
       role: resolveRole(username),
     });
     try {
-      await saveProfile(username, { ...(existingProfile || {}), username, displayName, avatarUrl: profileAvatar, role: resolveRole(username), age: Number(joinRequest?.age || existingProfile?.age || 0), accountCountry, loginCountry, banned: false, banReason: '' });
+      await saveProfile(username, { ...(existingProfile || {}), username, displayName, avatarUrl: profileAvatar, role: existingProfile?.role || resolveRole(username), tiktokOpenId: user.open_id || existingProfile?.tiktokOpenId || '', tiktokUnionId: user.union_id || existingProfile?.tiktokUnionId || '', age: Number(joinRequest?.age || existingProfile?.age || 0), accountCountry, loginCountry, banned: false, banReason: '' });
+      await saveTikTokIndex(user.open_id, username);
+      if (oldUsername && String(oldUsername).toLowerCase() !== username.toLowerCase()) await deleteProfile(oldUsername);
     } catch (storageError) {
       console.error('Profile storage unavailable; continuing login:', storageError.message);
     }
