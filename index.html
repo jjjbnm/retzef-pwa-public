@@ -2575,7 +2575,7 @@ function openPaypalModal(itemName, price){
   if(settingsSection && !document.getElementById('retzef-version-switcher')){
     const card=document.createElement('div'); card.className='settings-card glass';
     card.innerHTML='<h3>📱 גרסת האפליקציה</h3><p style="font-size:13px;color:var(--muted);">בחרו אם להציג את כל האפשרויות או ממשק Lite.</p><div id="retzef-version-switcher"><button type="button" class="btn btn-ghost glass" data-version="regular">רגיל</button><button type="button" class="btn btn-ghost glass" data-version="lite">Lite</button></div>';
-    const reset=settingsSection.querySelector('#resetSettingsBtn'); settingsSection.insertBefore(card,reset||null);
+    const reset=settingsSection.querySelector('#resetSettingsBtn'); if(reset && reset.parentNode===settingsSection) settingsSection.insertBefore(card,reset); else settingsSection.appendChild(card);
     card.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>applyVersion(button.dataset.version)));
   }
   applyVersion(safeGet(VERSION_KEY,'regular'),false);
