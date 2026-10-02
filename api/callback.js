@@ -65,8 +65,8 @@ module.exports = async (req, res) => {
     }
     const displayName = user.display_name || user.username || '';
     const rawUsername = user.username || displayName || user.open_id || '';
-    const username = String(rawUsername).toLowerCase() === 'user613987579196' ? 'retzef_support' : rawUsername;
-    const existingProfile = await getProfile(username) || (username === 'retzef_support' ? await getProfile(rawUsername) : null);
+    const username = rawUsername;
+    const existingProfile = await getProfile(username);
     const profileAvatar = username === 'retzef_support' ? '/icons/icon-192.png' : (user.avatar_url || '');
     if (existingProfile?.banned === true) return res.redirect(302, `/?tiktok_error=${encodeURIComponent('account_banned')}&ban_reason=${encodeURIComponent(existingProfile.banReason || 'החשבון נחסם')}`);
     const joinRequest = await getJoinRequest(username);

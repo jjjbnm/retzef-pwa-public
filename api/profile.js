@@ -22,16 +22,13 @@ module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   const username = getCookie(req, 'retzef_profile_id');
   if (!username) return res.status(401).json({ error: 'not_authenticated' });
-  const legacySupport = username.toLowerCase() === 'user613987579196';
-  const canonicalUsername = legacySupport ? 'retzef_support' : username;
+  const canonicalUsername = username.toLowerCase();
   try {
     let profileRaw = await kv('get', `retzef:profile:${canonicalUsername.toLowerCase()}`);
-    if (!profileRaw && legacySupport) profileRaw = await kv('get', `retzef:profile:${username.toLowerCase()}`);
     const profile = typeof profileRaw === 'string' ? JSON.parse(profileRaw) : profileRaw;
     if (!profile) return res.status(404).json({ error: 'profile_not_found' });
     if (profile.banned === true) { res.setHeader('Set-Cookie', 'retzef_profile_id=; Path=/; Max-Age=0; SameSite=Lax; Secure'); return res.status(403).json({ error: 'account_banned', reason: profile.banReason || 'החשבון נחסם' }); }
     profile.username = canonicalUsername;
-    if (legacySupport) { profile.displayName = 'רצף תמיכה'; profile.avatarUrl = '/icons/icon-192.png'; profile.role = 'admin'; }
     profile.lastSeen = Date.now();
     await kv('set', `retzef:profile:${canonicalUsername.toLowerCase()}`, JSON.stringify(profile));
     // Refresh the persistent session cookie on every successful page load.
