@@ -2566,6 +2566,11 @@ function openPaypalModal(itemName, price){
     const value=mode==='lite'?'lite':'regular';
     document.documentElement.setAttribute('data-retzef-version',value);
     markLiteTargets();
+    document.querySelectorAll('.tab-btn').forEach(button=>{
+      if(!button.dataset.retzefTabLabel)button.dataset.retzefTabLabel=button.textContent;
+      const original=button.dataset.retzefTabLabel;
+      button.textContent=value==='lite' ? original.replace(/^\s*(?:\p{Extended_Pictographic}|\uFE0F|\u200D)+[\s\uFE0F]*/u,'').trim() : original;
+    });
     document.querySelectorAll('#retzef-version-switcher button').forEach(b=>b.classList.toggle('active',b.dataset.version===value));
     if(save)safeSet(VERSION_KEY,value);
     if(value==='lite'){const active=document.querySelector('.tab-panel.active');if(active?.id==='home'||active?.id==='team'){const fallback=document.querySelector('.tab-btn[data-target="status"]');if(fallback)fallback.click();}}
