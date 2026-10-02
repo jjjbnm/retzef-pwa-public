@@ -549,6 +549,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
+<script id="retzef-version">window.RETZEF_VERSION='1.0.1';</script>
 </head>
 <body>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
@@ -1353,7 +1354,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;">ספטמבר 2026</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.0.1</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1363,8 +1364,9 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
 
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
-      <ul style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
-        <li>ספטמבר 2026 — עודכנו מחירי החנות והמנויים לפי המחירון הרשמי.</li>
+      <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>1.0.1 — מערכת גרסאות חדשה, תיקוני Trade, יתרות מטבעות וחיבור כפתורי מנוי.</li>
+        <li>1.0.0 — עודכנו מחירי החנות והמנויים לפי המחירון הרשמי.</li>
         <li>נוסף עוזר AI בעברית שמזהה כוונה ויכול לפתוח טאבים לפי בקשה.</li>
         <li>נוספה התחברות TikTok עם display name, username, תמונת פרופיל ותפקיד.</li>
         <li>נוספו לוחות מודעות ועדכונים עם שמירת מידע בשרת.</li>
@@ -1496,7 +1498,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
       const redeemBtn=document.getElementById('walletRedeemBtn'); const redeemMsg=document.getElementById('walletGiftMessage');
       redeemBtn.onclick=async()=>{const code=document.getElementById('walletGiftCode').value.trim(); if(!code){redeemMsg.textContent='❌ יש להזין קוד.';return;} redeemBtn.disabled=true; try{const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'giftCodeRedeem',code})}); const raw=await r.text(); let d={}; try{d=JSON.parse(raw||'{}')}catch(_){} if(r.ok&&d.wallet){window.__retzefProfile=window.__retzefProfile||{};window.__retzefProfile.wallet=d.wallet; updateWalletUI(d.wallet); document.getElementById('walletQuickBalance').textContent=Number(d.wallet.balance||0).toLocaleString()+' מטבעות'; redeemMsg.textContent='✅ הקוד מומש והמטבעות נוספו.';} else redeemMsg.textContent=d.error==='already_redeemed'?'❌ כבר מימשת את הקוד.':d.error==='code_not_found'?'❌ הקוד לא נמצא.':d.error==='tiktok_login_required'?'🔐 צריך להתחבר מחדש.':'❌ לא ניתן לממש את הקוד ('+r.status+').';}catch(_){redeemMsg.textContent='❌ שגיאת חיבור.';} redeemBtn.disabled=false;};
       const tradeBtn=document.getElementById('walletTradeBtn'); const tradeMsg=document.getElementById('walletTradeMessage');
-      tradeBtn.onclick=async()=>{const username=document.getElementById('walletTradeUser').value.trim(); const amount=Number(document.getElementById('walletTradeAmount').value); if(!username||!Number.isInteger(amount)||amount<1){tradeMsg.textContent='❌ יש להזין משתמש וכמות תקינה.';return;} tradeBtn.disabled=true; try{const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'walletDonate',username,amount,reason:'טרייד מטבעות'})}); const raw=await r.text(); let d={}; try{d=JSON.parse(raw||'{}')}catch(_){} if(r.ok&&d.wallet){window.__retzefProfile=window.__retzefProfile||{};window.__retzefProfile.wallet=d.wallet; updateWalletUI(d.wallet); document.getElementById('walletQuickBalance').textContent=Number(d.wallet.balance||0).toLocaleString()+' מטבעות'; tradeMsg.textContent='✅ המטבעות נשלחו בהצלחה.';} else tradeMsg.textContent=d.error==='insufficient_coins'?'❌ אין מספיק מטבעות.':d.error==='recipient_not_found'?'❌ המשתמש לא נמצא.':d.error==='tiktok_login_required'?'🔐 צריך להתחבר מחדש.':'❌ לא ניתן לבצע את הטרייד ('+r.status+').';}catch(_){tradeMsg.textContent='❌ שגיאת חיבור.';} tradeBtn.disabled=false;};
+      tradeBtn.onclick=async()=>{const username=document.getElementById('walletTradeUser').value.trim(); const amount=Number(document.getElementById('walletTradeAmount').value); if(!username||!Number.isInteger(amount)||amount<1){tradeMsg.textContent='❌ יש להזין משתמש וכמות תקינה.';return;} tradeBtn.disabled=true; try{const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'walletDonate',username,amount,reason:'טרייד מטבעות'})}); const raw=await r.text(); let d={}; try{d=JSON.parse(raw||'{}')}catch(_){} if(r.ok&&d.wallet){window.__retzefProfile=window.__retzefProfile||{};window.__retzefProfile.wallet=d.wallet; updateWalletUI(d.wallet); document.getElementById('walletQuickBalance').textContent=Number(d.wallet.balance||0).toLocaleString()+' מטבעות'; tradeMsg.textContent='✅ המטבעות נשלחו בהצלחה.';} else tradeMsg.textContent=d.error==='insufficient_coins'?'❌ ה־Trade התבטל — אין מספיק מטבעות.':d.error==='recipient_not_found'?'❌ ה־Trade התבטל — המשתמש לא נמצא.':d.error==='recipient_balance_not_updated'?'❌ ה־Trade התבטל — המשתמש לא קיבל את המטבעות.':d.error==='tiktok_login_required'?'🔐 צריך להתחבר מחדש.':'❌ לא ניתן לבצע את הטרייד ('+r.status+').';}catch(_){tradeMsg.textContent='❌ שגיאת חיבור.';} tradeBtn.disabled=false;};
     }
     quickModal.classList.add('open');
     const savePrivacy=document.getElementById('savePrivacy'); if(savePrivacy)savePrivacy.addEventListener('click',async()=>{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'privacy',statusVisible:document.getElementById('privacyStatus').checked,subscriptionVisible:document.getElementById('privacySubscription').checked})});savePrivacy.textContent=r.ok?'נשמר ✅':'שמירה נכשלה';}); const dark=document.getElementById('quickDarkMode'); if(dark)dark.addEventListener('click',()=>document.getElementById('darkModeToggle')?.click()); const full=document.getElementById('openFullSettings'); if(full)full.addEventListener('click',()=>{quickModal.classList.remove('open');if(typeof window.activateTab==='function')window.activateTab('settings');}); const savedDevice=getDevicePreferences(); const arm=document.getElementById('accountReduceMotion'); const abn=document.getElementById('accountBrowserNotifications'); if(arm)arm.checked=savedDevice.reduceMotion===true; if(abn)abn.checked=savedDevice.notifications===true; const saveAccountDevice=document.getElementById('saveAccountDevicePreferences'); if(saveAccountDevice)saveAccountDevice.addEventListener('click',async()=>{const reduceMotion=arm.checked;const notifications=abn.checked;await saveDevicePreferencesToDatabase(reduceMotion,notifications);document.documentElement.dataset.reduceMotion=reduceMotion?'true':'false';if(notifications&&'Notification' in window&&Notification.permission==='default')await Notification.requestPermission();saveAccountDevice.textContent='נשמר ✅';}); const runAccountPerformance=document.getElementById('runAccountPerformance'); if(runAccountPerformance)runAccountPerformance.addEventListener('click',async()=>{const lines=['חיבור לאינטרנט: '+(navigator.onLine?'✅ מחובר':'❌ לא מחובר'),'JavaScript: ✅ פעיל','מסך: '+screen.width+'×'+screen.height,'ליבות מעבד: '+(navigator.hardwareConcurrency||'לא נמסר'),'זיכרון משוער: '+(navigator.deviceMemory?navigator.deviceMemory+'GB':'לא נמסר')];try{const battery=await navigator.getBattery?.();if(battery)lines.push('סוללה: '+Math.round(battery.level*100)+'%'+(battery.charging?' · בטעינה':''));}catch(_){}document.getElementById('accountPerformanceResult').textContent=lines.join('\n');}); const quickDevice=document.getElementById('saveQuickDevicePreferences'); if(quickDevice)quickDevice.addEventListener('click',async()=>{const reduceMotion=document.getElementById('quickReduceMotion').checked;const notifications=document.getElementById('quickBrowserNotifications').checked;await saveDevicePreferencesToDatabase(reduceMotion,notifications);document.documentElement.dataset.reduceMotion=reduceMotion?'true':'false';if(notifications&&'Notification' in window&&Notification.permission==='default')await Notification.requestPermission();quickDevice.textContent='נשמר ✅';}); const quickPerformance=document.getElementById('runQuickPerformance'); if(quickPerformance)quickPerformance.addEventListener('click',async()=>{const lines=['חיבור לאינטרנט: '+(navigator.onLine?'✅ מחובר':'❌ לא מחובר'),'JavaScript: ✅ פעיל','מסך: '+screen.width+'×'+screen.height,'ליבות מעבד: '+(navigator.hardwareConcurrency||'לא נמסר'),'זיכרון משוער: '+(navigator.deviceMemory?navigator.deviceMemory+'GB':'לא נמסר')];try{const battery=await navigator.getBattery?.();if(battery)lines.push('סוללה: '+Math.round(battery.level*100)+'%'+(battery.charging?' · בטעינה':''));}catch(_){}document.getElementById('quickPerformanceResult').textContent=lines.join('\n');});
@@ -2161,48 +2163,19 @@ function openPaypalModal(itemName, price){
   subModal.addEventListener('click', e => { if(e.target === subModal) closeSubscriptionModal(); });
   document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closePaypalModal(); closeSubscriptionModal(); } });
 
-  function openSubscriptionModal(itemName, planKey){
-    subItemName.textContent = itemName;
-    subButtonContainer.innerHTML = '';
-    subModal.classList.add('open');
-
-    const planId = PLAN_IDS[planKey];
-    if (!planId || planId === 'PASTE_PLAN_ID_HERE') {
-      subButtonContainer.innerHTML = '<p style="color:#b91c1c; font-size:13.5px;">המנוי הזה עדיין לא מוגדר — צריך להריץ את api/paypal/create-plans.js פעם אחת ולהדביק את ה-plan_id שהוא מחזיר בתוך PLAN_IDS בקוד.</p>';
-      return;
-    }
-    if (typeof paypal === 'undefined' || !paypal.Buttons) {
-      subButtonContainer.innerHTML = '<p style="color:#b91c1c; font-size:13.5px;">PayPal לא נטען. נסו לרענן, או לכבות VPN/חוסם פרסומות.</p>';
-      return;
-    }
-
-    try {
-      paypal.Buttons({
-        style: { layout: 'vertical', shape: 'rect', label: 'subscribe' },
-        createSubscription: function (data, actions) {
-          return actions.subscription.create({ plan_id: planId });
-        },
-        onApprove: function (data) {
-          // שומר את מזהה המנוי במכשיר הזה בלבד — אין כאן בסיס נתונים,
-          // אז זה מה שמאפשר לאתר לבדוק סטטוס בהמשך (ראו checkSubStatusBtn).
-          localStorage.setItem('retzef_subscription_id', data.subscriptionID);
-          localStorage.setItem('retzef_subscription_name', itemName);
-          subButtonContainer.innerHTML = `<p style="color:#15803d; font-weight:700; text-align:center;">✅ נרשמת בהצלחה ל-"${itemName}"! החיוב הבא יתבצע אוטומטית.</p>`;
-          updateMySubStatus();
-        },
-        onError: function (err) {
-          console.error('Subscription error:', err);
-          subButtonContainer.innerHTML = '<p style="color:#b91c1c; text-align:center;">שגיאה בהרשמה למנוי. נסו שוב.</p>';
-        },
-        onCancel: function () {
-          subButtonContainer.innerHTML = '<p style="color:#656b80; text-align:center;">ההרשמה בוטלה.</p>';
-        }
-      }).render('#subButtonContainer');
-    } catch (err) {
-      console.error('Subscription render error:', err);
-      subButtonContainer.innerHTML = '<p style="color:#b91c1c; text-align:center;">שגיאה בטעינת PayPal. נסו שוב.</p>';
-    }
+  const SUBSCRIPTION_PRICES={video_regular_month:5,video_plus_month:10,retzef_plus_day:2.95,retzef_plus_week:4.95,retzef_plus_month:12.45,retzef_plus_year:18,retzef_premium_day:5.95,retzef_premium_week:9.95,retzef_premium_month:18,retzef_premium_year:20};
+  function openSubscriptionModal(itemName,planKey){
+    subItemName.textContent=itemName; subButtonContainer.innerHTML=''; subModal.classList.add('open');
+    const price=Number(SUBSCRIPTION_PRICES[planKey]||0); const period=/שנה/.test(itemName)?'שנה':/שבוע/.test(itemName)?'שבוע':/3 ימים|יום/.test(itemName)?'3 ימים':'חודש';
+    subButtonContainer.innerHTML=`<div style="text-align:center;margin-bottom:12px"><strong>סכום: ₪${price.toFixed(2)} · תקופה: ${period}</strong><p style="font-size:12px;color:var(--muted);margin:6px 0">בחרו חיוב חד־פעמי או חיוב חוזר. הסכום והתקופה מוצגים לפני האישור.</p></div><div style="display:grid;gap:8px"><button type="button" id="subOneTimeBtn" class="btn btn-primary">תשלום חד־פעמי · ₪${price.toFixed(2)}</button><div id="subRecurringArea"></div></div>`;
+    document.getElementById('subOneTimeBtn').onclick=()=>{closeSubscriptionModal();openPaypalModal(itemName.replace(/\s*\(מתחדש\)/,'')+' (חד־פעמי)',price.toFixed(2));};
+    const area=document.getElementById('subRecurringArea'),planId=PLAN_IDS[planKey];
+    if(!planId||planId==='PASTE_PLAN_ID_HERE'){area.innerHTML='<p style="color:#a16207;font-size:12px;text-align:center">חיוב חוזר יופעל לאחר הגדרת PayPal Plan ID אמיתי עבור תקופה זו.</p>';return;}
+    if(typeof paypal==='undefined'||!paypal.Buttons){area.innerHTML='<p style="color:#b91c1c;font-size:13px;text-align:center">PayPal לא נטען. נסו לרענן את הדף.</p>';return;}
+    const box=document.createElement('div');area.appendChild(box);
+    try{paypal.Buttons({style:{layout:'vertical',shape:'rect',label:'subscribe'},createSubscription:(data,actions)=>actions.subscription.create({plan_id:planId}),onApprove(data){localStorage.setItem('retzef_subscription_id',data.subscriptionID);localStorage.setItem('retzef_subscription_name',itemName);area.innerHTML='<p style="color:#15803d;font-weight:700;text-align:center">✅ המנוי הופעל. החיוב יתחדש אוטומטית עד לביטול.</p>';if(typeof updateMySubStatus==='function')updateMySubStatus();},onError(){area.innerHTML='<p style="color:#b91c1c;text-align:center">❌ ההרשמה למנוי נכשלה. לא בוצע חיוב.</p>';},onCancel(){area.innerHTML='<p style="color:#656b80;text-align:center">ההרשמה בוטלה.</p>';}}).render(box);}catch(_){area.innerHTML='<p style="color:#b91c1c;text-align:center">❌ לא ניתן לטעון חיוב חוזר.</p>';}
   }
+  document.querySelectorAll('.subscribe-btn').forEach(btn=>btn.addEventListener('click',()=>openSubscriptionModal(btn.dataset.item,btn.dataset.plan)));
 </script>
 <script>
   (function () {

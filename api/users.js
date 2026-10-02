@@ -163,20 +163,27 @@ module.exports = async (req, res) => {
       if (!/^[a-z0-9._-]{2,128}$/.test(recipient) || recipient === me) return res.status(400).json({ error: 'invalid_recipient' });
       if (!Number.isInteger(amount) || amount < 1 || amount > 100000) return res.status(400).json({ error: 'invalid_amount' });
       const targetProfile = await profile(recipient);
-      if (!targetProfile || targetProfile.banned === true) return res.status(404).json({ error: 'recipient_not_found' });
-      const senderWallet = walletOf(mine);
-      if (senderWallet.balance < amount) return res.status(400).json({ error: 'insufficient_coins', balance: senderWallet.balance });
-      const recipientWallet = walletOf(targetProfile);
-      const now = new Date().toISOString();
-      senderWallet.balance -= amount;
-      senderWallet.transactions.unshift({ type: 'donate', amount: -amount, reason: `תרומה ל־@${recipient}: ${reason}`, to: recipient, createdAt: now });
-      recipientWallet.balance += amount;
-      recipientWallet.transactions.unshift({ type: 'donation', amount, reason: `תרומה מ־@${me}: ${reason}`, from: me, createdAt: now });
-      mine.wallet = senderWallet; targetProfile.wallet = recipientWallet;
-      await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
-      await redis('set', `${PREFIX}${recipient}`, JSON.stringify(targetProfile));
+      if (!targetProfile || targetProfile.banned === true) return res.status(404).json({ error: 'recipient_not_found', message: 'ה־Trade התבטל — המשתמש לא נמצא.' });
+      const senderBefore = walletOf(mine);
+      const recipientBefore = walletOf(targetProfile);
+      if (senderBefore.balance < amount) return res.status(400).json({ error: 'insufficient_coins', balance: senderBefore.balance, message: 'ה־Trade התבטל — אין מספיק מטבעות.' });
+      const senderAfter = walletOf(mine); const recipientAfter = walletOf(targetProfile); const now = new Date().toISOString();
+      senderAfter.balance -= amount;
+      senderAfter.transactions.unshift({ type: 'donate', amount: -amount, reason: `תרומה ל־@${recipient}: ${reason}`, to: recipient, createdAt: now });
+      recipientAfter.balance += amount;
+      recipientAfter.transactions.unshift({ type: 'donation', amount, reason: `תרומה מ־@${me}: ${reason}`, from: me, createdAt: now });
+      mine.wallet = senderAfter; targetProfile.wallet = recipientAfter;
+      try {
+        await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+        await redis('set', `${PREFIX}${recipient}`, JSON.stringify(targetProfile));
+        const senderCheck = await profile(me); const recipientCheck = await profile(recipient);
+        if (!senderCheck || !recipientCheck || walletOf(senderCheck).balance !== senderAfter.balance || walletOf(recipientCheck).balance !== recipientAfter.balance) throw new Error('trade_verification_failed');
+      } catch (_) {
+        try { await redis('set', `${PREFIX}${me}`, JSON.stringify({ ...mine, wallet: senderBefore })); await redis('set', `${PREFIX}${recipient}`, JSON.stringify({ ...targetProfile, wallet: recipientBefore })); } catch (_) {}
+        return res.status(409).json({ error: 'recipient_balance_not_updated', message: 'ה־Trade התבטל — המשתמש לא קיבל את המטבעות.' });
+      }
       try { await sendTo(recipient, { title: 'קיבלת תרומה בארנק', body: `קיבלת ${amount} מטבעות מ־@${me}`, url: '/' }); } catch (_) {}
-      return res.status(200).json({ wallet: senderWallet, recipient });
+      return res.status(200).json({ wallet: senderAfter, recipient, message: '✅ ה־Trade הושלם' });
     }
     if (action === 'walletSpend') { const reason = String(input.reason || 'רכישה באפליקציה').trim().slice(0, 160); if (/^תג/.test(reason)) return res.status(400).json({ error: 'badges_not_available_with_coins' }); const amount = Math.floor(Number(input.amount)); if (!Number.isInteger(amount) || amount < 1 || amount > 100000) return res.status(400).json({ error: 'invalid_amount' }); const wallet = walletOf(mine); if (wallet.balance < amount) return res.status(400).json({ error: 'insufficient_coins', balance: wallet.balance }); wallet.balance -= amount; wallet.transactions.unshift({ type: 'spend', amount: -amount, reason, createdAt: new Date().toISOString() }); mine.wallet = wallet; await redis('set', `${PREFIX}${me}`, JSON.stringify(mine)); return res.status(200).json({ wallet }); }
     const target = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
