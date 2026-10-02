@@ -537,6 +537,18 @@
   .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li span{font-size:14px;line-height:1.65;color:var(--muted)}
 
 </style>
+
+<style id="retzef-version-mode-styles">
+  html[data-retzef-version="lite"] .retzef-lite-hide{display:none!important}
+  #retzef-version-switcher{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  #retzef-version-switcher button{flex:1;min-width:120px}
+  #retzef-version-switcher button.active{outline:3px solid var(--accent);outline-offset:1px}
+</style>
+
+<script id="retzef-profile-cache-bootstrap">
+window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
+</script>
+
 </head>
 <body>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
@@ -592,7 +604,7 @@
     text.textContent=message; code.textContent=errorCode; overlay.style.display='flex'; document.body.dataset.accessBlocked='true';
   }
   async function checkRegion(){
-    if(!navigator.onLine){ block('RETZEF_OFFLINE','אין חיבור לאינטרנט. האפליקציה זמינה רק עם חיבור פעיל.'); return; }
+    if(!navigator.onLine){ document.documentElement.dataset.network='offline'; return; }
     try{
       const response=await fetch('/api/access-check',{cache:'no-store'});
       const data=await response.json().catch(()=>({}));
@@ -1434,7 +1446,7 @@
 
 <script>
   // === TikTok config — real OAuth, server confirmed working ===
-  const TIKTOK_CLIENT_KEY = "sbawi4iah8tlx0wyst";
+  const TIKTOK_CLIENT_KEY = "awt4ywx6dk6j3wem";
   const TIKTOK_GROUP_URL = "https://tiktok.me/group/ZSfhTkvp4/";
   const TIKTOK_REDIRECT_URI = "https://chi-liart-74.vercel.app/api/callback";
 
@@ -1455,7 +1467,7 @@
   function getSavedAccounts(){try{return JSON.parse(localStorage.getItem(ACCOUNT_STORAGE_KEY)||'[]').filter(a=>a&&a.username);}catch(_){return [];}}
   async function rememberAccount(profile){if(!profile?.username)return;const account={username:String(profile.username).replace(/^@/,'').toLowerCase(),displayName:profile.displayName||profile.username,avatarUrl:profile.avatarUrl||'',role:profile.role||'member'};const accounts=getSavedAccounts().filter(a=>a.username!==account.username);localStorage.setItem(ACCOUNT_STORAGE_KEY,JSON.stringify([account,...accounts].slice(0,10)));try{await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveAccount',account})});}catch(_){} }
   async function loadSavedAccounts(){try{const response=await fetch('/api/users?savedAccounts=1',{credentials:'include',cache:'no-store'});if(response.ok){const data=await response.json();if(Array.isArray(data.accounts)){localStorage.setItem(ACCOUNT_STORAGE_KEY,JSON.stringify(data.accounts));return data.accounts;}}}catch(_){}return getSavedAccounts();}
-  async function switchAccount(username){const clean=String(username||'').replace(/^@/,'').trim().toLowerCase();if(!clean)return;const button=Array.from(document.querySelectorAll('#savedAccountsList button')).find(b=>b.textContent==='החלף'&&b.closest('div')?.textContent?.toLowerCase().includes('@'+clean));if(button){button.disabled=true;button.textContent='מחליף...';}try{const response=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'switchAccount',username:clean})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'switch_account_failed');window.__retzefProfile=null;profileMenu.classList.remove('open');quickModal.classList.remove('open');window.location.replace('/?account_switch='+Date.now());}catch(error){if(button){button.disabled=false;button.textContent='החלף';}alert('לא ניתן להחליף חשבון כרגע: '+(error.message==='profile_not_found'?'החשבון עדיין לא נשמר בשרת. התחבר אליו פעם אחת עם TikTok.':'נסו שוב.'));}}
+  async function switchAccount(username){const clean=String(username||'').replace(/^@/,'').trim().toLowerCase();if(!clean)return;const button=Array.from(document.querySelectorAll('#savedAccountsList button')).find(b=>b.textContent==='החלף'&&b.closest('div')?.textContent?.toLowerCase().includes('@'+clean));if(button){button.disabled=true;button.textContent='מחליף...';}try{const response=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'switchAccount',username:clean})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'switch_account_failed');window.__retzefProfile=data.profile||window.__retzefProfile; if(window.retzefCacheProfile)window.retzefCacheProfile(window.__retzefProfile); if(window.__retzefProfile?.username)document.cookie=`retzef_profile_id=${encodeURIComponent(String(window.__retzefProfile.username).replace(/^@/,'').toLowerCase())}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`; profileMenu.classList.remove('open');quickModal.classList.remove('open'); if(typeof showTikTokGreeting==='function')showTikTokGreeting(window.__retzefProfile);}catch(error){if(button){button.disabled=false;button.textContent='החלף';}alert('לא ניתן להחליף חשבון כרגע: '+(error.message==='profile_not_found'?'החשבון עדיין לא נשמר בשרת. התחבר אליו פעם אחת עם TikTok.':'נסו שוב.'));}}
   async function openAccountManager(){
     profileMenu.classList.remove('open');
     const accounts=await loadSavedAccounts();
@@ -1579,6 +1591,7 @@
       // Ensure the API session is available on the exact domain after OAuth redirect.
       if (username) document.cookie = `retzef_profile_id=${encodeURIComponent(username.toLowerCase())}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
       window.__retzefProfile = serverProfile;
+      if(window.retzefCacheProfile)window.retzefCacheProfile(serverProfile);
       rememberAccount(serverProfile);
       const nameModal = document.getElementById('usernameModal');
       if (nameModal) nameModal.classList.remove('open');
@@ -2476,10 +2489,10 @@ function openPaypalModal(itemName, price){
     document.body.dataset.accessBlocked='true';
   }
   function checkConnection(){
-    if(!navigator.onLine) block('RETZEF_OFFLINE','אין חיבור לאינטרנט. האפליקציה דורשת חיבור פעיל.');
+    if(!navigator.onLine) document.documentElement.dataset.network='offline';
   }
-  window.addEventListener('offline',()=>block('RETZEF_OFFLINE','אין חיבור לאינטרנט. האפליקציה דורשת חיבור פעיל.'));
-  window.addEventListener('online',()=>location.reload());
+  window.addEventListener('offline',()=>document.documentElement.dataset.network='offline');
+  window.addEventListener('online',()=>delete document.documentElement.dataset.network);
   window.addEventListener('error',()=>{ if(navigator.onLine) block('RETZEF_LOAD_ERROR','אירעה שגיאה בטעינת האפליקציה.'); });
   window.addEventListener('unhandledrejection',()=>{ if(navigator.onLine) block('RETZEF_RUNTIME_ERROR','אירעה שגיאה טכנית באפליקציה.'); });
   checkConnection();
@@ -2530,5 +2543,48 @@ function openPaypalModal(itemName, price){
   </script>
 <div id="legalLinks" dir="rtl" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px auto;padding:12px;font-size:13px;"><a href="/terms-of-service/">תנאי שימוש</a><a href="/privacy-policy/">מדיניות פרטיות</a><a href="/cookie-policy/">מדיניות עוגיות</a><a href="/refund-and-cancellation/">ביטולים והחזרים</a><a href="/subscription-terms/">תנאי מנוי</a><a href="/community-guidelines/">כללי קהילה</a><a href="/managers-terms/">תנאי שימוש למנהלים</a></div>
 <div id="supportLegalLinks" dir="rtl" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px auto;padding:12px;font-size:13px;"><a href="/terms-of-use-for-support/">Terms of Use for Support</a><a href="/terms-of-service-for-support/">Terms of Service for Support</a><a href="/managers-terms-of-service/">Terms of Service for Managers</a></div>
+
+<script id="retzef-login-and-version-fixes">
+(function(){
+  const PROFILE_CACHE_KEY='retzef_current_profile';
+  const VERSION_KEY='retzef_version_mode';
+  const safeGet=(key,fallback)=>{try{return localStorage.getItem(key)||fallback;}catch(_){return fallback;}};
+  const safeSet=(key,value)=>{try{localStorage.setItem(key,value);return true;}catch(_){return false;}};
+  function cacheProfile(profile){if(profile?.username)safeSet(PROFILE_CACHE_KEY,JSON.stringify(profile));}
+  function cachedProfile(){try{const p=JSON.parse(safeGet(PROFILE_CACHE_KEY,'null'));return p&&p.username?p:null;}catch(_){return null;}}
+  window.retzefCacheProfile=cacheProfile;
+
+  // Keep the login visible from the last known profile while the server is offline.
+  const cached=cachedProfile();
+  if(cached && !window.__retzefProfile){ window.__retzefProfile=cached; if(typeof window.showTikTokGreeting==='function')window.showTikTokGreeting(cached); }
+
+  function markLiteTargets(){
+    const selectors=['header > p:first-of-type','header > h1','#joinWebsiteBtn','.tab-btn[data-target="home"]','#home','.tab-btn[data-target="team"]','#team'];
+    selectors.forEach(selector=>document.querySelectorAll(selector).forEach(el=>el.classList.add('retzef-lite-hide')));
+  }
+  function applyVersion(mode,save=true){
+    const value=mode==='lite'?'lite':'regular';
+    document.documentElement.setAttribute('data-retzef-version',value);
+    markLiteTargets();
+    document.querySelectorAll('#retzef-version-switcher button').forEach(b=>b.classList.toggle('active',b.dataset.version===value));
+    if(save)safeSet(VERSION_KEY,value);
+    if(value==='lite'){const active=document.querySelector('.tab-panel.active');if(active?.id==='home'||active?.id==='team'){const fallback=document.querySelector('.tab-btn[data-target="status"]');if(fallback)fallback.click();}}
+  }
+  window.retzefApplyVersion=applyVersion;
+  const settingsSection=document.querySelector('#settings');
+  if(settingsSection && !document.getElementById('retzef-version-switcher')){
+    const card=document.createElement('div'); card.className='settings-card glass';
+    card.innerHTML='<h3>📱 גרסת האפליקציה</h3><p style="font-size:13px;color:var(--muted);">בחרו אם להציג את כל האפשרויות או ממשק Lite.</p><div id="retzef-version-switcher"><button type="button" class="btn btn-ghost glass" data-version="regular">רגיל</button><button type="button" class="btn btn-ghost glass" data-version="lite">Lite</button></div>';
+    const reset=settingsSection.querySelector('#resetSettingsBtn'); settingsSection.insertBefore(card,reset||null);
+    card.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>applyVersion(button.dataset.version)));
+  }
+  applyVersion(safeGet(VERSION_KEY,'regular'),false);
+
+  // Replace the blocking offline overlay with a non-destructive state.
+  window.addEventListener('offline',()=>document.documentElement.dataset.network='offline');
+  window.addEventListener('online',()=>delete document.documentElement.dataset.network);
+})();
+</script>
+
 </body>
   </html>

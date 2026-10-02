@@ -26,7 +26,8 @@ async function getProfile(username) { const url = process.env.KV_REST_API_URL ||
 async function getJoinRequest(username) { const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL; const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN; if (!url || !token) return null; const r = await fetch(`${url}/lrange/retzef%3Ajoin%3Arequests/0/199`, { headers: { Authorization: `Bearer ${token}` } }); const d = await r.json(); return (d.result || []).map(x => { try { return typeof x === 'string' ? JSON.parse(x) : x; } catch (_) { return null; } }).find(x => x && String(x.username || '').toLowerCase() === String(username || '').toLowerCase()) || null; }
 
 module.exports = async (req, res) => {
-  const { code, error: tiktokError } = req.query;
+  const query = req && req.query && typeof req.query === 'object' ? req.query : {};
+  const { code, error: tiktokError } = query;
   if (tiktokError) return res.redirect(302, `/?tiktok_error=${encodeURIComponent(tiktokError)}`);
   if (!code) return res.redirect(302, '/?tiktok_error=missing_code');
 
@@ -87,7 +88,7 @@ module.exports = async (req, res) => {
     } catch (storageError) {
       console.error('Profile storage unavailable; continuing login:', storageError.message);
     }
-    res.setHeader('Set-Cookie', `retzef_profile_id=${encodeURIComponent(username)}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`);
+    if (String(query.state || '') !== 'retzef_add_account') res.setHeader('Set-Cookie', `retzef_profile_id=${encodeURIComponent(username)}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`);
     return res.redirect(302, `/?${params.toString()}`);
   } catch (err) {
     console.error('TikTok callback error:', err);
