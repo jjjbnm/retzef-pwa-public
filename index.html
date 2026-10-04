@@ -549,7 +549,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.2.2';</script>
+<script id="retzef-version">window.RETZEF_VERSION='1.2.3';</script>
 </head>
 <body>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
@@ -1355,7 +1355,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.2.2</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.2.3</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1366,6 +1366,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>1.2.3 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.2.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.1.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.0.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
@@ -1517,7 +1518,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
   document.getElementById('saveProfileDevicePreferences').addEventListener('click',async()=>{const reduceMotion=document.getElementById('profileReduceMotion').checked;const notifications=document.getElementById('profileBrowserNotifications').checked;await saveDevicePreferencesToDatabase(reduceMotion,notifications);document.documentElement.dataset.reduceMotion=reduceMotion?'true':'false';if(notifications&&'Notification' in window&&Notification.permission==='default')await Notification.requestPermission();document.getElementById('saveProfileDevicePreferences').textContent='נשמר ✅';setTimeout(()=>document.getElementById('saveProfileDevicePreferences').textContent='שמירה',1500);});
   document.getElementById('profileDevicePerformance').addEventListener('click',()=>{document.getElementById('profileDevicePerformancePanel').style.display=document.getElementById('profileDevicePerformancePanel').style.display==='none'?'block':'none';});
   document.getElementById('runProfileDevicePerformance').addEventListener('click',async()=>{const lines=['חיבור לאינטרנט: '+(navigator.onLine?'✅ מחובר':'❌ לא מחובר'),'JavaScript: ✅ פעיל','מסך: '+screen.width+'×'+screen.height,'ליבות מעבד: '+(navigator.hardwareConcurrency||'לא נמסר'),'זיכרון משוער: '+(navigator.deviceMemory?navigator.deviceMemory+'GB':'לא נמסר')];try{const battery=await navigator.getBattery?.();if(battery)lines.push('סוללה: '+Math.round(battery.level*100)+'%'+(battery.charging?' · בטעינה':''));}catch(_){}document.getElementById('profileDevicePerformanceResult').textContent=lines.join('\n');});
-  document.getElementById('profileLogout').addEventListener('click',()=>{document.cookie='retzef_profile_id=; Path=/; Max-Age=0; SameSite=Lax';window.__retzefProfile=null;profileMenu.classList.remove('open');location.reload();});
+  document.getElementById('profileLogout').addEventListener('click',()=>{try{localStorage.removeItem('retzef_current_profile');localStorage.setItem('retzef_logged_out','1');}catch(_){} document.cookie='retzef_profile_id=; Path=/; Max-Age=0; SameSite=Lax; Secure';document.cookie='retzef_profile_id=; Path=/; Max-Age=0; SameSite=Lax';window.__retzefProfile=null;profileMenu.classList.remove('open');location.replace(window.location.pathname);});
   const hubModal=document.getElementById('userHubModal'), hubUsers=document.getElementById('hubUsers'), hubRequests=document.getElementById('hubRequests'), hubChat=document.getElementById('hubChat'), hubChatTitle=document.getElementById('hubChatTitle'), hubChatMessages=document.getElementById('hubChatMessages'), hubChatInput=document.getElementById('hubChatInput');
   let activeChatUser='';
   async function enableWebPush(){
@@ -1598,6 +1599,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
       // Ensure the API session is available on the exact domain after OAuth redirect.
       if (username) document.cookie = `retzef_profile_id=${encodeURIComponent(username.toLowerCase())}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
       window.__retzefProfile = serverProfile;
+      try{localStorage.removeItem('retzef_logged_out');}catch(_){}
       if(window.retzefCacheProfile)window.retzefCacheProfile(serverProfile);
       rememberAccount(serverProfile);
       const nameModal = document.getElementById('usernameModal');
@@ -2525,6 +2527,7 @@ function openPaypalModal(itemName, price){
 <script id="retzef-login-and-version-fixes">
 (function(){
   const PROFILE_CACHE_KEY='retzef_current_profile';
+  const LOGGED_OUT_KEY='retzef_logged_out';
   const VERSION_KEY='retzef_version_mode';
   const safeGet=(key,fallback)=>{try{return localStorage.getItem(key)||fallback;}catch(_){return fallback;}};
   const safeSet=(key,value)=>{try{localStorage.setItem(key,value);return true;}catch(_){return false;}};
@@ -2534,7 +2537,9 @@ function openPaypalModal(itemName, price){
 
   // Keep the login visible from the last known profile while the server is offline.
   const cached=cachedProfile();
-  if(cached && !window.__retzefProfile){ window.__retzefProfile=cached; if(typeof window.showTikTokGreeting==='function')window.showTikTokGreeting(cached); }
+  const loggedOut=safeGet(LOGGED_OUT_KEY,'')==='1';
+  if(loggedOut){ try{localStorage.removeItem(PROFILE_CACHE_KEY);}catch(_){} }
+  if(!loggedOut && cached && !window.__retzefProfile){ window.__retzefProfile=cached; if(typeof window.showTikTokGreeting==='function')window.showTikTokGreeting(cached); }
 
   function markLiteTargets(){
     const selectors=['header > p:first-of-type','header > h1','#joinWebsiteBtn','.tab-btn[data-target="home"]','#home','.tab-btn[data-target="team"]','#team'];
