@@ -7,7 +7,17 @@ async function redis(command, ...args) { const { url, token } = cfg(); if (!url 
 async function profile(username) { const raw = await redis('get', `${PREFIX}${username.toLowerCase()}`); return raw ? (typeof raw === 'string' ? JSON.parse(raw) : raw) : null; }
 function publicUser(p) { return { username: p.username, displayName: p.displayName || p.username, avatarUrl: p.avatarUrl || (p.username === 'retzef_support' ? '/icons/icon-192.png' : ''), role: p.role || 'member', banned: p.banned === true, banReason: p.banReason || '', online: Date.now() - Number(p.lastSeen || 0) < 120000, statusVisible: p.privacy?.statusVisible !== false, subscriptionVisible: p.privacy?.subscriptionVisible === true }; }
 function knownStatus(username) { const known = { 'ban.real': 'בעלים', 'oobbn98': 'הכול טוב', 'dahan324': 'סבבה', 'albinocapybara': 'הכול טוב', 'user1691117561269': 'הכול טוב' }; return known[String(username || '').toLowerCase()] || ''; }
-function walletOf(p) { const wallet = p.wallet && typeof p.wallet === 'object' ? p.wallet : {}; return { balance: Math.max(0, Math.floor(Number(wallet.balance) || 0)), transactions: Array.isArray(wallet.transactions) ? wallet.transactions.slice(0, 50) : [] }; }
+function coinNumber(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  const normalized = String(value ?? '').replace(/[,_\s]/g, '');
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+function walletOf(p) {
+  const wallet = p && p.wallet && typeof p.wallet === 'object' ? p.wallet : {};
+  const rawBalance = wallet.balance ?? wallet.coins ?? p?.walletBalance ?? p?.coins ?? p?.balance ?? 0;
+  return { balance: Math.max(0, Math.floor(coinNumber(rawBalance))), transactions: Array.isArray(wallet.transactions) ? wallet.transactions.slice(0, 50) : [] };
+}
 async function supportRequests() { const rows = await redis('lrange', 'retzef:support:requests', '0', '99'); return (rows || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean); }
 async function joinRequests() { const rows = await redis('lrange', 'retzef:join:requests', '0', '99'); return (rows || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean); }
 module.exports = async (req, res) => {

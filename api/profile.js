@@ -1,5 +1,16 @@
 // Shared TikTok profile storage for Vercel KV/Redis REST.
 // Required environment variables: KV_REST_API_URL and KV_REST_API_TOKEN.
+function coinNumber(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  const normalized = String(value ?? '').replace(/[,_\s]/g, '');
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+function normalizedWallet(profile) {
+  const wallet = profile && profile.wallet && typeof profile.wallet === 'object' ? profile.wallet : {};
+  const rawBalance = wallet.balance ?? wallet.coins ?? profile?.walletBalance ?? profile?.coins ?? profile?.balance ?? 0;
+  return { balance: Math.max(0, Math.floor(coinNumber(rawBalance))), transactions: Array.isArray(wallet.transactions) ? wallet.transactions.slice(0, 50) : [] };
+}
 function getCookie(req, name) {
   const raw = req.headers.cookie || '';
   const match = raw.split(';').map(v => v.trim()).find(v => v.startsWith(name + '='));
@@ -29,6 +40,7 @@ module.exports = async (req, res) => {
     if (!profile) return res.status(404).json({ error: 'profile_not_found' });
     if (profile.banned === true) { res.setHeader('Set-Cookie', 'retzef_profile_id=; Path=/; Max-Age=0; SameSite=Lax; Secure'); return res.status(403).json({ error: 'account_banned', reason: profile.banReason || 'החשבון נחסם' }); }
     profile.username = canonicalUsername;
+    profile.wallet = normalizedWallet(profile);
     profile.lastSeen = Date.now();
     await kv('set', `retzef:profile:${canonicalUsername.toLowerCase()}`, JSON.stringify(profile));
     // Refresh the persistent session cookie on every successful page load.
