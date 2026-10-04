@@ -549,7 +549,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.1.2';</script>
+<script id="retzef-version">window.RETZEF_VERSION='1.2.2';</script>
 </head>
 <body>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
@@ -651,6 +651,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
 <div id="profileMenu" role="menu" aria-label="תפריט משתמש">
   <div class="menu-user" id="profileMenuUser">החשבון שלי</div><button type="button" id="profileWallet" data-profile-target="wallet" style="width:calc(100% - 26px);margin:8px 13px;padding:10px 12px;border:0;border-radius:12px;background:linear-gradient(135deg,#fff7d6,#ffe9a8);color:#5b4300;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer"><span>🪙 מטבעות רצף</span><b id="profileWalletBalance">0</b></button>
   <button type="button" data-profile-target="settings">⚙️ הגדרות חשבון</button>
+  <button type="button" id="syncTikTokProfile">🔄 סנכרן פרופיל TikTok</button>
   <button type="button" id="profileDevicePreferences">📱 Device Preferences</button>
   <div id="profileDevicePreferencesPanel" style="display:none;padding:8px 13px;border-top:1px solid var(--glass-border);border-bottom:1px solid var(--glass-border);font-size:12px;">
     <label style="display:flex;align-items:center;gap:8px;margin:7px 0;"><input type="checkbox" id="profileReduceMotion"> הפחתת אנימציות</label>
@@ -1354,7 +1355,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.1.2</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.2.2</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1365,6 +1366,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>1.2.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.1.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.0.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.0.1 — מערכת גרסאות חדשה, תיקוני Trade, יתרות מטבעות וחיבור כפתורי מנוי.</li>
@@ -1482,6 +1484,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     accounts.forEach(account=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:9px;margin:8px 0;padding:8px;border:1px solid var(--glass-border);border-radius:12px;';const name=document.createElement('span');name.style.flex='1';name.textContent=(account.displayName||account.username)+' · @'+account.username;const button=document.createElement('button');button.type='button';button.className='quick-action';button.textContent=String(window.__retzefProfile?.username||'').toLowerCase()===account.username?'מחובר ✅':'החלף';button.disabled=button.textContent==='מחובר ✅';button.onclick=()=>switchAccount(account.username);row.append(name,button);list.appendChild(row);});
     quickModal.classList.add('open');
     document.getElementById('addTikTokAccount').addEventListener('click',()=>{quickModal.classList.remove('open');closeConsentModal();startTikTokLogin(true);});
+  const syncTikTokProfileButton=document.getElementById('syncTikTokProfile'); if(syncTikTokProfileButton) syncTikTokProfileButton.addEventListener('click',()=>{profileMenu.classList.remove('open');closeConsentModal();startTikTokLogin(false);});
   }
   function openProfileAction(action){
     const profile=window.__retzefProfile||{};
