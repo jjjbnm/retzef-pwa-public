@@ -91,6 +91,7 @@ module.exports = async (req, res) => {
       display_name: displayName,
       avatar: profileAvatar,
       role: resolveRole(username),
+      account_added: addAccountFlow ? '1' : '0',
     });
     try {
       await saveProfile(username, { ...(existingProfile || {}), username, displayName, avatarUrl: profileAvatar, role: existingProfile?.role || resolveRole(username), tiktokOpenId: user.open_id || existingProfile?.tiktokOpenId || '', tiktokUnionId: user.union_id || existingProfile?.tiktokUnionId || '', age: Number(joinRequest?.age || existingProfile?.age || 0), accountCountry, loginCountry, banned: false, banReason: '' });

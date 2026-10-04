@@ -549,7 +549,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.2.3';</script>
+<script id="retzef-version">window.RETZEF_VERSION='1.2.4';</script>
 </head>
 <body>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
@@ -1355,7 +1355,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.2.3</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.2.4</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1366,6 +1366,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>1.2.4 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.2.3 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.2.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.1.2 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
@@ -1595,17 +1596,20 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
       const displayName = params.get('display_name') || params.get('displayName') || username;
       const avatarUrl = params.get('avatar') || '';
       const role = params.get('role') || 'member';
+      const accountAdded = params.get('account_added') === '1';
       const serverProfile = { username, displayName, avatarUrl, role };
-      // Ensure the API session is available on the exact domain after OAuth redirect.
-      if (username) document.cookie = `retzef_profile_id=${encodeURIComponent(username.toLowerCase())}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
-      window.__retzefProfile = serverProfile;
-      try{localStorage.removeItem('retzef_logged_out');}catch(_){}
-      if(window.retzefCacheProfile)window.retzefCacheProfile(serverProfile);
+      // During add-account, keep the current cookie/session and only save the new account to its list.
+      if (username && !accountAdded) document.cookie = `retzef_profile_id=${encodeURIComponent(username.toLowerCase())}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
+      if (!accountAdded) {
+        window.__retzefProfile = serverProfile;
+        try{localStorage.removeItem('retzef_logged_out');}catch(_){}
+        if(window.retzefCacheProfile)window.retzefCacheProfile(serverProfile);
+      }
       rememberAccount(serverProfile);
       const nameModal = document.getElementById('usernameModal');
       if (nameModal) nameModal.classList.remove('open');
       const roleLabel = role === 'owner' ? 'בעלים' : role === 'admin' ? 'מנהל' : 'חבר';
-      statusEl.textContent = username ? `מחובר בתור @${username} · ${roleLabel} ✅` : 'התחברות בוצעה בהצלחה ✅';
+      statusEl.textContent = accountAdded ? `✅ החשבון @${username} נוסף לרשימת החשבונות` : (username ? `מחובר בתור @${username} · ${roleLabel} ✅` : 'התחברות בוצעה בהצלחה ✅');
       statusEl.style.display = 'block';
       if (avatarUrl) {
         avatarImg.src = avatarUrl;
@@ -1618,7 +1622,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
       statusEl2.style.display = 'block';
     }
     if (params.has('tiktok_ok') || params.has('tiktok_error') || params.has('username') || params.has('avatar') || params.has('role')) {
-      params.delete('tiktok_ok'); params.delete('tiktok_error'); params.delete('ban_reason'); params.delete('username'); params.delete('display_name'); params.delete('displayName'); params.delete('avatar'); params.delete('role');
+      params.delete('tiktok_ok'); params.delete('tiktok_error'); params.delete('ban_reason'); params.delete('username'); params.delete('display_name'); params.delete('displayName'); params.delete('avatar'); params.delete('role'); params.delete('account_added');
       const clean = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
       window.history.replaceState({}, '', clean);
     }
