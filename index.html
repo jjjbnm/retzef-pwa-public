@@ -798,7 +798,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       </div>
       <div class="shop-item glass tab-jump" data-target="subs" style="cursor:pointer;">
         <span class="name">💳 מנויים</span>
-        <span class="note">רצף פלוס, מנוי סרטון ועוד</span>
+        <span class="note">רצף פלוס ועוד</span>
       </div>
       <div class="shop-item glass tab-jump" data-target="shop" style="cursor:pointer;">
         <span class="name">🛍️ חנות</span>
@@ -991,64 +991,6 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <button type="button" id="checkSubStatusBtn" class="btn btn-ghost glass" style="width:100%; justify-content:center; font-size:13px;">🔄 בדוק סטטוס מנוי</button>
   </div>
 
-  <!-- VIDEO POSTING SUBSCRIPTIONS -->
-  <section id="video-subs">
-    <span class="eyebrow" data-i18n="videosubs_eyebrow">הרשאת פרסום סרטונים</span>
-    <h2 class="sec-title" data-i18n="videosubs_title">מנוי סרטון</h2>
-    <p class="sec-sub" data-i18n="videosubs_sub">בנפרד ממנויי רצף פלוס — זה המנוי שקובע מה מותר לשלוח בכלל.</p>
-<div class="purchase-warning glass" role="alert" style="margin:18px 0;padding:16px 18px;border:3px solid #b91c1c;border-right:8px solid #991b1b;background:#fee2e2;color:#7f1d1d;font-size:14px;line-height:1.75;box-shadow:0 6px 20px rgba(185,28,28,.22);"><strong style="display:block;color:#991b1b;font-size:16px;margin-bottom:5px;">🛑 אזהרה חשובה מאוד לפני רכישה</strong><strong>אם ירד כסף אך התשלום לא הושלם, או שהרכישה/המנוי לא התקבלו או לא הופעלו, אין החזר כספי אוטומטי ואין התחייבות לקבל את מה שנרכש.</strong> יש לפנות לתמיכה ולספק התשלום לבדיקה. כל בקשת החזר תיבדק לפי המדיניות, תנאי ספק התשלום והדין החל. אין למסור באתר פרטי כרטיס אשראי.</div>
-
-    <div class="plans">
-      <div class="plan glass">
-        <span class="tag">בסיסי</span>
-        <div class="name">מנוי סרטון רגיל</div>
-        <div class="price">5₪<span>/חודש</span></div>
-        <ul class="plusminus">
-          <li class="no">− אפשר לשלוח לייבים</li>
-          <li class="no">− אפשר לשלוח סרטונים של כולם</li>
-          <li class="yes">+ אפשר לשלוח סרטונים שלנו</li>
-        </ul>
-        <button type="button" class="buy-btn" data-item="מנוי סרטון רגיל (חודש)" data-price="5" style="margin-top:14px;">🛒 קנה</button>
-        <button type="button" class="subscribe-btn" data-item="מנוי סרטון רגיל (חודשי, מתחדש)" data-plan="video_regular_month" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">🔁 הרשמה כמנוי מתחדש</button>
-        <button type="button" class="add-to-cart-btn" data-item="מנוי סרטון רגיל (חודש)" data-price="5" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
-      </div>
-      <div class="plan glass highlight">
-        <span class="tag">מורחב</span>
-        <div class="name">מנוי סרטון פלוס</div>
-        <div class="price">10₪<span>/חודש</span></div>
-        <ul class="plusminus">
-          <li class="yes">+ אפשר לשלוח לייבים</li>
-          <li class="yes">+ אפשר לשלוח סרטונים שלנו</li>
-          <li class="yes">+ אפשר לשלוח סרטונים של כולם</li>
-        </ul>
-        <button type="button" class="buy-btn" data-item="מנוי סרטון פלוס (חודש)" data-price="10" style="margin-top:14px;">🛒 קנה</button>
-        <button type="button" class="subscribe-btn" data-item="מנוי סרטון פלוס (חודשי, מתחדש)" data-plan="video_plus_month" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">🔁 הרשמה כמנוי מתחדש</button>
-        <button type="button" class="add-to-cart-btn" data-item="מנוי סרטון פלוס (חודש)" data-price="10" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
-      </div>
-    </div>
-
-    <p style="font-size:12px;color:var(--muted);margin:8px 0 0;">🪙 המרה: 1 ₪ = 10 מטבעות. לדוגמה: מנוי ב־10 ₪ = 100 מטבעות.</p>
-
-    <h3 style="font-size:15px; margin-top:28px; margin-bottom:12px;">📅 לוח הנחות</h3>
-    <div class="glass" style="padding:18px 20px; display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-      <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--glass-border); padding-bottom:8px;">
-        <span>20–25 בינואר</span><span style="font-weight:700; color:#15803d;">חינם</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--glass-border); padding-bottom:8px;">
-        <span>1 באפריל</span><span style="font-weight:700;">המחיר עולה בשקל נוסף</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--glass-border); padding-bottom:8px;">
-        <span>1–5 בספטמבר</span><span style="font-weight:700; color:#15803d;">הנחה 50%</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--glass-border); padding-bottom:8px;">
-        <span>25 בספטמבר</span><span style="font-weight:700; color:#15803d;">הנחה 25%</span>
-      </div>
-      <div style="display:flex; justify-content:space-between;">
-        <span>1–10 בנובמבר</span><span style="font-weight:700; color:#15803d;">הנחה 11%</span>
-      </div>
-    </div>
-  </section>
-
   <!-- PLANS -->
   <section id="plans">
     <span class="eyebrow" data-i18n="plans_eyebrow">הטבות קהילה</span>
@@ -1065,7 +1007,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
           <li>ניתן לשנות שם</li>
           <li>שימוש בתג פלוס</li>
           <li>תמיכה פלוס</li>
-          <li>אפשר לשלוח רק סרטונים שלנו</li>
+
         </ul>
         <div class="price-tiers">
           <button type="button" class="tier buy-tier" data-item="רצף פלוס (חודש)" data-price="12.45"><span>חודש</span><span>₪12.45</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס (חודש) (מתחדש)" data-plan="retzef_plus_month" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
@@ -1087,7 +1029,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
           <li>ניתן לשנות שם ותמונת קבוצה</li>
           <li>שימוש בתג פלוס פרימיום</li>
           <li>תמיכה עם מנהל</li>
-          <li>אפשר לשלוח כל סרטון</li>
+
         </ul>
         <div class="price-tiers">
           <button type="button" class="tier buy-tier" data-item="רצף פלוס פרימיום (חודש)" data-price="18"><span>חודש</span><span>₪18</span></button><button type="button" class="subscribe-btn" data-item="רצף פלוס פרימיום (חודש) (מתחדש)" data-plan="retzef_premium_month" style="width:100%; font-size:11px; padding:6px; margin-top:4px; grid-column:1/-1;">🔁 הרשמה כמנוי</button>
@@ -1360,7 +1302,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.3.7</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.4.7</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1371,6 +1313,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>1.4.7 — הוסרו מנויי הסרטון והפריט השישי מהטבות המנויים.</li>
         <li>1.3.7 — המרת מטבעות: 1 ₪ = 10 מטבעות.</li>
         <li>1.2.7 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.2.6 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
@@ -2163,8 +2106,6 @@ function openPaypalModal(itemName, price){
   // PayPal requires a Plan to exist before any subscribe button can use it —
   // that one visit is unavoidable, it isn't something code alone can skip.
   const PLAN_IDS = {
-    video_regular_month: "PASTE_PLAN_ID_HERE",
-    video_plus_month: "PASTE_PLAN_ID_HERE",
     retzef_plus_day: "PASTE_PLAN_ID_HERE",
     retzef_plus_week: "PASTE_PLAN_ID_HERE",
     retzef_plus_month: "PASTE_PLAN_ID_HERE",
@@ -2183,7 +2124,7 @@ function openPaypalModal(itemName, price){
   subModal.addEventListener('click', e => { if(e.target === subModal) closeSubscriptionModal(); });
   document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closePaypalModal(); closeSubscriptionModal(); } });
 
-  const SUBSCRIPTION_PRICES={video_regular_month:5,video_plus_month:10,retzef_plus_day:2.95,retzef_plus_week:4.95,retzef_plus_month:12.45,retzef_plus_year:18,retzef_premium_day:5.95,retzef_premium_week:9.95,retzef_premium_month:18,retzef_premium_year:20};
+  const SUBSCRIPTION_PRICES={retzef_plus_day:2.95,retzef_plus_week:4.95,retzef_plus_month:12.45,retzef_plus_year:18,retzef_premium_day:5.95,retzef_premium_week:9.95,retzef_premium_month:18,retzef_premium_year:20};
   function openSubscriptionModal(itemName,planKey){
     subItemName.textContent=itemName; subButtonContainer.innerHTML=''; subModal.classList.add('open');
     const price=Number(SUBSCRIPTION_PRICES[planKey]||0); const period=/שנה/.test(itemName)?'שנה':/שבוע/.test(itemName)?'שבוע':/3 ימים|יום/.test(itemName)?'3 ימים':'חודש';
