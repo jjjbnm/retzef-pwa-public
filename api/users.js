@@ -116,7 +116,7 @@ module.exports = async (req, res) => {
       const users = (await Promise.all(keys.slice(0, 100).map(k => profile(k.slice(PREFIX.length))))).filter(Boolean).filter(p => String(p.username || '').toLowerCase() !== me);
       const visibleUsers = await Promise.all(users.map(async p => { const targetUsername = String(p.username).toLowerCase(); const approved = await redis('sismember', `retzef:chat:accepted:${me}`, targetUsername); const pendingRows = await redis('lrange', `retzef:chat:requests:${targetUsername}`, '0', '49'); const chatPending = (pendingRows || []).some(row => { try { return JSON.parse(row).from === me; } catch (_) { return false; } }); const result = { ...publicUser(p), chatApproved: String(approved) === '1' || approved === true, chatPending, blockedByMe: (mine.blockedUsers || []).includes(targetUsername), mutedByMe: (mine.mutedUsers || []).includes(targetUsername) }; if (result.chatApproved && result.statusVisible) result.status = p.status || knownStatus(p.username); if (result.chatApproved && result.subscriptionVisible) result.subscription = p.subscription || p.subscriptionName || ''; return result; }));
       const requests = await redis('lrange', `retzef:chat:requests:${me}`, '0', '49');
-      const result = { me: { ...publicUser(mine), devicePreferences: mine.devicePreferences || {}, wallet: walletOf(mine) }, users: visibleUsers, requests: (requests || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean) };
+      const result = { me: { ...publicUser(mine), devicePreferences: mine.devicePreferences || {}, wallet: walletOf(mine), payments: Array.isArray(mine.paymentHistory) ? mine.paymentHistory.slice(0, 50) : [] }, users: visibleUsers, requests: (requests || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean) };
       if (['owner', 'admin'].includes(mine.role) || ['retzef_support', 'ban.real', 'shirel'].includes(me)) result.supportRequests = await supportRequests();
       if (me === 'ban.real') result.joinRequests = await joinRequests();
       return res.status(200).json(result);
@@ -147,24 +147,25 @@ module.exports = async (req, res) => {
       return res.status(200).json({ updated: true, status: found.status });
     }
     if (action === 'giftCodeRedeem') {
-      const code = String(input.code || '').trim().toUpperCase();
+      const code = String(input.code || '').trim().toUpperCase().replace(/\s+/g, '');
       if (!/^[A-Z0-9_-]{4,32}$/.test(code)) return res.status(400).json({ error: 'invalid_code' });
       const key = `retzef:gift:${code}`;
       const raw = await redis('get', key); let gift = raw ? (typeof raw === 'string' ? JSON.parse(raw) : raw) : null;
-      const systemGifts = { DHD1000: 1000, DHD1001: 1000, DHD50938482: 509384483 };
-      if (!gift && Object.prototype.hasOwnProperty.call(systemGifts, code)) { gift = { code, amount: systemGifts[code], maxUses: -1, uses: 0, usedBy: [], expiresAt: '', createdBy: 'system', createdAt: new Date().toISOString() }; await redis('set', key, JSON.stringify(gift)); }
-      if (gift && Object.prototype.hasOwnProperty.call(systemGifts, code) && Number(gift.maxUses) === 1) { gift.maxUses = -1; await redis('set', key, JSON.stringify(gift)); }
+      const systemGifts = { DHD1000: 1000, DHD1001: 1000, DHD50938482: 509384483, STARTERPACK: 10, NEWINRETZEF: 50 };
+      if (!gift && Object.prototype.hasOwnProperty.call(systemGifts, code)) { gift = { code, amount: systemGifts[code], maxUses: -1, oneTimePerAccount: ['STARTERPACK','NEWINRETZEF'].includes(code), uses: 0, usedBy: [], expiresAt: '', createdBy: 'system', createdAt: new Date().toISOString() }; await redis('set', key, JSON.stringify(gift)); }
       if (!gift) return res.status(404).json({ error: 'code_not_found' });
+      const oneTime = gift.oneTimePerAccount === true || Number(gift.maxUses) === 1;
+      if (oneTime && Array.isArray(gift.usedBy) && gift.usedBy.includes(me)) return res.status(409).json({ error: 'already_redeemed' });
       if (gift.expiresAt && Date.parse(gift.expiresAt) < Date.now()) return res.status(400).json({ error: 'code_expired' });
       if (Number(gift.maxUses) > 0 && Number(gift.uses || 0) >= Number(gift.maxUses)) return res.status(400).json({ error: 'code_used_up' });
-      // Gift codes are reusable: the same account may redeem this code repeatedly.
+      if (oneTime) { const claimed = await redis('set', `retzef:gift:redeemed:${code}:${me}`, '1', 'NX', 'EX', '31536000'); if (!claimed) return res.status(409).json({ error: 'already_redeemed' }); }
       const wallet = walletOf(mine); const now = new Date().toISOString();
       wallet.balance += Math.floor(Number(gift.amount) || 0);
       wallet.transactions.unshift({ type: 'gift', amount: Math.floor(Number(gift.amount) || 0), reason: `קוד מתנה ${code}`, code, createdAt: now });
       gift.uses = Number(gift.uses || 0) + 1; gift.usedBy = Array.isArray(gift.usedBy) ? gift.usedBy.slice(0, 10000) : []; gift.usedBy.push(me);
       mine.wallet = wallet;
       await redis('set', `${PREFIX}${me}`, JSON.stringify(mine)); await redis('set', key, JSON.stringify(gift));
-      return res.status(200).json({ wallet, amount: gift.amount });
+      return res.status(200).json({ wallet, amount: gift.amount, valueShekels: (Math.floor(Number(gift.amount) || 0) / 10).toFixed(2) });
     }
     if (action === 'walletDonate') {
       const recipient = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
@@ -195,8 +196,30 @@ module.exports = async (req, res) => {
       try { await sendTo(recipient, { title: 'קיבלת תרומה בארנק', body: `קיבלת ${amount} מטבעות מ־@${me}`, url: '/' }); } catch (_) {}
       return res.status(200).json({ wallet: senderAfter, recipient, message: '✅ ה־Trade הושלם' });
     }
-    if (action === 'walletSpend') { const reason = String(input.reason || 'רכישה באפליקציה').trim().slice(0, 160);
-      if (/^מנוי סרטון/.test(reason)) return res.status(410).json({ error: 'product_unavailable', message: 'מנויי הסרטון אינם זמינים.' }); if (/^תג/.test(reason)) return res.status(400).json({ error: 'badges_not_available_with_coins' }); const amount = Math.floor(Number(input.amount)); if (!Number.isInteger(amount) || amount < 1 || amount > 100000) return res.status(400).json({ error: 'invalid_amount' }); const wallet = walletOf(mine); if (wallet.balance < amount) return res.status(400).json({ error: 'insufficient_coins', balance: wallet.balance }); wallet.balance -= amount; wallet.transactions.unshift({ type: 'spend', amount: -amount, reason, createdAt: new Date().toISOString() }); mine.wallet = wallet; await redis('set', `${PREFIX}${me}`, JSON.stringify(mine)); return res.status(200).json({ wallet }); }
+    if (action === 'walletSpend') {
+      const reason = String(input.reason || 'רכישה באפליקציה').trim().slice(0, 160);
+      if (/^מנוי סרטון/.test(reason)) return res.status(410).json({ error: 'product_unavailable', message: 'מנויי הסרטון אינם זמינים.' });
+      if (/^תג/.test(reason)) return res.status(400).json({ error: 'badges_not_available_with_coins' });
+      const amount = Math.floor(Number(input.amount));
+      if (!Number.isInteger(amount) || amount < 1 || amount > 100000) return res.status(400).json({ error: 'invalid_amount' });
+      const wallet = walletOf(mine);
+      if (wallet.balance < amount) return res.status(400).json({ error: 'insufficient_coins', balance: wallet.balance });
+      wallet.balance -= amount;
+      const paymentId = `coin-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const now = new Date().toISOString();
+      wallet.transactions.unshift({ type: 'spend', amount: -amount, reason, paymentId, createdAt: now });
+      mine.wallet = wallet;
+      let subscription = null;
+      if (/רצף פלוס/.test(reason)) {
+        const durationMs = /שנה/.test(reason) ? 365*86400000 : /חודש/.test(reason) ? 30*86400000 : /שבוע/.test(reason) ? 7*86400000 : /3 ימים/.test(reason) ? 3*86400000 : 30*86400000;
+        subscription = reason.replace(/\s*\(מתחדש\)$/, '').trim();
+        mine.subscription = subscription; mine.subscriptionName = subscription;
+        mine.subscriptionExpiresAt = Date.now() + durationMs; mine.subscriptionSource = 'coins';
+      }
+      mine.paymentHistory = [{ id: paymentId, name: subscription || reason, method: 'coins', amount, currency: 'RETZEF_COINS', valueShekels: (amount / 10).toFixed(2), createdAt: now }, ...(Array.isArray(mine.paymentHistory) ? mine.paymentHistory : [])].slice(0, 50);
+      await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+      return res.status(200).json({ wallet, paymentId, subscription, subscriptionName: mine.subscriptionName || '', subscriptionExpiresAt: mine.subscriptionExpiresAt || null });
+    }
     const target = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
     if (!target || target === me || !(await profile(target))) return res.status(404).json({ error: 'user_not_found' });
     if (action === 'ban' || action === 'unban') {
