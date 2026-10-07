@@ -544,6 +544,13 @@
   #retzef-version-switcher button{flex:1;min-width:120px}
   #retzef-version-switcher button.active{outline:3px solid var(--accent);outline-offset:1px}
 
+
+  html[data-wallpaper="alvin"]{--text:#f8fafc;--muted:#cbd5e1;--bg2:#18181b;--glass:rgba(10,10,12,.78);--glass-border:rgba(249,115,22,.32)}
+  html[data-wallpaper="alvin"] body,html[data-wallpaper="alvin"] .sec-title,html[data-wallpaper="alvin"] .settings-card h3,html[data-wallpaper="alvin"] label,html[data-wallpaper="alvin"] button{color:var(--text)}
+  html[data-wallpaper="alvin"] .sec-sub,html[data-wallpaper="alvin"] p,html[data-wallpaper="alvin"] small,html[data-wallpaper="alvin"] .muted{color:var(--muted)}
+  html[data-wallpaper="alvin"] input,html[data-wallpaper="alvin"] select,html[data-wallpaper="alvin"] textarea{color:#f8fafc;background:rgba(24,24,27,.92);border-color:rgba(249,115,22,.38)}
+  html[data-wallpaper="alvin"] input::placeholder,html[data-wallpaper="alvin"] textarea::placeholder{color:#cbd5e1}
+
   /* Account-backed Alvin wallpaper */
   html[data-wallpaper="alvin"] body{background:radial-gradient(circle at 18% 18%,rgba(249,115,22,.18),transparent 22%),radial-gradient(circle at 82% 72%,rgba(124,58,237,.18),transparent 25%),linear-gradient(135deg,#020204,#111114 48%,#241006)}
   html[data-wallpaper="alvin"] body:before{content:"🖤   🎃   🖤   🎃   🖤";position:fixed;inset:0;z-index:-1;display:flex;align-items:center;justify-content:center;color:rgba(249,115,22,.22);font-size:clamp(34px,8vw,84px);letter-spacing:18px;line-height:2.4;text-align:center;pointer-events:none;transform:rotate(-12deg) scale(1.3)}
