@@ -2569,5 +2569,25 @@ function openPaypalModal(itemName, price){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
 </script>
+
+<audio id="retzefBackgroundMusic" loop preload="auto" playsinline aria-hidden="true">
+  <source src="/audio/retzef-background.mp3" type="audio/mpeg">
+</audio>
+<script>
+(function(){
+  const music=document.getElementById('retzefBackgroundMusic');
+  if(!music)return;
+  music.volume=0.24;
+  let started=false;
+  const start=()=>{
+    if(started)return;
+    const attempt=music.play();
+    if(attempt&&typeof attempt.then==='function')attempt.then(()=>{started=true;}).catch(()=>{});
+    else started=true;
+  };
+  start();
+  ['pointerdown','touchstart','keydown'].forEach(event=>window.addEventListener(event,start,{once:true,passive:true}));
+})();
+</script>
 </body>
   </html>
