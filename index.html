@@ -551,6 +551,10 @@
   html[data-wallpaper="alvin"] input,html[data-wallpaper="alvin"] select,html[data-wallpaper="alvin"] textarea{color:#f8fafc;background:rgba(24,24,27,.92);border-color:rgba(249,115,22,.38)}
   html[data-wallpaper="alvin"] input::placeholder,html[data-wallpaper="alvin"] textarea::placeholder{color:#cbd5e1}
 
+
+  .alvin-banner{position:relative;overflow:hidden;margin:18px auto 24px;padding:24px 20px;max-width:760px;border:2px solid #f97316;border-radius:24px;text-align:center;color:#fff;background:radial-gradient(circle at 15% 20%,rgba(249,115,22,.35),transparent 28%),radial-gradient(circle at 85% 10%,rgba(124,58,237,.35),transparent 30%),linear-gradient(135deg,#09090b,#1c0b2b 55%,#431407);box-shadow:0 18px 50px rgba(0,0,0,.28)}
+  .alvin-banner:before,.alvin-banner:after{content:"🎃";position:absolute;font-size:54px;opacity:.85}.alvin-banner:before{right:18px;top:12px}.alvin-banner:after{left:18px;bottom:8px}.alvin-banner-title{position:relative;z-index:1;margin:0;color:#fff;font-size:clamp(28px,6vw,48px);font-weight:900}.alvin-banner-subtitle{position:relative;z-index:1;margin:6px 0 14px;color:#fed7aa;font-size:16px;font-weight:700}.alvin-banner-discount{position:relative;z-index:1;display:inline-block;padding:10px 18px;border-radius:999px;color:#fff;background:linear-gradient(135deg,#dc2626,#991b1b);box-shadow:0 8px 22px rgba(220,38,38,.35);font-size:20px;font-weight:900}.alvin-banner-note{position:relative;z-index:1;margin-top:10px;color:#e4e4e7;font-size:12px}
+
   /* Account-backed Alvin wallpaper */
   html[data-wallpaper="alvin"] body{background:radial-gradient(circle at 18% 18%,rgba(249,115,22,.18),transparent 22%),radial-gradient(circle at 82% 72%,rgba(124,58,237,.18),transparent 25%),linear-gradient(135deg,#020204,#111114 48%,#241006)}
   html[data-wallpaper="alvin"] body:before{content:"🖤   🎃   🖤   🎃   🖤";position:fixed;inset:0;z-index:-1;display:flex;align-items:center;justify-content:center;color:rgba(249,115,22,.22);font-size:clamp(34px,8vw,84px);letter-spacing:18px;line-height:2.4;text-align:center;pointer-events:none;transform:rotate(-12deg) scale(1.3)}
@@ -799,6 +803,14 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <span class="eyebrow" data-i18n="home_eyebrow">ברוכים הבאים</span>
     <h2 class="sec-title" data-i18n="home_title">בית</h2>
     <p class="sec-sub" data-i18n="home_sub">כל מה שצריך לדעת על רצף, במקום אחד.</p>
+
+    <div class="alvin-banner" role="status" aria-label="מבצע אלווין פעיל">
+      <h2 class="alvin-banner-title">🎃 אלווין הגיע לרצף</h2>
+      <div class="alvin-banner-subtitle">המבצע פעיל עכשיו</div>
+      <div class="alvin-banner-discount">50% הנחה</div>
+      <div class="alvin-banner-note">ההטבה זמינה עכשיו.</div>
+    </div>
+
 
     <div class="shop-grid" style="margin-bottom:20px;">
       <div class="shop-item glass tab-jump" data-target="status" style="cursor:pointer;">
