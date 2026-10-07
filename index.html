@@ -1934,6 +1934,24 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   // callback — ראו את התיעוד המלא בהערת ה-HTML בתחתית הקובץ.
   const PAYPAL_API_BASE_URL = "https://chi-liart-74.vercel.app";
 
+
+  const ALVIN_DISCOUNT_FACTOR = 0.5;
+  const campaignPrice = value => Math.round((Number(value) || 0) * ALVIN_DISCOUNT_FACTOR * 100) / 100;
+  const formatCampaignPrice = value => `₪${campaignPrice(value).toFixed(2)}`;
+  function applyAlvinCampaignPrices(){
+    document.querySelectorAll('.buy-btn, .buy-tier, .add-to-cart-btn').forEach(button => {
+      const base = Number(button.dataset.basePrice || button.dataset.price);
+      if (!Number.isFinite(base) || base <= 0) return;
+      button.dataset.basePrice = String(base);
+      button.dataset.price = String(campaignPrice(base));
+      const tierPrice = button.matches('.buy-tier') ? button.querySelector('span:last-child') : null;
+      if (tierPrice) tierPrice.textContent = formatCampaignPrice(base);
+      const cardPrice = button.closest('.shop-item')?.querySelector('.price');
+      if (cardPrice && !cardPrice.classList.contains('free')) cardPrice.textContent = formatCampaignPrice(base);
+    });
+  }
+  applyAlvinCampaignPrices();
+
   const paypalModal = document.getElementById('paypalModal');
   const paypalItemName = document.getElementById('paypalItemName');
   const paypalItemPrice = document.getElementById('paypalItemPrice');
@@ -2166,7 +2184,7 @@ function openPaypalModal(itemName, price){
   const SUBSCRIPTION_PRICES={retzef_plus_day:2.95,retzef_plus_week:4.95,retzef_plus_month:12.45,retzef_plus_year:18,retzef_premium_day:5.95,retzef_premium_week:9.95,retzef_premium_month:18,retzef_premium_year:20};
   function openSubscriptionModal(itemName,planKey){
     subItemName.textContent=itemName; subButtonContainer.innerHTML=''; subModal.classList.add('open');
-    const price=Number(SUBSCRIPTION_PRICES[planKey]||0); const period=/שנה/.test(itemName)?'שנה':/שבוע/.test(itemName)?'שבוע':/3 ימים|יום/.test(itemName)?'3 ימים':'חודש';
+    const price=campaignPrice(SUBSCRIPTION_PRICES[planKey]||0); const period=/שנה/.test(itemName)?'שנה':/שבוע/.test(itemName)?'שבוע':/3 ימים|יום/.test(itemName)?'3 ימים':'חודש';
     subButtonContainer.innerHTML=`<div style="text-align:center;margin-bottom:12px"><strong>סכום: ₪${price.toFixed(2)} · תקופה: ${period}</strong><p style="font-size:12px;color:var(--muted);margin:6px 0">בחרו חיוב חד־פעמי או חיוב חוזר. הסכום והתקופה מוצגים לפני האישור.</p></div><div style="display:grid;gap:8px"><button type="button" id="subOneTimeBtn" class="btn btn-primary">תשלום חד־פעמי · ₪${price.toFixed(2)}</button><div id="subRecurringArea"></div></div>`;
     document.getElementById('subOneTimeBtn').onclick=()=>{closeSubscriptionModal();openPaypalModal(itemName.replace(/\s*\(מתחדש\)/,'')+' (חד־פעמי)',price.toFixed(2));};
     const area=document.getElementById('subRecurringArea'),planId=PLAN_IDS[planKey];
