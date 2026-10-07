@@ -543,13 +543,19 @@
   #retzef-version-switcher{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   #retzef-version-switcher button{flex:1;min-width:120px}
   #retzef-version-switcher button.active{outline:3px solid var(--accent);outline-offset:1px}
+
+  /* Account-backed Alvin wallpaper */
+  html[data-wallpaper="alvin"] body{background:radial-gradient(circle at 18% 18%,rgba(249,115,22,.18),transparent 22%),radial-gradient(circle at 82% 72%,rgba(124,58,237,.18),transparent 25%),linear-gradient(135deg,#020204,#111114 48%,#241006)}
+  html[data-wallpaper="alvin"] body:before{content:"🖤   🎃   🖤   🎃   🖤";position:fixed;inset:0;z-index:-1;display:flex;align-items:center;justify-content:center;color:rgba(249,115,22,.22);font-size:clamp(34px,8vw,84px);letter-spacing:18px;line-height:2.4;text-align:center;pointer-events:none;transform:rotate(-12deg) scale(1.3)}
+  html[data-wallpaper="alvin"] body:after{content:"אלווין";position:fixed;right:18px;bottom:14px;z-index:0;color:rgba(255,255,255,.12);font-size:clamp(42px,10vw,110px);font-weight:900;pointer-events:none}
+  html[data-wallpaper="alvin"] .glass,html[data-wallpaper="alvin"] .settings-card{background:rgba(10,10,12,.78);border-color:rgba(249,115,22,.28)}
 </style>
 
 <script id="retzef-profile-cache-bootstrap">
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.3.8';</script>
+<script id="retzef-version">window.RETZEF_VERSION='1.4.8';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';const el=document.getElementById('profileWalletBalance');if(el)el.textContent=value;}
 </script>
@@ -1207,6 +1213,19 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       </div>
     </div>
 
+
+    <div class="settings-card glass" id="retzefMediaSettingsCard">
+      <h3>🎵 טפט ומוזיקה</h3>
+      <label for="wallpaperSelect">טפט</label>
+      <select id="wallpaperSelect">
+        <option value="alvin">אלווין שחור עם דלעת</option>
+        <option value="normal">רגיל</option>
+      </select>
+      <label for="musicVolumeSlider" style="display:block;margin-top:14px;">עוצמת המוזיקה: <span id="musicVolumeValue">24%</span></label>
+      <input type="range" id="musicVolumeSlider" min="0" max="100" value="24" step="1" style="width:100%;">
+      <div id="mediaSettingsStatus" style="font-size:12px;color:var(--muted);margin-top:8px;" aria-live="polite"></div>
+    </div>
+
     <div class="settings-card glass" id="devicePerformanceCard">
       <h3>⚡ Device Performance</h3>
       <p style="font-size:12.5px;color:var(--muted);">בדיקה מקומית של הדפדפן והמכשיר. המידע לא נשלח לשרת.</p>
@@ -1302,7 +1321,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.3.8</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.4.8</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -2587,6 +2606,54 @@ function openPaypalModal(itemName, price){
   };
   start();
   ['pointerdown','touchstart','keydown'].forEach(event=>window.addEventListener(event,start,{once:true,passive:true}));
+})();
+</script>
+
+<script id="retzef-account-media-settings">
+(function(){
+  const defaults={wallpaper:'alvin',musicVolume:0.24};
+  const wallpaperSelect=document.getElementById('wallpaperSelect');
+  const volumeSlider=document.getElementById('musicVolumeSlider');
+  const volumeValue=document.getElementById('musicVolumeValue');
+  const status=document.getElementById('mediaSettingsStatus');
+  const music=document.getElementById('retzefBackgroundMusic');
+  let clientState={};
+  let saveTimer=0;
+  const localGet=(key,fallback)=>{try{return localStorage.getItem(key)||fallback;}catch(_){return fallback;}};
+  const localSet=(key,value)=>{try{localStorage.setItem(key,String(value));}catch(_){} };
+  const normalizeVolume=value=>{const number=Number(value);return Number.isFinite(number)?Math.max(0,Math.min(1,number)):defaults.musicVolume;};
+  function apply(settings,saveLocal=true){
+    const wallpaper=settings.wallpaper==='normal'?'normal':'alvin';
+    const volume=normalizeVolume(settings.musicVolume);
+    document.documentElement.dataset.wallpaper=wallpaper;
+    if(wallpaperSelect)wallpaperSelect.value=wallpaper;
+    if(volumeSlider)volumeSlider.value=String(Math.round(volume*100));
+    if(volumeValue)volumeValue.textContent=Math.round(volume*100)+'%';
+    if(music)music.volume=volume;
+    if(saveLocal){localSet('retzef-wallpaper',wallpaper);localSet('retzef-music-volume',volume);}
+  }
+  function currentSettings(){return {...(clientState.settings&&typeof clientState.settings==='object'?clientState.settings:{}),wallpaper:wallpaperSelect?.value==='normal'?'normal':'alvin',musicVolume:normalizeVolume(Number(volumeSlider?.value||24)/100)};}
+  async function save(){
+    clientState.settings=currentSettings();
+    apply(clientState.settings);
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(async()=>{
+      try{
+        const response=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'clientState',state:clientState})});
+        if(status)status.textContent=response.ok?'✅ נשמר בחשבון':'התחברו כדי לשמור בחשבון';
+      }catch(_){if(status)status.textContent='ההגדרה נשמרה במכשיר';}
+    },180);
+  }
+  apply({wallpaper:localGet('retzef-wallpaper',defaults.wallpaper),musicVolume:localGet('retzef-music-volume',defaults.musicVolume)} ,false);
+  if(wallpaperSelect)wallpaperSelect.addEventListener('change',save);
+  if(volumeSlider)volumeSlider.addEventListener('input',()=>{apply(currentSettings());save();});
+  (async()=>{
+    try{
+      const response=await fetch('/api/users?clientState=1',{credentials:'include',cache:'no-store'});
+      const data=await response.json();
+      if(response.ok&&data.clientState){clientState=data.clientState;apply({...clientState.settings});}
+    }catch(_){}
+  })();
 })();
 </script>
 </body>
