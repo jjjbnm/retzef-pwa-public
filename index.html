@@ -2649,12 +2649,15 @@ function openPaypalModal(itemName, price){
     try{
       const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
       const ctx=new AC(); const now=ctx.currentTime;
-      const master=ctx.createGain();master.gain.setValueAtTime(.0001,now);master.gain.exponentialRampToValueAtTime(.72,now+.025);master.gain.exponentialRampToValueAtTime(.0001,now+1.75);master.connect(ctx.destination);
-      const osc=ctx.createOscillator();osc.type='sawtooth';osc.frequency.setValueAtTime(430,now);osc.frequency.exponentialRampToValueAtTime(1150,now+.28);osc.frequency.exponentialRampToValueAtTime(260,now+1.7);osc.connect(master);osc.start(now);osc.stop(now+1.8);
-      const mod=ctx.createOscillator(), modGain=ctx.createGain();mod.type='sine';mod.frequency.value=8;modGain.gain.value=90;mod.connect(modGain);modGain.connect(osc.frequency);mod.start(now);mod.stop(now+1.8);
-      const buffer=ctx.createBuffer(1,ctx.sampleRate*1.6,ctx.sampleRate), data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);
-      const noise=ctx.createBufferSource(), filter=ctx.createBiquadFilter(), noiseGain=ctx.createGain();noise.buffer=buffer;filter.type='bandpass';filter.frequency.value=1800;filter.Q.value=.8;noiseGain.gain.value=.18;noise.connect(filter);filter.connect(noiseGain);noiseGain.connect(master);noise.start(now);noise.stop(now+1.6);
-      setTimeout(()=>ctx.close().catch(()=>{}),2200);
+      const compressor=ctx.createDynamicsCompressor();compressor.threshold.value=-18;compressor.knee.value=8;compressor.ratio.value=12;compressor.attack.value=.003;compressor.release.value=.18;compressor.connect(ctx.destination);
+      const master=ctx.createGain();master.gain.setValueAtTime(.0001,now);master.gain.exponentialRampToValueAtTime(.92,now+.018);master.gain.exponentialRampToValueAtTime(.0001,now+2.05);master.connect(compressor);
+      const shaper=ctx.createWaveShaper();const curve=new Float32Array(44100);for(let i=0;i<curve.length;i++){const x=i*2/curve.length-1;curve[i]=(Math.PI+24)*x/(Math.PI+24*Math.abs(x));}shaper.curve=curve;shaper.oversample='2x';shaper.connect(master);
+      const osc=ctx.createOscillator();osc.type='sawtooth';osc.frequency.setValueAtTime(360,now);osc.frequency.exponentialRampToValueAtTime(1480,now+.34);osc.frequency.exponentialRampToValueAtTime(210,now+2);osc.connect(shaper);osc.start(now);osc.stop(now+2.1);
+      const osc2=ctx.createOscillator(),osc2Gain=ctx.createGain();osc2.type='square';osc2.frequency.setValueAtTime(690,now);osc2.frequency.exponentialRampToValueAtTime(2050,now+.3);osc2.frequency.exponentialRampToValueAtTime(330,now+2);osc2Gain.gain.value=.22;osc2.connect(osc2Gain);osc2Gain.connect(shaper);osc2.start(now);osc2.stop(now+2.1);
+      const mod=ctx.createOscillator(),modGain=ctx.createGain();mod.type='sine';mod.frequency.value=10;modGain.gain.value=135;mod.connect(modGain);modGain.connect(osc.frequency);mod.start(now);mod.stop(now+2.1);
+      const buffer=ctx.createBuffer(1,ctx.sampleRate*1.9,ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++){const fade=1-i/data.length;data[i]=(Math.random()*2-1)*fade;}
+      const noise=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),noiseGain=ctx.createGain();noise.buffer=buffer;filter.type='bandpass';filter.frequency.value=2400;filter.Q.value=.65;noiseGain.gain.value=.3;noise.connect(filter);filter.connect(noiseGain);noiseGain.connect(master);noise.start(now);noise.stop(now+1.9);
+      setTimeout(()=>ctx.close().catch(()=>{}),2500);
     }catch(_){/* autoplay/audio APIs can be unavailable */}
   }
   let audioPlayed=false;
