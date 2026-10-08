@@ -570,8 +570,20 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';const el=document.getElementById('profileWalletBalance');if(el)el.textContent=value;}
 </script>
-</head>
-<body>
+<style id="retzef-engine-splash-style">
+#retzef-engine-splash{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;color:#111;font-family:Arial,sans-serif;transition:opacity .25s ease}
+#retzef-engine-splash img{width:112px;height:112px;object-fit:contain;border-radius:24px}
+#retzef-engine-splash .retzef-engine-created{margin-top:18px;font-size:15px;font-weight:600;opacity:.72}
+#retzef-engine-splash .retzef-engine-spinner{width:28px;height:28px;margin-top:24px;border:3px solid #e5e7eb;border-top-color:#111;border-radius:50%;animation:retzefEngineSpin .8s linear infinite}
+@keyframes retzefEngineSpin{to{transform:rotate(360deg)}}
+@media(prefers-color-scheme:dark){#retzef-engine-splash{background:#0b0d12;color:#fff}#retzef-engine-splash .retzef-engine-spinner{border-color:#30343d;border-top-color:#fff}}
+</style></head>
+<body><div id="retzef-engine-splash" aria-label="Created with Retzef Engine">
+<img src="/icons/icon-192.png" alt="Retzef Engine">
+<div class="retzef-engine-created">Created with Retzef Engine</div>
+<div class="retzef-engine-spinner" aria-hidden="true"></div>
+</div>
+<script>(function(){var s=document.getElementById('retzef-engine-splash');window.addEventListener('load',function(){setTimeout(function(){if(!s)return;s.style.opacity='0';setTimeout(function(){if(s)s.remove()},300)},900)});setTimeout(function(){if(s)s.remove()},3500)})();</script>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
 <div id="retzefEntryChoice" role="dialog" aria-modal="true" aria-labelledby="retzefEntryTitle"><div class="retzef-entry-card"><img src="/icons/icon-512.png" alt="לוגו רצף"><h1 id="retzefEntryTitle">ברוכים הבאים לרצף</h1><p>בחרו איך להיכנס לאפליקציה</p><div class="retzef-entry-actions"><button type="button" id="retzefEntryTikTok">התחברות עם TikTok</button><button type="button" id="retzefEntryGuest">המשך כאורח</button></div></div></div>
 
