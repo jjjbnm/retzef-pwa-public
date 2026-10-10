@@ -59,12 +59,24 @@ module.exports = async (req, res) => {
       const item = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, ticketNumber, from: cookie(req, 'retzef_profile_id').toLowerCase() || null, username, name: name || 'לא נמסר', email, device, category, reason, description, quote: description, createdAt: new Date().toISOString(), status: 'new' };
       await redis('lpush', 'retzef:support:requests', JSON.stringify(item)); await redis('ltrim', 'retzef:support:requests', '0', '199');
       try { await sendTo('retzef_support', { title: `פניית תמיכה חדשה · ${ticketNumber}`, body: `פנייה חדשה מ־@${username}: ${reason}`, url: '/' }); } catch (_) {}
-      const mailPayload = { username, name, email, toEmail: email, fromEmail: 'retzef.support@gmail.com', replyTo: 'retzef.support@gmail.com', subject: `כרטיס תמיכה ${ticketNumber} · רצף`, ticketNumber, device, category, reason, description };
+      const categoryNames = { account: 'פרצו לי לחשבון', login: 'בעיית התחברות', app: 'תקלה באפליקציה', payments: 'מנויים ותשלומים', community: 'קבוצה, סטטוס או משתמש', other: 'נושא אחר' };
+      const reasonNames = { hacked: 'חשבון נפרץ', password: 'שכחתי סיסמה', locked: 'החשבון ננעל', details: 'שונו פרטים בלי אישור', failed: 'לא מצליח/ה להתחבר', code: 'קוד התחברות לא הגיע', tiktok: 'TikTok לא נפתח', broken: 'האפליקציה לא עובדת', blank: 'מסך לבן או טעינה שלא נגמרת', button: 'כפתור לא מגיב', error: 'מופיעה שגיאה', subscription: 'בעיה במנוי', payment: 'תשלום נכשל', charge: 'חיוב לא מוכר', status: 'שאלה על סטטוס או באן', rules: 'שאלה על חוקי הקבוצה', user: 'דיווח על משתמש', question: 'שאלה כללית', suggestion: 'הצעה לשיפור' };
+      const categoryName = categoryNames[category] || category;
+      const reasonName = reasonNames[reason] || reason;
+      const supportDetails = `שם משתמש: ${username}
+שם: ${name || 'לא נמסר'}
+מייל ליצירת קשר: ${email}
+איזה מכשיר?: ${device}
+קטגוריה: ${categoryName}
+מה קרה?: ${reasonName}
+הסבר: ${description}`;
+      const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      const mailPayload = { username, name, email, toEmail: email, fromEmail: 'retzef.support@gmail.com', replyTo: 'retzef.support@gmail.com', subject: `כרטיס תמיכה ${ticketNumber} · רצף`, ticketNumber, device, category, categoryName, reason, reasonName, description, supportDetails };
       const resendKey = process.env.RESEND_API_KEY;
       const appsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
       let mailResult = null;
       if (resendKey) {
-        const mailResponse = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: process.env.RESEND_FROM_EMAIL || 'retzef.support@gmail.com', to: [email], reply_to: 'retzef.support@gmail.com', subject: mailPayload.subject, html: `<div dir="rtl"><h2>כרטיס התמיכה שלך נשלח בהצלחה</h2><p>מספרך בתור זה <b>${ticketNumber}</b></p><p>שלום ${name || username},</p><p>קיבלנו את הפנייה שלך ונחזור אליך בהקדם.</p><hr><p><b>נושא:</b> ${reason}</p><p>${description}</p></div>` }) });
+        const mailResponse = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: process.env.RESEND_FROM_EMAIL || 'retzef.support@gmail.com', to: [email], reply_to: 'retzef.support@gmail.com', subject: mailPayload.subject, html: `<div dir="rtl"><h2>כרטיס התמיכה שלך נשלח בהצלחה</h2><p>מספרך בתור זה <b>${escapeHtml(ticketNumber)}</b></p><p>שלום ${escapeHtml(name || username)},</p><p>קיבלנו את הפנייה שלך ונחזור אליך בהקדם.</p><hr><h3>מידע שנשלח בטופס</h3><p><b>שם משתמש:</b> ${escapeHtml(username)}<br><b>שם:</b> ${escapeHtml(name || 'לא נמסר')}<br><b>מייל ליצירת קשר:</b> ${escapeHtml(email)}<br><b>איזה מכשיר?:</b> ${escapeHtml(device)}<br><b>קטגוריה:</b> ${escapeHtml(categoryName)}<br><b>מה קרה?:</b> ${escapeHtml(reasonName)}<br><b>הסבר:</b><br>${escapeHtml(description).replace(/\n/g, '<br>')}</p></div>` }) });
         mailResult = await mailResponse.json(); if (!mailResponse.ok || !mailResult.id) throw new Error(mailResult.message || 'email_delivery_failed');
       } else if (appsScriptUrl) {
         const mailResponse = await fetch(appsScriptUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(mailPayload) });
