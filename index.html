@@ -536,6 +536,23 @@
   .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li strong{font-size:16px;color:var(--text)}
   .rules-card ol[aria-label="סעיפי חוקי הקבוצה"] li span{font-size:14px;line-height:1.65;color:var(--muted)}
 
+
+  /* first-entry legal consent gate */
+  #retzefLegalGate{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg,#f3f4f9);direction:rtl;}
+  #retzefLegalGate.is-hidden{display:none;}
+  .retzef-legal-card{width:min(100%,460px);padding:30px 24px;text-align:right;background:var(--bg2,#fff);color:var(--text,#161a26);border:1px solid var(--glass-border,rgba(20,23,40,.1));border-radius:24px;box-shadow:0 24px 80px rgba(20,25,50,.2);}
+  .retzef-legal-card h1{margin:0 0 10px;text-align:center;font-size:clamp(23px,5vw,30px);}
+  .retzef-legal-card>p{margin:0 0 20px;text-align:center;color:var(--muted,#656b80);line-height:1.7;}
+  .retzef-legal-links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 20px;}
+  .retzef-legal-links a{display:block;padding:13px 10px;text-align:center;border:1px solid var(--glass-border,rgba(20,23,40,.1));border-radius:13px;color:var(--accent,#3b63e0);font-weight:800;text-decoration:none;background:var(--glass,rgba(255,255,255,.55));}
+  .retzef-legal-links a:hover{transform:translateY(-1px);}
+  .retzef-legal-check{display:flex;align-items:flex-start;gap:10px;margin:0 0 20px;padding:13px;border-radius:13px;background:rgba(59,99,224,.07);font-size:14px;line-height:1.55;cursor:pointer;}
+  .retzef-legal-check input{width:19px;height:19px;flex:0 0 auto;margin-top:2px;accent-color:var(--accent,#3b63e0);}
+  #retzefLegalAccept{width:100%;min-height:48px;border:0;border-radius:13px;padding:12px 18px;background:linear-gradient(135deg,var(--accent,#3b63e0),var(--accent2,#7c3aed));color:#fff;font:inherit;font-weight:800;cursor:pointer;opacity:.5;}
+  #retzefLegalAccept:not(:disabled){opacity:1;}
+  #retzefLegalAccept:disabled{cursor:not-allowed;}
+  @media(max-width:420px){.retzef-legal-card{padding:25px 18px}.retzef-legal-links{grid-template-columns:1fr;}}
+
 </style>
 
 <style id="retzef-version-mode-styles">
@@ -578,7 +595,40 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 @keyframes retzefEngineSpin{to{transform:rotate(360deg)}}
 @media(prefers-color-scheme:dark){#retzef-engine-splash{background:#0b0d12;color:#fff}#retzef-engine-splash .retzef-engine-spinner{border-color:#30343d;border-top-color:#fff}}
 </style></head>
-<body><div id="retzef-engine-splash" aria-label="Created with Retzef Engine">
+<body>
+<div id="retzefLegalGate" role="dialog" aria-modal="true" aria-labelledby="retzefLegalTitle">
+  <div class="retzef-legal-card">
+    <h1 id="retzefLegalTitle">לפני שנכנסים לרצף</h1>
+    <p>כדי להמשיך, קראו את תנאי השימוש ואת מדיניות הפרטיות. אפשר ללחוץ על כל מסמך כדי לפתוח ולהציג אותו.</p>
+    <div class="retzef-legal-links">
+      <a href="/terms-of-service/">תנאי שימוש</a>
+      <a href="/privacy-policy/">מדיניות פרטיות</a>
+    </div>
+    <label class="retzef-legal-check"><input type="checkbox" id="retzefLegalRead"> <span>קראתי את תנאי השימוש ואת מדיניות הפרטיות, ואני מסכים/ה להמשיך.</span></label>
+    <button type="button" id="retzefLegalAccept" disabled>אישור והמשך</button>
+  </div>
+</div>
+<script id="retzef-legal-consent">
+(function(){
+  const KEY='retzef_legal_consent_v1';
+  const gate=document.getElementById('retzefLegalGate');
+  const checkbox=document.getElementById('retzefLegalRead');
+  const accept=document.getElementById('retzefLegalAccept');
+  if(!gate||!checkbox||!accept)return;
+  let accepted=false;
+  try{accepted=localStorage.getItem(KEY)==='accepted';}catch(_){}
+  if(accepted){gate.classList.add('is-hidden');return;}
+  document.documentElement.style.overflow='hidden';
+  checkbox.addEventListener('change',()=>{accept.disabled=!checkbox.checked;});
+  accept.addEventListener('click',()=>{
+    if(!checkbox.checked)return;
+    try{localStorage.setItem(KEY,'accepted');}catch(_){}
+    gate.classList.add('is-hidden');
+    document.documentElement.style.overflow='';
+  });
+})();
+</script>
+<div id="retzef-engine-splash" aria-label="Created with Retzef Engine">
 <img src="/icons/icon-192.png" alt="Retzef Engine">
 <div class="retzef-engine-created">Created with Retzef Engine</div>
 <div class="retzef-engine-spinner" aria-hidden="true"></div>
