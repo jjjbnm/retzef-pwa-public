@@ -583,7 +583,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.5.7';</script>
+<script id="retzef-version">window.RETZEF_VERSION='1.5.10';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';const el=document.getElementById('profileWalletBalance');if(el)el.textContent=value;}
 </script>
@@ -1402,7 +1402,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.5.7</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.5.10</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1413,6 +1413,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>1.5.10 — הורחבו שאלות ותשובות ה-FAQ בטאב התמיכה, עם הסברים מלאים על חוקים נוספים, זמני מענה, סמכויות מנהלים, ערעורים ובדיקת באנים.</li>
         <li>1.5.7 — נוסף בטאב התמיכה אזור שאלות נפוצות עם מידע על חוקים נוספים, זמני מענה, סמכויות מנהלים, ערעורים ובדיקת באנים.</li>
         <li>1.3.8 — הוספת כפתור תשלומים במסך הארנק.</li>
         <li>1.4.7 — הוסרו מנויי הסרטון והפריט השישי מהטבות המנויים.</li>
@@ -1455,24 +1456,24 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
         <h3 style="margin:0 0 14px; font-size:22px;">שאלות נפוצות</h3>
         <div style="display:grid; gap:10px;">
           <details class="glass" style="padding:14px 16px;">
-            <summary style="cursor:pointer; font-weight:700;">האם יש יותר חוקים מאלה שמופיעים בטאב חוקים?</summary>
-            <p style="margin:12px 0 0; line-height:1.7;">כן, יש חוקים נוספים שלא מופיעים בטאב חוקים.</p>
+            <summary style="cursor:pointer; font-weight:700;">האם קיימים חוקים נוספים שלא מופיעים בטאב חוקים, או שטאב חוקים כולל את כל הכללים?</summary>
+            <p style="margin:12px 0 0; line-height:1.7;">כן. טאב חוקים מציג את עיקרי הכללים, אבל קיימים גם חוקים והנחיות נוספים שלא מופיעים בו. לכן חשוב להכיר את הנהלים של הקבוצה ולהתנהל בצורה מכבדת גם במקרים שלא מפורטים בטאב.</p>
           </details>
           <details class="glass" style="padding:14px 16px;">
-            <summary style="cursor:pointer; font-weight:700;">כמה זמן לוקח לתמיכה לענות?</summary>
-            <p style="margin:12px 0 0; line-height:1.7;">בתמיכה בטיקטוק עונים בערך תוך שעה, בתמיכה במייל בערך תוך יום, ובתמיכה בדיסקורד בערך תוך חצי יום.</p>
+            <summary style="cursor:pointer; font-weight:700;">כמה זמן בדרך כלל לוקח לתמיכה לענות בפלטפורמות השונות?</summary>
+            <p style="margin:12px 0 0; line-height:1.7;">זמן המענה משתנה לפי הפלטפורמה ולעיתים גם לפי עומס הפניות: בתמיכה בטיקטוק המענה הוא בערך תוך שעה, בתמיכה במייל בערך תוך יום, ובתמיכה בדיסקורד בערך תוך חצי יום. הזמנים הם הערכה בלבד, ולכן במקרים של עומס חריג ייתכן שהמענה ייקח יותר זמן.</p>
           </details>
           <details class="glass" style="padding:14px 16px;">
-            <summary style="cursor:pointer; font-weight:700;">האם מנהלים יכולים להגביר את הבאן?</summary>
-            <p style="margin:12px 0 0; line-height:1.7;">לא, מנהלים לא יכולים להגביר את הבאן. עם זאת, אם אתם מקללים או מדברים לא יפה, הבאן כן יכול להיות מוגבר.</p>
+            <summary style="cursor:pointer; font-weight:700;">האם מנהלים יכולים להאריך או להחמיר באן שניתן למשתמש?</summary>
+            <p style="margin:12px 0 0; line-height:1.7;">לא. למנהלים אין אפשרות להאריך או להחמיר באן לפי שיקול דעתם. עם זאת, אם משתמש מקלל, מתנהג בצורה לא מכבדת או ממשיך להפר את הכללים, ההתנהגות הזו עלולה להוביל להחמרה בטיפול או לבאן נוסף בהתאם להחלטה המתאימה.</p>
           </details>
           <details class="glass" style="padding:14px 16px;">
-            <summary style="cursor:pointer; font-weight:700;">אם מישהו מקבל באן ממנהל, אילו זכויות יש לו?</summary>
-            <p style="margin:12px 0 0; line-height:1.7;">מי שמקבל באן ממנהל יכול לבקש בדיקה של הבאן ולהגיש ערעור.</p>
+            <summary style="cursor:pointer; font-weight:700;">אם משתמש קיבל באן ממנהל, אילו אפשרויות עומדות לרשותו?</summary>
+            <p style="margin:12px 0 0; line-height:1.7;">משתמש שקיבל באן ממנהל רשאי לבקש בדיקה של ההחלטה ולהגיש ערעור. בערעור כדאי להסביר בצורה עניינית מה קרה, לציין מדוע לדעתו ההחלטה דורשת בדיקה ולהוסיף מידע רלוונטי שיכול לעזור בבירור המקרה.</p>
           </details>
           <details class="glass" style="padding:14px 16px;">
-            <summary style="cursor:pointer; font-weight:700;">האם מנהל יכול לאשר באנים מבדיקות?</summary>
-            <p style="margin:12px 0 0; line-height:1.7;">לא. מנהל לא יכול לבדוק באן ולאשר אותו; רק הבעלים יכול לבדוק ולאשר באן.</p>
+            <summary style="cursor:pointer; font-weight:700;">האם מנהל יכול לבדוק באן ולאשר אותו לאחר בדיקה?</summary>
+            <p style="margin:12px 0 0; line-height:1.7;">לא. מנהל אינו יכול לבצע את בדיקת הבאן הסופית או לאשר אותו לאחר בדיקה. הסמכות לבדוק ולאשר באן נתונה רק לבעלים, ולכן מקרים כאלה צריכים לעבור לבדיקה ואישור של הבעלים בלבד.</p>
           </details>
         </div>
       </div>
