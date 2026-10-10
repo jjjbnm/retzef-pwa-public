@@ -2642,6 +2642,25 @@ function openPaypalModal(itemName, price){
     <h2 class="sec-title">🤖 עוזר AI</h2>
     <p class="sec-sub">שאלו שאלה על האפליקציה, הסטטוס, החוקים, המנויים או התמיכה.</p>
     <div id="retzef-ai-panel" style="display:flex;width:100%;height:520px;margin-top:20px;"><div id="retzef-ai-head">🤖 עוזר AI</div><div id="retzef-ai-messages"><div class="retzef-ai-msg retzef-ai-bot">היי! אני עוזר ה־AI של רצף, איך אפשר לעזור?</div></div><form id="retzef-ai-form"><input id="retzef-ai-input" autocomplete="off" placeholder="כתבו שאלה..."><button id="retzef-ai-send" type="submit">שלח</button></form></div>
+  <script>
+(function(){
+  var loaded = false;
+  function loadAiTicketBot(){
+    if (loaded || document.querySelector('script[data-retzef-ai-ticket-bot]')) return;
+    loaded = true;
+    var script = document.createElement('script');
+    script.src = 'https://aiticketbot.com/widget/w.js';
+    script.async = true;
+    script.dataset.key = 'wgt_ae1796028567fc39ac458116453a3774';
+    script.dataset.retzefAiTicketBot = 'true';
+    document.body.appendChild(script);
+  }
+  var assistantButton = document.querySelector('.tab-btn[data-target="assistant"]');
+  if (assistantButton) assistantButton.addEventListener('click', loadAiTicketBot);
+  var assistantPanel = document.getElementById('assistant');
+  if (assistantPanel && assistantPanel.classList.contains('active')) loadAiTicketBot();
+})();
+</script>
   </section>
 <script>(function(){const panel=document.getElementById('retzef-ai-panel'),form=document.getElementById('retzef-ai-form'),input=document.getElementById('retzef-ai-input'),messages=document.getElementById('retzef-ai-messages');input.focus();function localAnswer(q){const t=String(q||'').toLowerCase();if(t.trim()==='הבאן המקורי')return '🥚 מצאת Easter egg! עוד סוד קטן: מתחילת 1 באוקטובר לא צריך לקנות מנוי כדי לשלוח סרטון יותר.';if(/^\s*(היי|שלום|הי|אהלן)/.test(t)&&!/מנוי|משתמש|מחובר/.test(t))return 'היי! אני עוזר ה־AI של רצף, איך אפשר לעזור?';if(/לאיזה משתמש|מי אני|מחובר בתור|איזה משתמש/.test(t))return 'כדי לזהות את המשתמש המחובר, התחבר עם TikTok.';if(/איזה מנוי|המנוי שלי/.test(t))return 'אין לי כרגע נתוני מנוי אישיים. אפשר לבדוק בטאב מנויים.';if(/גיל|בן כמה|לאיזה גיל/.test(t))return 'גיל הכניסה לקבוצה הוא 15- כרגע, והוא יעלה ל-16- בשנת 2027.';if(/סטטוס|סולם/.test(t))return 'סולם הסטטוס: 🟢 הכול טוב, 🟡 אזהרה ראשונה, 🟠 בסיכון, 🔴 בסכנה, ⚫ באן, ☠️ חסימה לצמיתות.';if(/חוק|חוקים/.test(t))return 'החוקים: לא לספים, לא לקלל, לא לשנות שם או תמונת קבוצה, ואסור להזכיר את המדינות האסורות.';if(/סקר/.test(t))return 'סקר זמין רק בלוח העדכונים וכולל שאלה, תשובות וכפתור להוספת תשובה.';if(/אירוע/.test(t))return 'אירוע כולל שם, תיאור, מתי יתחיל ומתי ייגמר.';if(/קובץ|apk|100mb/.test(t))return 'אסור להעלות APK או קובץ מעל 100MB.';if(/חנות|paypal|תשלום/.test(t))return 'החנות כוללת תגים ושירותים, והתשלום מתבצע דרך PayPal.';return 'הבנתי. במה תרצה שאעזור? אפשר לכתוב שאלה או בקשה מלאה.';}function requestedTab(q){const t=String(q||'').toLowerCase();const maps=[['boards',/מודעות|לוח עדכונים|לוח מודעות/],['subs',/מנויים|מנוי/],['shop',/חנות/],['status',/סטטוס/],['rules',/חוקים/],['team',/בעלים|מנהלים/],['scope',/גיל ותנאים|גיל כניסה/],['settings',/הגדרות/],['about',/אודות|גרסה/],['contact',/יצירת קשר|תמיכה/],['home',/בית/]];if(!/תעביר|להעביר|פתח|לפתוח|עבור|לעבור|לך ל|קח אותי|תראה לי/.test(t))return '';const found=maps.find(x=>x[1].test(t));return found?found[0]:null;}function isSupportRequest(q){return /תמיכה|מנהל מערכת תמיכה|לדווח|דיווח|בעיה|תקלה|שגיאה|עזרה/.test(String(q||'').toLowerCase());}function add(text,who){const el=document.createElement('div');el.className='retzef-ai-msg '+(who==='user'?'retzef-ai-user':'retzef-ai-bot');el.textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight;return el;}function addSupportButton(quote){const button=document.createElement('button');button.type='button';button.className='quick-action';button.textContent='📩 העבר את הציטוט למנהל מערכת התמיכה';button.onclick=async()=>{button.disabled=true;button.textContent='שולח...';try{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'support',quote})});const d=await r.json();button.textContent=r.ok?'✅ הציטוט הועבר למערכת התמיכה':'❌ לא ניתן להעביר כרגע';if(!r.ok&&d.error==='tiktok_login_required')button.textContent='🔐 צריך להתחבר עם TikTok כדי לפנות לתמיכה';}catch(_){button.disabled=false;button.textContent='נסה שוב להעביר לתמיכה';}};messages.appendChild(button);messages.scrollTop=messages.scrollHeight;}form.addEventListener('submit',async e=>{e.preventDefault();const question=input.value.trim();if(!question)return;input.value='';add(question,'user');const target=requestedTab(question);if(target){if(['boards','subs','shop'].includes(target)&&!window.__retzefProfile){add('כדי לפתוח את הטאב הזה צריך להתחבר עם TikTok.','bot');return;}if(typeof window.activateTab==='function')window.activateTab(target);panel.scrollIntoView({behavior:'smooth',block:'start'});return;}const wait=add('חושב...','bot');try{const r=await fetch('/api/assistant',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:question})});const d=await r.json();wait.textContent=d.answer||localAnswer(question);if(isSupportRequest(question)){const note=add('אם תרצה, אפשר להעביר את הציטוט הזה למנהל מערכת התמיכה.','bot');addSupportButton(question);}}catch(_){wait.textContent=localAnswer(question);if(isSupportRequest(question)){add('אפשר להעביר את הציטוט למנהל מערכת התמיכה:','bot');addSupportButton(question);}}});})();</script>
 <script>
@@ -2883,6 +2902,5 @@ function openPaypalModal(itemName, price){
   })();
 })();
 </script>
-  <script src="https://aiticketbot.com/widget/w.js" data-key="wgt_ae1796028567fc39ac458116453a3774" async></script>
 </body>
   </html>
