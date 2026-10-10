@@ -5,7 +5,7 @@ const cfg = () => ({ url: process.env.KV_REST_API_URL || process.env.UPSTASH_RED
 async function redis(command, ...args) { const { url, token } = cfg(); if (!url || !token) throw new Error('storage_not_configured'); const r = await fetch(`${url}/${command}/${args.map(encodeURIComponent).join('/')}`, { headers: { Authorization: `Bearer ${token}` } }); const d = await r.json(); if (!r.ok || d.error) throw new Error(d.error || 'storage_error'); return d.result; }
 async function profile(username) { const raw = await redis('get', `retzef:profile:${username}`); return raw ? (typeof raw === 'string' ? JSON.parse(raw) : raw) : null; }
 function key(a, b) { return `retzef:chat:${[a, b].sort().join(':')}`; }
-function voiceAllowed(a, b) { const ageA = Number(a?.age || 0), ageB = Number(b?.age || 0); return ageA >= 13 && ageB >= 13; }
+function voiceAllowed(a, b) { const ageA = Number(a?.age || 0), ageB = Number(b?.age || 0); const relA = a?.safeContacts?.[b?.username] || '', relB = b?.safeContacts?.[a?.username] || ''; if (relA === 'family' || relB === 'family') return true; return ageA >= 13 && ageB >= 13; }
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store'); const me = cookie(req, 'retzef_profile_id'); if (!me) return res.status(401).json({ error: 'tiktok_login_required' });
   try {
