@@ -634,6 +634,50 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 <div class="retzef-engine-spinner" aria-hidden="true"></div>
 </div>
 <script>(function(){var s=document.getElementById('retzef-engine-splash');window.addEventListener('load',function(){setTimeout(function(){if(!s)return;s.style.opacity='0';setTimeout(function(){if(s)s.remove()},300)},900)});setTimeout(function(){if(s)s.remove()},3500)})();</script>
+<style id="retzef-legal-updates-style">
+#retzefLegalUpdates{position:fixed;inset:0;z-index:2147482990;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,14,28,.62);direction:rtl;overflow:auto;}
+#retzefLegalUpdates.is-open{display:flex;}
+.retzef-updates-card{width:min(100%,620px);max-height:min(90vh,760px);overflow:auto;padding:28px 24px;background:var(--bg2,#fff);color:var(--text,#161a26);border:1px solid var(--glass-border,rgba(20,23,40,.1));border-radius:24px;box-shadow:0 24px 80px rgba(20,25,50,.3);}
+.retzef-updates-card h2{margin:0 0 10px;text-align:center;font-size:clamp(22px,5vw,30px);}
+.retzef-updates-card>p{margin:0 0 18px;text-align:center;color:var(--muted,#656b80);line-height:1.7;}
+.retzef-updates-list{display:grid;gap:10px;margin:0 0 22px;padding:0;list-style:none;}
+.retzef-updates-list li{padding:13px 14px;border:1px solid var(--glass-border,rgba(20,23,40,.1));border-radius:14px;background:var(--glass,rgba(255,255,255,.55));line-height:1.55;}
+.retzef-updates-list a{color:var(--accent,#3b63e0);font-weight:800;text-decoration:none;}
+.retzef-updates-list a:hover{text-decoration:underline;}
+.retzef-updates-close{width:100%;min-height:46px;border:0;border-radius:13px;padding:11px 18px;background:linear-gradient(135deg,var(--accent,#3b63e0),var(--accent2,#7c3aed));color:#fff;font:inherit;font-weight:800;cursor:pointer;}
+</style>
+<div id="retzefLegalUpdates" role="dialog" aria-modal="true" aria-labelledby="retzefLegalUpdatesTitle">
+  <div class="retzef-updates-card">
+    <h2 id="retzefLegalUpdatesTitle">המסמכים המשפטיים עודכנו</h2>
+    <p>עדכנו את תוכן המסמכים כדי לשקף את כללי הקהילה, סמכויות המנהלים, תהליך הערעורים והטיפול בפניות התמיכה. הנה כל המסמכים שהשתנו:</p>
+    <ul class="retzef-updates-list">
+      <li><a href="/terms-of-service/">תנאי שימוש</a><br>נוסף איסור לצרף אנשים ללא אישור הבעלים, והובהרו ההשלכות והסמכות לאישור באנים.</li>
+      <li><a href="/privacy-policy/">מדיניות פרטיות</a><br>נוסף הסבר על שמירת בקשות הצטרפות, ראיות, סיבות באן ותכתובות ערעור.</li>
+      <li><a href="/cookie-policy/">מדיניות עוגיות</a><br>נוספה הבהרה לגבי שמירת העדפות ממשק ורשומות תפעוליות הקשורות לסטטוס, תמיכה וערעורים.</li>
+      <li><a href="/refund-and-cancellation/">ביטולים והחזרים</a><br>הובהר שהפרת איסור צירוף אנשים אינה מזכה בדרך כלל בהחזר ושמנוי אינו עוקף באן.</li>
+      <li><a href="/subscription-terms/">תנאי מנוי</a><br>נוסף שהמנוי אינו מעניק הרשאה לצרף אנשים ושחסימה עקב הפרה אינה מבטיחה החזר.</li>
+      <li><a href="/community-guidelines/">כללי קהילה</a><br>נוסף חוק איסור צירוף אנשים והובהר שרק הבעלים מאשר באנים סופיים.</li>
+      <li><a href="/managers-terms-of-service/">תנאי שימוש למנהלים</a><br>הובהר שמנהל אינו רשאי לצרף אנשים או לבצע בדיקה ואישור סופיים של באן.</li>
+      <li><a href="/terms-of-use-for-support/">Terms of Use for Support</a><br>נוספה אפשרות לערער גם על חסימה בעקבות צירוף ללא הרשאה והובהרה סמכות הבעלים.</li>
+      <li><a href="/terms-of-service-for-support/">Terms of Service for Support</a><br>עודכן תהליך הערעורים והובהר שרק הבעלים מבצע בדיקה ואישור סופיים של באן.</li>
+    </ul>
+    <button type="button" class="retzef-updates-close" id="retzefLegalUpdatesClose">הבנתי</button>
+  </div>
+</div>
+<script id="retzef-legal-updates">
+(function(){
+  const CONSENT_KEY='retzef_legal_consent_v1';
+  const UPDATE_KEY='retzef_legal_update_20261010_seen';
+  const modal=document.getElementById('retzefLegalUpdates');
+  const close=document.getElementById('retzefLegalUpdatesClose');
+  if(!modal||!close)return;
+  let hadPriorConsent=false, alreadySeen=false;
+  try{hadPriorConsent=localStorage.getItem(CONSENT_KEY)==='accepted';alreadySeen=localStorage.getItem(UPDATE_KEY)==='seen';}catch(_){}
+  if(hadPriorConsent&&!alreadySeen)modal.classList.add('is-open');
+  function dismiss(){modal.classList.remove('is-open');try{localStorage.setItem(UPDATE_KEY,'seen');}catch(_){} }
+  close.addEventListener('click',dismiss);
+})();
+</script>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
 <div id="retzefEntryChoice" role="dialog" aria-modal="true" aria-labelledby="retzefEntryTitle"><div class="retzef-entry-card"><img src="/icons/icon-512.png" alt="לוגו רצף"><h1 id="retzefEntryTitle">ברוכים הבאים לרצף</h1><p>בחרו איך להיכנס לאפליקציה</p><div class="retzef-entry-actions"><button type="button" id="retzefEntryTikTok">התחברות עם TikTok</button><button type="button" id="retzefEntryGuest">המשך כאורח</button></div></div></div>
 
