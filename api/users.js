@@ -74,15 +74,32 @@ module.exports = async (req, res) => {
       const mailPayload = { username, name, email, toEmail: email, fromEmail: 'retzef.support@gmail.com', replyTo: 'retzef.support@gmail.com', subject: `כרטיס תמיכה ${ticketNumber} · רצף`, ticketNumber, device, category, categoryName, reason, reasonName, description, supportDetails };
       const resendKey = process.env.RESEND_API_KEY;
       const appsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
-      let mailResult = null;
+      let deliveryError = null;
       if (resendKey) {
-        const mailResponse = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: process.env.RESEND_FROM_EMAIL || 'retzef.support@gmail.com', to: [email], reply_to: 'retzef.support@gmail.com', subject: mailPayload.subject, html: `<div dir="rtl"><h2>כרטיס התמיכה שלך נשלח בהצלחה</h2><p>מספרך בתור זה <b>${escapeHtml(ticketNumber)}</b></p><p>שלום ${escapeHtml(name || username)},</p><p>קיבלנו את הפנייה שלך ונחזור אליך בהקדם.</p><hr><h3>מידע שנשלח בטופס</h3><p><b>שם משתמש:</b> ${escapeHtml(username)}<br><b>שם:</b> ${escapeHtml(name || 'לא נמסר')}<br><b>מייל ליצירת קשר:</b> ${escapeHtml(email)}<br><b>איזה מכשיר?:</b> ${escapeHtml(device)}<br><b>קטגוריה:</b> ${escapeHtml(categoryName)}<br><b>מה קרה?:</b> ${escapeHtml(reasonName)}<br><b>הסבר:</b><br>${escapeHtml(description).replace(/\n/g, '<br>')}</p></div>` }) });
-        mailResult = await mailResponse.json(); if (!mailResponse.ok || !mailResult.id) throw new Error(mailResult.message || 'email_delivery_failed');
-      } else if (appsScriptUrl) {
-        const mailResponse = await fetch(appsScriptUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(mailPayload) });
-        mailResult = await mailResponse.json(); if (!mailResponse.ok || mailResult.ok === false) throw new Error(mailResult.error || 'email_delivery_failed');
-      } else throw new Error('email_not_configured');
-      return res.status(201).json({ forwarded: true, submitted: true, ticketNumber, emailSent: true, request: item });
+        try {
+          const mailResponse = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: process.env.RESEND_FROM_EMAIL || 'retzef.support@gmail.com', to: [email], reply_to: 'retzef.support@gmail.com', subject: mailPayload.subject, html: `<div dir="rtl"><h2>כרטיס התמיכה שלך נשלח בהצלחה</h2><p>מספרך בתור זה <b>${escapeHtml(ticketNumber)}</b></p><p>שלום ${escapeHtml(name || username)},</p><p>קיבלנו את הפנייה שלך ונחזור אליך בהקדם.</p><hr><h3>מידע שנשלח בטופס</h3><p><b>שם משתמש:</b> ${escapeHtml(username)}<br><b>שם:</b> ${escapeHtml(name || 'לא נמסר')}<br><b>מייל ליצירת קשר:</b> ${escapeHtml(email)}<br><b>איזה מכשיר?:</b> ${escapeHtml(device)}<br><b>קטגוריה:</b> ${escapeHtml(categoryName)}<br><b>מה קרה?:</b> ${escapeHtml(reasonName)}<br><b>הסבר:</b><br>${escapeHtml(description).replace(/\n/g, '<br>')}</p></div>` }) });
+          const result = await mailResponse.json();
+          if (mailResponse.ok && result.id) return res.status(201).json({ forwarded: true, submitted: true, ticketNumber, emailSent: true, request: item });
+          deliveryError = result.message || 'resend_failed';
+        } catch (error) { deliveryError = error.message; }
+      }
+      if (appsScriptUrl) {
+        try {
+          const mailResponse = await fetch(appsScriptUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(mailPayload) });
+          const result = await mailResponse.json();
+          if (mailResponse.ok && result.ok !== false && result.success !== false) return res.status(201).json({ forwarded: true, submitted: true, ticketNumber, emailSent: true, request: item });
+          deliveryError = result.error || 'apps_script_failed';
+        } catch (error) { deliveryError = error.message; }
+      }
+      try {
+        const fallbackResponse = await fetch('https://formsubmit.co/ajax/retzef.support@gmail.com', { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ _subject: mailPayload.subject, _template: 'table', username: `@${username}`, name: name || 'לא נמסר', email, device, category: categoryName, reason: reasonName, description, ticketNumber }) });
+        const raw = await fallbackResponse.text();
+        let fallbackResult = {};
+        try { fallbackResult = JSON.parse(raw || '{}'); } catch (_) {}
+        if (fallbackResponse.ok && fallbackResult.success !== false) return res.status(201).json({ forwarded: true, submitted: true, ticketNumber, emailSent: true, request: item });
+        deliveryError = fallbackResult.message || 'formsubmit_failed';
+      } catch (error) { deliveryError = error.message; }
+      throw new Error(deliveryError || 'email_not_configured');
     } catch (e) { console.error('support form:', e.message); return res.status(503).json({ error: e.message === 'storage_not_configured' ? e.message : 'storage_error' }); }
   }
   const me = cookie(req, 'retzef_profile_id').toLowerCase();
