@@ -585,7 +585,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.13.15';</script>
+<script id="retzef-version">window.RETZEF_VERSION='1.13.16';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';document.querySelectorAll('#profileWalletBalance,#topWalletBalance').forEach(function(el){el.textContent=value;});}
 </script>
@@ -1496,7 +1496,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.6.10</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.13.16</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1507,6 +1507,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>1.13.16 — עדכון גרסה אוטומטי ותיקוני מערכת.</li>
         <li>1.13.15 — מאז עדכון מסמכי התנאים והמדיניות ב־10 באוקטובר: נוספה הודעת עדכון למסמכים למשתמשים שכבר אישרו תנאים ופרטיות; שופרה שליחת פניות התמיכה עם גיבוי FormSubmit; נוסף עוזר AI בתוך הטאב הייעודי; נוספו הגבלת שיחות קוליות לפי גיל והרשאות שיחות לחבר בטוח ולמשפחה; נוספו אימות משפחה באמצעות QR, Bluetooth, Wi‑Fi וקוד זמני; נוספה יתרת מטבעות קבועה בפינה העליונה עם כפתור פלוס; נוספו חבילות מטבעות במחירי מבצע; נוספו קטגוריות סינון בחנות — מטבעות, תגים ואחר; וסרגל הטאבים נשאר קבוע בזמן גלילה.</li>
         <li>1.6.10 — הורחבו שאלות ותשובות ה-FAQ בטאב התמיכה, עם הסברים מלאים על חוקים נוספים, זמני מענה, סמכויות מנהלים, ערעורים ובדיקת באנים.</li>
         <li>1.5.7 — נוסף בטאב התמיכה אזור שאלות נפוצות עם מידע על חוקים נוספים, זמני מענה, סמכויות מנהלים, ערעורים ובדיקת באנים.</li>
