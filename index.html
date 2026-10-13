@@ -585,7 +585,7 @@ window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(pr
 
 <script id="retzef-version">window.RETZEF_VERSION='1.6.10';</script>
 <script>
-function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';const el=document.getElementById('profileWalletBalance');if(el)el.textContent=value;}
+function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';document.querySelectorAll('#profileWalletBalance,#topWalletBalance').forEach(function(el){el.textContent=value;});}
 </script>
 <style id="retzef-engine-splash-style">
 #retzef-engine-splash{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;color:#111;font-family:Arial,sans-serif;transition:opacity .25s ease}
@@ -850,6 +850,8 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 <div class="blob blob2"></div>
 <div class="blob blob3"></div>
 
+<div id="topWalletWidget" dir="ltr" aria-label="יתרת מטבעות" style="position:fixed;top:14px;right:14px;z-index:1100;display:flex;align-items:center;gap:4px;padding:5px 6px 5px 10px;border:1px solid rgba(245,158,11,.35);border-radius:999px;background:linear-gradient(135deg,#fff7d6,#ffe9a8);color:#5b4300;box-shadow:0 8px 24px rgba(91,67,0,.16);font:700 14px Assistant,Arial,sans-serif;direction:ltr"><button type="button" id="topWalletBalance" style="border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;padding:3px 2px">0 🪙</button><button type="button" id="topWalletPlus" aria-label="פתיחת החנות" style="width:25px;height:25px;border:0;border-radius:50%;background:#f59e0b;color:#fff;font:900 18px/1 Assistant,Arial,sans-serif;cursor:pointer;padding:0">+</button></div>
+<script>(function(){var balance=document.getElementById('topWalletBalance'),plus=document.getElementById('topWalletPlus');if(balance)balance.addEventListener('click',function(){if(typeof window.openProfileAction==='function')window.openProfileAction('wallet');});if(plus)plus.addEventListener('click',function(){if(typeof window.activateTab==='function')window.activateTab('shop');});})();</script>
 <div class="wrap">
 
   <header>
