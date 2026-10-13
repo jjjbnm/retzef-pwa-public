@@ -1236,84 +1236,90 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <p class="sec-sub" data-i18n="shop_sub">רכישות דרך הבעלים/מנהלים. חלק מהפריטים מסוכנים או מוגבלים — שימו לב להערות.</p>
 <div class="purchase-warning glass" role="alert" style="margin:18px 0;padding:16px 18px;border:3px solid #b91c1c;border-right:8px solid #991b1b;background:#fee2e2;color:#7f1d1d;font-size:14px;line-height:1.75;box-shadow:0 6px 20px rgba(185,28,28,.22);"><strong style="display:block;color:#991b1b;font-size:16px;margin-bottom:5px;">🛑 אזהרה חשובה מאוד לפני רכישה</strong><strong>אם ירד כסף אך התשלום לא הושלם, או שהרכישה/המנוי לא התקבלו או לא הופעלו, אין החזר כספי אוטומטי ואין התחייבות לקבל את מה שנרכש.</strong> יש לפנות לתמיכה ולספק התשלום לבדיקה. כל בקשת החזר תיבדק לפי המדיניות, תנאי ספק התשלום והדין החל. אין למסור באתר פרטי כרטיס אשראי.</div>
 
+    <div class="shop-categories" role="tablist" aria-label="קטגוריות החנות" style="display:flex;flex-wrap:wrap;gap:8px;margin:18px 0;justify-content:center;direction:rtl">
+      <button type="button" class="btn btn-primary shop-category-btn" data-shop-category="all" role="tab" aria-selected="true" style="padding:10px 18px">🛍️ הכול</button>
+      <button type="button" class="btn btn-ghost glass shop-category-btn" data-shop-category="coins" role="tab" aria-selected="false" style="padding:10px 18px">🪙 מטבעות</button>
+      <button type="button" class="btn btn-ghost glass shop-category-btn" data-shop-category="badges" role="tab" aria-selected="false" style="padding:10px 18px">🏷️ תגים</button>
+      <button type="button" class="btn btn-ghost glass shop-category-btn" data-shop-category="other" role="tab" aria-selected="false" style="padding:10px 18px">📦 אחר</button>
+    </div>
     <div class="shop-grid">
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="coins">
         <span class="name">🪙 מטבע אחד</span>
         <span class="price"><del style="opacity:.6">₪0.10</del> <strong style="color:#16a34a">₪0.05</strong></span>
         <span class="note">מחיר מקורי: 10 אגורות · מחיר מבצע: 5 אגורות</span>
         <button type="button" class="buy-btn" data-item="מטבע אחד" data-price="0.05">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="מטבע אחד" data-price="0.05" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="coins">
         <span class="name">🪙 10 מטבעות</span>
         <span class="price"><del style="opacity:.6">₪1.00</del> <strong style="color:#16a34a">₪0.50</strong></span>
         <span class="note">מחיר מקורי: שקל · מחיר מבצע: 50 אגורות</span>
         <button type="button" class="buy-btn" data-item="10 מטבעות" data-price="0.50">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="10 מטבעות" data-price="0.50" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="coins">
         <span class="name">🪙 100 מטבעות</span>
         <span class="price"><del style="opacity:.6">₪10</del> <strong style="color:#16a34a">₪5</strong></span>
         <span class="note">מחיר מקורי: 10 שקל · מחיר מבצע: 5 שקל</span>
         <button type="button" class="buy-btn" data-item="100 מטבעות" data-price="5">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="100 מטבעות" data-price="5" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="coins">
         <span class="name">🪙 1,000 מטבעות</span>
         <span class="price"><del style="opacity:.6">₪100</del> <strong style="color:#16a34a">₪50</strong></span>
         <span class="note">מחיר מקורי: 100 שקל · מחיר מבצע: 50 שקל</span>
         <button type="button" class="buy-btn" data-item="1,000 מטבעות" data-price="50">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="1,000 מטבעות" data-price="50" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="badges">
         <span class="name">🏷️ תג תורם</span>
         <span class="price">₪1</span>
         <button type="button" class="buy-btn" data-item="תג תורם" data-price="1">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="תג תורם" data-price="1" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="badges">
         <span class="name">💎 תג עשיר</span>
         <span class="price">₪10</span>
         <button type="button" class="buy-btn" data-item="תג עשיר" data-price="10">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="תג עשיר" data-price="10" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="other">
         <span class="name">📢 לקבל ערעור</span>
         <span class="price">₪5</span>
         <button type="button" class="buy-btn" data-item="לקבל ערעור" data-price="5">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="לקבל ערעור" data-price="5" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="badges">
         <span class="name">🛡️ תג מנהל</span>
         <span class="price free">חינם</span>
         <span class="note">מנהל בלבד</span>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="other">
         <span class="name">✏️ שינוי שם/תמונת קבוצה</span>
         <span class="price">₪10</span>
         <span class="note">חד פעמי</span>
         <button type="button" class="buy-btn" data-item="שינוי שם/תמונת קבוצה" data-price="10">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="שינוי שם/תמונת קבוצה" data-price="10" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="other">
         <span class="name">🗑️ מחיקת הקבוצה</span>
         <span class="price">₪1000</span>
         <button type="button" class="buy-btn" data-item="מחיקת הקבוצה" data-price="1000">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="מחיקת הקבוצה" data-price="1000" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="other">
         <span class="name">👢 הקיק אנשים</span>
         <span class="price">₪500</span>
         <button type="button" class="buy-btn" data-item="הקיק אנשים" data-price="500">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="הקיק אנשים" data-price="500" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="other">
         <span class="name">👑 להיות בעלים חדש</span>
         <span class="price">₪700</span>
         <button type="button" class="buy-btn" data-item="להיות בעלים חדש" data-price="700">🛒 קנה</button>
         <button type="button" class="add-to-cart-btn" data-item="להיות בעלים חדש" data-price="700" style="margin-top:6px; width:100%; justify-content:center; font-size:12.5px; padding:8px;">➕ הוסף לעגלה</button>
       </div>
-      <div class="shop-item glass">
+      <div class="shop-item glass" data-category="other">
         <span class="name">🎲 להיות מנהל בלי ניסיון</span>
         <span class="price">₪50</span>
         <span class="note warn">⚠️ יכול לגרום לחסימה</span>
@@ -1322,6 +1328,17 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       </div>
     </div>
 
+    <script>
+      (function(){
+        const buttons=document.querySelectorAll('.shop-category-btn');
+        const items=document.querySelectorAll('#shop .shop-grid > .shop-item');
+        buttons.forEach(button=>button.addEventListener('click',()=>{
+          const category=button.dataset.shopCategory;
+          buttons.forEach(item=>{const active=item===button;item.classList.toggle('btn-primary',active);item.classList.toggle('btn-ghost',!active);item.setAttribute('aria-selected',String(active));});
+          items.forEach(item=>{item.style.display=category==='all'||item.dataset.category===category?'':'none';});
+        }));
+      })();
+    </script>
     <div class="settings-card glass" style="margin-top:20px;">
       <h3>🧮 מחשבון מחיר</h3>
       <div style="display:flex; flex-direction:column; gap:12px;">
