@@ -681,7 +681,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 })();
 </script>
 <div id="retzefSplash" aria-label="טוען את רצף"><div class="retzef-splash-inner"><img class="retzef-splash-logo" src="/icons/icon-512.png" alt="לוגו רצף"><div class="retzef-loading-track" aria-label="טוען"><div class="retzef-loading-bar"></div></div></div></div>
-<div id="retzefEntryChoice" role="dialog" aria-modal="true" aria-labelledby="retzefEntryTitle"><div class="retzef-entry-card"><img src="/icons/icon-512.png" alt="לוגו רצף"><h1 id="retzefEntryTitle">ברוכים הבאים לרצף</h1><p>בחרו איך להיכנס לאפליקציה</p><div class="retzef-entry-actions"><button type="button" id="retzefEntryTikTok">התחברות עם TikTok</button><button type="button" id="retzefEntryGuest">המשך כאורח</button><button type="button" id="retzefEntryAccountPreview">יצירת חשבון רצף (Preview)</button></div></div></div>
+<div id="retzefEntryChoice" role="dialog" aria-modal="true" aria-labelledby="retzefEntryTitle"><div class="retzef-entry-card"><img src="/icons/icon-512.png" alt="לוגו רצף"><h1 id="retzefEntryTitle">ברוכים הבאים לרצף</h1><p>בחרו איך להיכנס לאפליקציה</p><div class="retzef-entry-actions"><button type="button" id="retzefEntryTikTok">התחברות עם TikTok</button><button type="button" id="retzefEntryGuest">המשך כאורח</button></div></div></div>
 
 <noscript>
   <div style="position:fixed;inset:0;z-index:2147483647;background:#f6f7fb;color:#161a26;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;direction:rtl;font-family:Arial,sans-serif;">
@@ -869,7 +869,6 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
         <span data-i18n="hero_login_btn">התחברות עם TikTok</span>
       </button>
       <button type="button" id="joinWebsiteBtn" class="btn btn-ghost glass">הצטרפות דרך האתר</button>
-      <button type="button" id="retzefAccountPreviewBtn" class="btn btn-ghost glass">Preview — חשבון רצף</button>
       <a href="#" data-target="contact" class="btn btn-ghost glass tab-jump" data-i18n="hero_tiktok_page_btn">עמוד TikTok של רצף</a>
       <a href="#" data-target="status" class="btn btn-ghost glass tab-jump" data-i18n="hero_check_status_btn">בדיקת סטטוס</a>
     </div>
@@ -2998,7 +2997,7 @@ function openPaypalModal(itemName, price){
   function open(){modal.style.display='block';show('welcome');}
   document.getElementById('retzefAccountPreviewClose')?.addEventListener('click',()=>modal.style.display='none');
   modal.addEventListener('click',e=>{if(e.target===modal)modal.style.display='none';});
-  document.getElementById('retzefAccountPreviewBtn')?.addEventListener('click',open);document.getElementById('retzefEntryAccountPreview')?.addEventListener('click',()=>{if(typeof window.__retzefCloseEntryScreens==='function')window.__retzefCloseEntryScreens();open();});
+  window.__openRetzefAccountPreview=open;open();
 })();
 </script>
 
