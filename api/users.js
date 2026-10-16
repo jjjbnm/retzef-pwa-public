@@ -102,6 +102,28 @@ module.exports = async (req, res) => {
       throw new Error(deliveryError || 'email_not_configured');
     } catch (e) { console.error('support form:', e.message); return res.status(503).json({ error: e.message === 'storage_not_configured' ? e.message : 'storage_error' }); }
   }
+
+  if (req.method === 'POST' && action === 'createAccount') {
+    try {
+      const pendingToken = cookie(req, 'retzef_tiktok_pending');
+      const pendingRaw = pendingToken ? await redis('get', `retzef:tiktok:pending:${pendingToken}`) : null;
+      const pending = pendingRaw ? (typeof pendingRaw === 'string' ? JSON.parse(pendingRaw) : pendingRaw) : null;
+      if (!pending || !pending.openId) return res.status(401).json({ error: 'tiktok_verification_required' });
+      const username = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
+      const displayName = String(input.displayName || pending.displayName || username).trim().slice(0, 120);
+      const age = Number(input.age);
+      const gender = String(input.gender || '').trim();
+      const avatarUrl = String(input.avatarUrl || pending.avatarUrl || '').slice(0, 250000);
+      if (!/^[a-z0-9._-]{3,32}$/.test(username) || !Number.isInteger(age) || age < 1 || age > 120 || !['', 'בן', 'בת'].includes(gender)) return res.status(400).json({ error: 'invalid_account_details' });
+      if (await profile(username)) return res.status(409).json({ error: 'username_taken' });
+      const newProfile = { username, displayName: displayName || username, avatarUrl, role: 'member', age, gender, tiktokOpenId: pending.openId, tiktokUnionId: pending.unionId || '', tiktokUsername: pending.tiktokUsername || '', accountCountry: pending.accountCountry || '', loginCountry: pending.loginCountry || '', banned: false, banReason: '', wallet: { balance: 0, transactions: [] }, createdAt: new Date().toISOString(), lastSeen: Date.now() };
+      await redis('set', `${PREFIX}${username}`, JSON.stringify(newProfile));
+      await redis('set', `retzef:tiktok:open_id:${pending.openId}`, username);
+      await redis('del', `retzef:tiktok:pending:${pendingToken}`);
+      res.setHeader('Set-Cookie', [`retzef_profile_id=${encodeURIComponent(username)}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`, 'retzef_tiktok_pending=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax']);
+      return res.status(201).json({ created: true, profile: { ...publicUser(newProfile), age, gender, wallet: walletOf(newProfile) } });
+    } catch (e) { console.error('create account:', e.message); return res.status(503).json({ error: e.message === 'storage_not_configured' ? e.message : 'storage_error' }); }
+  }
   const me = cookie(req, 'retzef_profile_id').toLowerCase();
   if (req.method === 'GET' && input.joinMine === '1') { try { const id = cookie(req, 'retzef_join_id'); const rows = await joinRequests(); return res.status(200).json({ requests: id ? rows.filter(x => x.id === id).map(x => ({ id: x.id, status: x.status, reason: x.reason || '', createdAt: x.createdAt })) : [] }); } catch (_) { return res.status(503).json({ error: 'storage_error' }); } }
   if (!me) return res.status(401).json({ error: 'tiktok_login_required' });
