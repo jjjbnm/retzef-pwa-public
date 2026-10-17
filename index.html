@@ -574,6 +574,17 @@
   .alvin-banner{position:relative;overflow:hidden;margin:18px auto 24px;padding:24px 20px;max-width:760px;border:2px solid #f97316;border-radius:24px;text-align:center;color:#fff;background:radial-gradient(circle at 15% 20%,rgba(249,115,22,.35),transparent 28%),radial-gradient(circle at 85% 10%,rgba(124,58,237,.35),transparent 30%),linear-gradient(135deg,#09090b,#1c0b2b 55%,#431407);box-shadow:0 18px 50px rgba(0,0,0,.28)}
   .alvin-banner:before,.alvin-banner:after{content:"🎃";position:absolute;font-size:54px;opacity:.85}.alvin-banner:before{right:18px;top:12px}.alvin-banner:after{left:18px;bottom:8px}.alvin-banner-title{position:relative;z-index:1;margin:0;color:#fff;font-size:clamp(28px,6vw,48px);font-weight:900}.alvin-banner-subtitle{position:relative;z-index:1;margin:6px 0 14px;color:#fed7aa;font-size:16px;font-weight:700}.alvin-banner-discount{position:relative;z-index:1;display:inline-block;padding:10px 18px;border-radius:999px;color:#fff;background:linear-gradient(135deg,#dc2626,#991b1b);box-shadow:0 8px 22px rgba(220,38,38,.35);font-size:20px;font-weight:900}.alvin-banner-note{position:relative;z-index:1;margin-top:10px;color:#e4e4e7;font-size:12px}
 
+
+  /* Christmas wallpaper */
+  html[data-wallpaper="christmas"] body{background:radial-gradient(circle at 18% 18%,rgba(239,68,68,.2),transparent 23%),radial-gradient(circle at 82% 72%,rgba(34,197,94,.2),transparent 25%),linear-gradient(135deg,#07152e,#0b3150 48%,#123b2a)}
+  html[data-wallpaper="christmas"] body:before{content:"❄️   🎄   ❄️   🎁   ❄️";position:fixed;inset:0;z-index:-1;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:clamp(34px,8vw,84px);letter-spacing:12px;line-height:2.4;text-align:center;pointer-events:none;transform:rotate(-8deg) scale(1.3)}
+  html[data-wallpaper="christmas"] body:after{content:"חג המולד";position:fixed;right:18px;bottom:14px;z-index:0;color:rgba(255,255,255,.15);font-size:clamp(38px,9vw,100px);font-weight:900;pointer-events:none}
+  html[data-wallpaper="christmas"] .glass,html[data-wallpaper="christmas"] .settings-card{background:rgba(5,25,45,.78);border-color:rgba(134,239,172,.28)}
+  html[data-wallpaper="christmas"] .alvin-banner{border-color:#dc2626;background:radial-gradient(circle at 15% 20%,rgba(220,38,38,.38),transparent 28%),radial-gradient(circle at 85% 10%,rgba(34,197,94,.3),transparent 30%),linear-gradient(135deg,#07152e,#0b3150 55%,#14532d)}
+  html[data-wallpaper="christmas"] .alvin-banner:before,html[data-wallpaper="christmas"] .alvin-banner:after{content:"🎄"}
+  html[data-wallpaper="christmas"] .alvin-banner-subtitle{color:#bbf7d0}
+  html[data-wallpaper="christmas"] .alvin-banner-note{color:#dbeafe}
+
   /* Account-backed Alvin wallpaper */
   html[data-wallpaper="alvin"] body{background:radial-gradient(circle at 18% 18%,rgba(249,115,22,.18),transparent 22%),radial-gradient(circle at 82% 72%,rgba(124,58,237,.18),transparent 25%),linear-gradient(135deg,#020204,#111114 48%,#241006)}
   html[data-wallpaper="alvin"] body:before{content:"🖤   🎃   🖤   🎃   🖤";position:fixed;inset:0;z-index:-1;display:flex;align-items:center;justify-content:center;color:rgba(249,115,22,.22);font-size:clamp(34px,8vw,84px);letter-spacing:18px;line-height:2.4;text-align:center;pointer-events:none;transform:rotate(-12deg) scale(1.3)}
@@ -876,9 +887,9 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="badge glass" style="margin-top:16px; font-weight:700;">🔥 <span data-i18n="hero_streak_label">רצף</span>: <span id="streakDays">335</span> <span data-i18n="hero_days_label">ימים</span></div>
     <section class="glass retzef-season-card" aria-label="עונות רצף" style="margin:18px auto 0;max-width:520px;padding:18px 20px;border:1px solid rgba(245,158,11,.32);background:linear-gradient(135deg,rgba(245,158,11,.16),rgba(124,58,237,.14));border-radius:22px;text-align:center;">
       <div style="font-size:12px;color:var(--muted);letter-spacing:.04em;">עונות רצף</div>
-      <h2 style="margin:6px 0 4px;font-size:23px;">עונה 1</h2>
-      <div style="font-size:19px;font-weight:800;">אלווין</div>
-      <div style="margin-top:6px;color:var(--muted);">אוקטובר–נובמבר</div>
+      <h2 style="margin:6px 0 4px;font-size:23px;">עונה 2</h2>
+      <div style="font-size:19px;font-weight:800;">חג המולד</div>
+      <div style="margin-top:6px;color:var(--muted);">נובמבר–ינואר</div>
     </section>
     <div class="cta-row">
       <button type="button" id="retzefKeyLoginBtn" class="btn btn-ghost glass">🔑 התחברות עם מפתח חשבון רצף</button>
@@ -932,11 +943,10 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <h2 class="sec-title" data-i18n="home_title">בית</h2>
     <p class="sec-sub" data-i18n="home_sub">כל מה שצריך לדעת על רצף, במקום אחד.</p>
 
-    <div class="alvin-banner" role="status" aria-label="מבצע אלווין פעיל">
-      <h2 class="alvin-banner-title">🎃 אלווין הגיע לרצף</h2>
-      <div class="alvin-banner-subtitle">המבצע פעיל עכשיו</div>
-      <div class="alvin-banner-discount">50% הנחה</div>
-      <div class="alvin-banner-note">ההטבה זמינה עכשיו.</div>
+    <div class="alvin-banner" role="status" aria-label="עונת חג המולד ברצף">
+      <h2 class="alvin-banner-title">🎄 חג המולד הגיע לרצף</h2>
+      <div class="alvin-banner-subtitle">עונה 2 · נובמבר–ינואר</div>
+      <div class="alvin-banner-note">אווירת חג המולד פעילה עכשיו — ללא הנחה.</div>
     </div>
 
 
@@ -1411,7 +1421,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <h3>🎵 טפט ומוזיקה</h3>
       <label for="wallpaperSelect">טפט</label>
       <select id="wallpaperSelect">
-        <option value="alvin">אלווין שחור עם דלעת</option>
+        <option value="christmas">חג המולד</option>
         <option value="normal">רגיל</option>
       </select>
       <label for="musicVolumeSlider" style="display:block;margin-top:14px;">עוצמת המוזיקה: <span id="musicVolumeValue">24%</span></label>
@@ -2192,7 +2202,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   const PAYPAL_API_BASE_URL = "https://chi-liart-74.vercel.app";
 
 
-  const ALVIN_DISCOUNT_FACTOR = 0.5;
+  const ALVIN_DISCOUNT_FACTOR = 1;
   const campaignPrice = value => Math.round((Number(value) || 0) * ALVIN_DISCOUNT_FACTOR * 100) / 100;
   const formatCampaignPrice = value => `₪${campaignPrice(value).toFixed(2)}`;
   function applyAlvinCampaignPrices(){
@@ -2968,7 +2978,7 @@ function openPaypalModal(itemName, price){
 
 <script id="retzef-account-media-settings">
 (function(){
-  const defaults={wallpaper:'alvin',musicVolume:0.24};
+  const defaults={wallpaper:'christmas',musicVolume:0.24};
   const wallpaperSelect=document.getElementById('wallpaperSelect');
   const volumeSlider=document.getElementById('musicVolumeSlider');
   const volumeValue=document.getElementById('musicVolumeValue');
@@ -2980,7 +2990,7 @@ function openPaypalModal(itemName, price){
   const localSet=(key,value)=>{try{localStorage.setItem(key,String(value));}catch(_){} };
   const normalizeVolume=value=>{const number=Number(value);return Number.isFinite(number)?Math.max(0,Math.min(1,number)):defaults.musicVolume;};
   function apply(settings,saveLocal=true){
-    const wallpaper=settings.wallpaper==='normal'?'normal':'alvin';
+    const wallpaper=settings.wallpaper==='normal'?'normal':'christmas';
     const volume=normalizeVolume(settings.musicVolume);
     document.documentElement.dataset.wallpaper=wallpaper;
     if(wallpaperSelect)wallpaperSelect.value=wallpaper;
@@ -2989,7 +2999,7 @@ function openPaypalModal(itemName, price){
     if(music)music.volume=volume;
     if(saveLocal){localSet('retzef-wallpaper',wallpaper);localSet('retzef-music-volume',volume);}
   }
-  function currentSettings(){return {...(clientState.settings&&typeof clientState.settings==='object'?clientState.settings:{}),wallpaper:wallpaperSelect?.value==='normal'?'normal':'alvin',musicVolume:normalizeVolume(Number(volumeSlider?.value||24)/100)};}
+  function currentSettings(){return {...(clientState.settings&&typeof clientState.settings==='object'?clientState.settings:{}),wallpaper:wallpaperSelect?.value==='normal'?'normal':'christmas',musicVolume:normalizeVolume(Number(volumeSlider?.value||24)/100)};}
   async function save(){
     clientState.settings=currentSettings();
     apply(clientState.settings);
