@@ -817,6 +817,17 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 </div>
 
 
+<div class="modal-overlay" id="loginRequiredModal" role="dialog" aria-modal="true" aria-labelledby="loginRequiredTitle">
+  <div class="modal-card" style="text-align:center;max-width:390px;">
+    <div class="modal-icon">🔐</div>
+    <h3 id="loginRequiredTitle">חייב להיות מחובר לחשבון TikTok</h3>
+    <p style="color:var(--muted);line-height:1.7;">כדי להיכנס לטאב מנויים או חנות צריך להתחבר לחשבון TikTok.</p>
+    <div class="modal-actions" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button type="button" id="loginRequiredContinue" class="btn btn-primary">להמשיך לטיקטוק</button>
+      <button type="button" id="loginRequiredHome" class="btn btn-ghost glass">לחזור לבית</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="joinModal" role="dialog" aria-modal="true" aria-labelledby="joinTitle">
   <div class="modal-card"><button type="button" class="modal-close" id="joinClose" aria-label="סגירה">✕</button><h3 id="joinTitle">הצטרפות דרך האפליקציה</h3><p>מלאו את הפרטים. גיל ושם משתמש נדרשים לשליחה.</p><form id="joinForm"><label>שם <span style="color:var(--muted);font-size:12px;">(אופציונלי)</span><input id="joinName" maxlength="60" placeholder="אפשר להשאיר ריק"></label><label>שם משתמש <span style="color:#b91c1c;">*</span><input id="joinUsername" maxlength="60" pattern="[A-Za-z0-9._-]{2,60}" placeholder="username" required></label><label>גיל <span style="color:#b91c1c;">*</span><input id="joinAge" type="number" min="1" max="120" required></label><label>בן או בת <span style="color:var(--muted);font-size:12px;">(אופציונלי)</span><select id="joinGender"><option value="">לא נמסר</option><option value="בן">בן</option><option value="בת">בת</option></select></label><button type="submit" class="btn btn-tiktok">שליחת בקשת הצטרפות</button><div id="joinResult" style="margin-top:10px;font-size:13px;"></div></form></div>
 </div>
@@ -1781,8 +1792,14 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   document.addEventListener('click',e=>{if(profileMenu.classList.contains('open')&&!profileMenu.contains(e.target)&&!document.getElementById('profileAvatar').contains(e.target))profileMenu.classList.remove('open');});
 
   const consentModal = document.getElementById('consentModal');
+  const loginRequiredModal = document.getElementById('loginRequiredModal');
   function openConsentModal(forceAccountChooser){ forceTikTokAccountChooser=forceAccountChooser===true; consentModal.classList.add('open'); }
   function closeConsentModal(){ consentModal.classList.remove('open'); }
+  function openLoginRequiredModal(){ loginRequiredModal?.classList.add('open'); }
+  function closeLoginRequiredModal(){ loginRequiredModal?.classList.remove('open'); }
+  document.getElementById('loginRequiredContinue')?.addEventListener('click',()=>{closeLoginRequiredModal();startTikTokLogin(false);});
+  document.getElementById('loginRequiredHome')?.addEventListener('click',()=>{closeLoginRequiredModal();if(typeof window.activateTab==='function')window.activateTab('home');});
+  loginRequiredModal?.addEventListener('click',e=>{if(e.target===loginRequiredModal)closeLoginRequiredModal();});
   const joinModal=document.getElementById('joinModal');
   document.getElementById('joinWebsiteBtn').addEventListener('click',()=>joinModal.classList.add('open'));
   document.getElementById('joinClose').addEventListener('click',()=>joinModal.classList.remove('open'));
@@ -2128,7 +2145,10 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   const protectedTabs = new Set(['boards', 'subs', 'shop']);
   function activateTab(target){
     if (protectedTabs.has(target) && !window.__retzefProfile) {
-      if (typeof openConsentModal === 'function') openConsentModal();
+      if (target === 'subs' || target === 'shop') {
+        if (typeof openLoginRequiredModal === 'function') openLoginRequiredModal();
+        else alert('חייב להיות מחובר לחשבון TikTok.');
+      } else if (typeof openConsentModal === 'function') openConsentModal();
       else alert('כדי להיכנס לטאב הזה צריך להתחבר עם TikTok.');
       return;
     }
