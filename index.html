@@ -586,7 +586,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.15.23';</script>
+<script id="retzef-version">window.RETZEF_VERSION='1.15.20';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';document.querySelectorAll('#profileWalletBalance,#topWalletBalance').forEach(function(el){el.textContent=value;});}
 </script>
