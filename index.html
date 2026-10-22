@@ -829,6 +829,18 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     </div>
   </div>
 </div>
+<div class="modal-overlay" id="discordConnectModal" role="dialog" aria-modal="true" aria-labelledby="discordConnectTitle">
+  <div class="modal-card" style="text-align:center;max-width:410px;direction:rtl;">
+    <div style="font-size:42px;margin-bottom:8px;">💬</div>
+    <h3 id="discordConnectTitle" style="margin-bottom:10px;">לחבר את הדיסקורד שלך</h3>
+    <p style="line-height:1.7;color:var(--muted);margin:0 0 8px;">צריך לחבר את הדיסקורד שלך כדי שנדע מה חשבון הדיסקורד שלך.</p>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 18px;">הודעה: כרגע זה אופציונלי.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button type="button" id="discordConnectButton" class="btn btn-primary">🔗 חבר את Discord</button>
+      <button type="button" id="discordConnectSkip" class="btn btn-ghost glass">להמשיך בלי לחבר</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="joinModal" role="dialog" aria-modal="true" aria-labelledby="joinTitle">
   <div class="modal-card"><button type="button" class="modal-close" id="joinClose" aria-label="סגירה">✕</button><h3 id="joinTitle">הצטרפות דרך האפליקציה</h3><p>מלאו את הפרטים. גיל ושם משתמש נדרשים לשליחה.</p><form id="joinForm"><label>שם <span style="color:var(--muted);font-size:12px;">(אופציונלי)</span><input id="joinName" maxlength="60" placeholder="אפשר להשאיר ריק"></label><label>שם משתמש <span style="color:#b91c1c;">*</span><input id="joinUsername" maxlength="60" pattern="[A-Za-z0-9._-]{2,60}" placeholder="username" required></label><label>גיל <span style="color:#b91c1c;">*</span><input id="joinAge" type="number" min="1" max="120" required></label><label>בן או בת <span style="color:var(--muted);font-size:12px;">(אופציונלי)</span><select id="joinGender"><option value="">לא נמסר</option><option value="בן">בן</option><option value="בת">בת</option></select></label><button type="submit" class="btn btn-tiktok">שליחת בקשת הצטרפות</button><div id="joinResult" style="margin-top:10px;font-size:13px;"></div></form></div>
 </div>
@@ -3062,5 +3074,19 @@ function openPaypalModal(itemName, price){
 )();
 </script>
 
+<script id="discord-connect-entry-prompt">
+(function(){
+  const modal=document.getElementById('discordConnectModal');
+  if(!modal)return;
+  const close=()=>modal.classList.remove('open');
+  document.getElementById('discordConnectSkip')?.addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.getElementById('discordConnectButton')?.addEventListener('click',()=>{
+    window.open('https://micoapp.io/1555809333760237600/panels/761','_blank','noopener,noreferrer');
+  });
+  window.openDiscordConnectPrompt=()=>modal.classList.add('open');
+  setTimeout(()=>modal.classList.add('open'),350);
+})();
+</script>
 </body>
   </html>
