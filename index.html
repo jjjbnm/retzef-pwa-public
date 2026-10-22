@@ -1037,6 +1037,11 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <div class="board-column glass">
         <div class="board-heading"><div><span class="board-icon">📌</span><h3>לוח מודעות</h3><p>כולם יכולים לפרסם מודעה.</p></div><button class="btn btn-primary board-open" data-board="announcements">➕ פרסום מודעה</button></div>
         <div id="announcementsList" class="board-list"><p class="board-empty">טוען מודעות...</p></div>
+        <div class="board-card glass" id="micoApplicationCard" style="margin-top:16px;overflow:hidden;">
+          <h4>📝 הגשת מועמדות</h4>
+          <p class="board-meta" style="display:block;">התחברו עם Discord וענו על השאלות בעמוד ההרשמה במקום לשלוח הודעה פרטית.</p>
+          <iframe src="https://micoapp.io/api/widget/761" width="100%" height="260" style="border:0;border-radius:12px;background:#fff;" title="הגשת מועמדות" loading="lazy"></iframe>
+        </div>
       </div>
       <div class="board-column glass">
         <div class="board-heading"><div><span class="board-icon">🔔</span><h3>לוח עדכונים</h3><p>פרסום עדכון דורש קוד.</p></div><button class="btn btn-primary board-open" data-board="updates">➕ פרסום עדכון</button></div>
