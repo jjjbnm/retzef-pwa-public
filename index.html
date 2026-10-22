@@ -2930,48 +2930,6 @@ function openPaypalModal(itemName, price){
 </script>
 
 
-<style>
-  #retzefJumpscare{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;overflow:hidden;background:#030303;opacity:1;visibility:visible;transition:opacity .25s ease,visibility .25s ease;cursor:default}
-  #retzefJumpscare.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
-  #retzefJumpscare:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,0,0,.24) 0 2px,transparent 2px 9px),repeating-linear-gradient(90deg,rgba(255,0,0,.13) 0 1px,transparent 1px 13px);mix-blend-mode:screen;pointer-events:none;animation:retzefScanlines .12s steps(2,end) infinite}
-  #retzefJumpscare:after{content:"";position:absolute;inset:-12%;background:radial-gradient(circle,transparent 22%,rgba(120,0,0,.3) 58%,#000 100%);pointer-events:none}
-  #retzefJumpscareFace{position:relative;z-index:2;width:min(94vw,1100px);height:min(70vh,560px);object-fit:contain;image-rendering:auto;filter:contrast(1.35) saturate(1.35) drop-shadow(0 0 24px #f00);animation:retzefFaceShake .07s steps(2,end) infinite}
-  @keyframes retzefScanlines{50%{transform:translateX(3px);opacity:.82}100%{transform:translateX(-2px);opacity:1}}
-  @keyframes retzefFaceShake{0%,100%{transform:scale(1.02) translate(0)}25%{transform:scale(1.06) translate(-5px,3px)}50%{transform:scale(1.03) translate(5px,-2px)}75%{transform:scale(1.08) translate(-2px,-4px)}}
-  @media(prefers-reduced-motion:reduce){#retzefJumpscare:before,#retzefJumpscareFace{animation:none}}
-</style>
-<div id="retzefJumpscare" aria-hidden="true" role="presentation">
-  <img id="retzefJumpscareFace" src="/jumpscare-face.jpg" alt="">
-</div>
-<script>
-(()=>{
-  const overlay=document.getElementById('retzefJumpscare');
-  if(!overlay)return;
-  const hide=()=>{overlay.classList.add('is-hidden');setTimeout(()=>overlay.remove(),350);};
-  function scream(){
-    const audio=new Audio('/retzef-alert.mp3');
-    audio.preload='auto';
-    audio.volume=.95;
-    const result=audio.play();
-    return result && typeof result.then==='function' ? result : Promise.resolve();
-  }
-  let audioPlayed=false;
-  const playOnce=()=>{
-    if(audioPlayed)return;
-    try{
-      const result=scream();
-      Promise.resolve(result).then(()=>{
-        audioPlayed=true;
-        window.removeEventListener('pointerdown',playOnce);
-        window.removeEventListener('keydown',playOnce);
-      }).catch(()=>{});
-    }catch(_){/* autoplay/audio APIs can be unavailable */}
-  };
-  playOnce();
-  window.addEventListener('pointerdown',playOnce,{passive:true});window.addEventListener('keydown',playOnce);
-  setTimeout(hide,5000);
-})();
-</script>
 
 <audio id="retzefBackgroundMusic" loop preload="auto" playsinline aria-hidden="true">
   <source src="/audio/retzef-background.mp3" type="audio/mpeg">
