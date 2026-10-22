@@ -132,11 +132,39 @@ module.exports = async (req, res) => {
   if (req.method === 'POST' && action === 'createAccountKey') {
     try { const meKey=cookie(req,'retzef_profile_id').toLowerCase(); if(!meKey)return res.status(401).json({error:'tiktok_login_required'}); const p=await profile(meKey); if(!p)return res.status(404).json({error:'profile_not_found'}); const plain=require('crypto').randomBytes(24).toString('base64url'); p.accountKeyHash=require('crypto').createHash('sha256').update(plain).digest('hex'); p.accountKeyCreatedAt=new Date().toISOString(); await redis('set',`${PREFIX}${meKey}`,JSON.stringify(p)); return res.status(200).json({created:true,username:meKey,key:plain}); } catch(e){return res.status(503).json({error:'storage_error'});}
   }
+
+  if (req.method === 'POST' && action === 'createAccessCredentials') {
+    try {
+      const username = cookie(req, 'retzef_profile_id').toLowerCase(); if (!username) return res.status(401).json({error:'tiktok_login_required'});
+      const p = await profile(username); if (!p) return res.status(404).json({error:'profile_not_found'});
+      const crypto = require('crypto'); const random = (n=18) => crypto.randomBytes(n).toString('base64url');
+      const clientId = `retzef_${username}_${random(10)}`; const clientSecret = `rs_owner_${random(30)}`; const publicClient = `rs_public_${random(24)}`;
+      const hash = x => crypto.createHash('sha256').update(x).digest('hex');
+      p.accountAccess = { clientIdHash: hash(clientId), clientSecretHash: hash(clientSecret), publicClientHash: hash(publicClient), createdAt: new Date().toISOString(), publicFields: ['username','displayName','avatarUrl'] };
+      await redis('set', `${PREFIX}${username}`, JSON.stringify(p));
+      return res.status(200).json({created:true, username, clientId, clientSecret, publicClient, warning:'המפתחות יוצגו פעם אחת בלבד. Client Secret נותן הרשאה מלאה — אין לשתף אותו.'});
+    } catch(e) { return res.status(503).json({error:'storage_error'}); }
+  }
+  if (req.method === 'POST' && action === 'quickLogin') {
+    try {
+      const credential = String(input.credential || '').trim(); if (!credential) return res.status(400).json({error:'credential_required'});
+      const crypto = require('crypto'); const wanted = crypto.createHash('sha256').update(credential).digest('hex');
+      const scan = await redis('scan','0','match',`${PREFIX}*`,'count','500'); const keys = Array.isArray(scan) && Array.isArray(scan[1]) ? scan[1] : [];
+      let found=null, scope='';
+      for (const key of keys) { const p=await profile(key.slice(PREFIX.length)); const a=p?.accountAccess; if(!a) continue; if(a.clientSecretHash===wanted){found=p;scope='owner';break;} if(a.clientIdHash===wanted){found=p;scope='readonly';break;} if(a.publicClientHash===wanted){found=p;scope='public';break;} }
+      if(!found) return res.status(401).json({error:'invalid_account_credential'});
+      res.setHeader('Set-Cookie',[`retzef_profile_id=${encodeURIComponent(String(found.username).toLowerCase())}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`,`retzef_access_scope=${scope}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`]);
+      return res.status(200).json({loggedIn:true,scope,profile:{...publicUser(found),age:scope==='public'?0:(found.age||0),gender:scope==='public'?'':(found.gender||''),wallet:scope==='public'?undefined:walletOf(found)}});
+    } catch(e) { return res.status(503).json({error:'storage_error'}); }
+  }
+
   const me = cookie(req, 'retzef_profile_id').toLowerCase();
   if (req.method === 'GET' && input.joinMine === '1') { try { const id = cookie(req, 'retzef_join_id'); const rows = await joinRequests(); return res.status(200).json({ requests: id ? rows.filter(x => x.id === id).map(x => ({ id: x.id, status: x.status, reason: x.reason || '', createdAt: x.createdAt })) : [] }); } catch (_) { return res.status(503).json({ error: 'storage_error' }); } }
   if (!me) return res.status(401).json({ error: 'tiktok_login_required' });
   try {
     const mine = await profile(me); if (!mine) return res.status(401).json({ error: 'tiktok_login_required' });
+    const accessScope = cookie(req, 'retzef_access_scope');
+    if (req.method === 'POST' && accessScope && accessScope !== 'owner') return res.status(403).json({error:'read_only_account_access'});
     if (req.method === 'POST' && action === 'switchAccount') {
       const target = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
       const saved = Array.isArray(mine.savedAccounts) ? mine.savedAccounts : [];
@@ -185,6 +213,7 @@ module.exports = async (req, res) => {
       await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
       return res.status(200).json({ saved: true, accounts: mine.savedAccounts });
     }
+    if (req.method === 'GET' && accessScope === 'public') return res.status(200).json({me:{username:mine.username,displayName:mine.displayName||mine.username,avatarUrl:mine.avatarUrl||''},users:[]});
     if (req.method === 'GET') {
       const scan = await redis('scan', '0', 'match', `${PREFIX}*`, 'count', '100');
       const keys = Array.isArray(scan) && Array.isArray(scan[1]) ? scan[1] : [];
