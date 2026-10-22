@@ -1052,7 +1052,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
         <div class="board-card glass" id="micoApplicationCard" style="margin-top:16px;overflow:hidden;">
           <h4>📝 הגשת מועמדות</h4>
           <p class="board-meta" style="display:block;">התחברו עם Discord ישירות באתר. שם המשתמש נשמר פרטי כברירת מחדל ורק אתם והבעלים יכולים לראות אותו.</p>
-          <button type="button" class="btn btn-primary" onclick="window.location.href='https://chi-liart-74.vercel.app/api/discord/login?return_to='+encodeURIComponent(location.origin+location.pathname)" style="width:100%;margin-top:10px;">🔗 התחברות עם Discord להגשת מועמדות</button>
+          <button type="button" class="btn btn-primary" onclick="window.location.href='https://chi-liart-74.vercel.app/api/discord?return_to='+encodeURIComponent(location.origin+location.pathname)" style="width:100%;margin-top:10px;">🔗 התחברות עם Discord להגשת מועמדות</button>
         </div>
       </div>
       <div class="board-column glass">
@@ -3084,9 +3084,9 @@ function openPaypalModal(itemName, price){
   document.getElementById('discordConnectSkip')?.addEventListener('click',close);
   modal.addEventListener('click',e=>{if(e.target===modal)close();});
   document.getElementById('discordConnectButton')?.addEventListener('click',()=>{
-    window.location.href='https://chi-liart-74.vercel.app/api/discord/login?return_to='+encodeURIComponent(location.origin+location.pathname);
+    window.location.href='https://chi-liart-74.vercel.app/api/discord?return_to='+encodeURIComponent(location.origin+location.pathname);
   });
-  document.getElementById('discordPrivacyButton')?.addEventListener('click',async()=>{try{const r=await fetch('https://chi-liart-74.vercel.app/api/discord/me',{credentials:'include'});const d=await r.json();if(!r.ok)throw new Error();const next=!d.discord.publicVisible;const ok=confirm(next?'להציג את שם המשתמש שלך ב-Discord לכולם?':'להסתיר את שם המשתמש שלך מכולם?');if(!ok)return;await fetch('https://chi-liart-74.vercel.app/api/discord/me',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({publicVisible:next})});alert(next?'שם המשתמש יוצג לכולם.':'שם המשתמש הוסתר.');}catch(_){alert('צריך להתחבר ל-Discord קודם.');}});
+  document.getElementById('discordPrivacyButton')?.addEventListener('click',async()=>{try{const r=await fetch('https://chi-liart-74.vercel.app/api/discord',{credentials:'include'});const d=await r.json();if(!r.ok)throw new Error();const next=!d.discord.publicVisible;const ok=confirm(next?'להציג את שם המשתמש שלך ב-Discord לכולם?':'להסתיר את שם המשתמש שלך מכולם?');if(!ok)return;await fetch('https://chi-liart-74.vercel.app/api/discord',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({publicVisible:next})});alert(next?'שם המשתמש יוצג לכולם.':'שם המשתמש הוסתר.');}catch(_){alert('צריך להתחבר ל-Discord קודם.');}});
   window.openDiscordConnectPrompt=()=>modal.classList.add('open');
   setTimeout(()=>modal.classList.add('open'),350);
 })();
