@@ -2250,6 +2250,26 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   paypalModal.addEventListener('click', e => { if(e.target === paypalModal) closePaypalModal(); });
 
   async function loadCoinPayment(itemName, price){const balanceEl=document.getElementById('coinPaymentBalance'),msg=document.getElementById('coinPaymentMessage'),buy=document.getElementById('coinBuyBtn'),back=document.getElementById('coinBackBtn');if(!balanceEl||!buy)return;const isTag=/^תג/.test(String(itemName).trim());buy.disabled=isTag;buy.textContent=isTag?'תגים לא זמינים במטבעות':'קנה במטבעות';if(isTag){balanceEl.textContent='תגים אפשר לקנות רק דרך PayPal.';msg.textContent='';}try{const r=await fetch('/api/users',{credentials:'include',cache:'no-store'});const d=await r.json();const balance=Number(d.me?.wallet?.balance||0);const COINS_PER_SHEKEL=10;const amount=Math.ceil((Number(price)||0)*COINS_PER_SHEKEL);balanceEl.textContent='יתרה: '+balance.toLocaleString('he-IL')+' 🪙 · מחיר: '+amount.toLocaleString('he-IL')+' 🪙';buy.onclick=async()=>{if(isTag)return;if(balance<amount){msg.textContent='❌ הרכישה בוטלה — אין מספיק מטבעות.';return;}buy.disabled=true;const spent=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'walletSpend',amount,reason:itemName})});const result=await spent.json();if(spent.ok){msg.textContent='✅ הרכישה בוצעה בהצלחה.';balanceEl.textContent='יתרה: '+Number(result.wallet.balance||0)+' 🪙';}else{msg.textContent= result.error==='insufficient_coins'?'❌ הרכישה בוטלה — אין מספיק מטבעות.':result.error==='badges_not_available_with_coins'?'❌ אי אפשר לקנות תגים במטבעות.':'❌ הרכישה בוטלה.';}buy.disabled=false;};back.onclick=closePaypalModal;}catch(_){balanceEl.textContent='לא ניתן לטעון יתרה';msg.textContent='❌ הרכישה בוטלה — צריך להתחבר עם TikTok.';buy.disabled=true;}}
+  function retzefEscapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+  async function retzefCopyPurchaseText(text, button){
+    let copied=false;
+    try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);copied=true;}}catch(_){ }
+    if(!copied){try{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.focus();area.select();copied=document.execCommand('copy');area.remove();}catch(_){ }}
+    if(button){const original=button.textContent;button.textContent=copied?'✅ הועתק':'❌ לא ניתן להעתיק';setTimeout(()=>{button.textContent=original;},1800);}
+  }
+  function showRetzefPurchaseSuccess(orderId,itemName){
+    const id=String(orderId||'לא זמין');
+    if(!window.__retzefProfile){
+      const safeId=retzefEscapeHtml(id);
+      paypalButtonContainer.innerHTML=`<div class="retzef-guest-purchase-success" dir="rtl" style="text-align:right;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.08);border-radius:14px;padding:16px;color:var(--text);"><p style="color:#15803d;font-weight:800;text-align:center;margin-bottom:10px;">✅ הקנייה הוצלחה בהצלחה</p><p style="margin:6px 0;"><strong>ה־ID של ההזמנה:</strong></p><code style="display:block;direction:ltr;word-break:break-all;background:var(--bg);border:1px solid var(--glass-border);border-radius:8px;padding:9px;text-align:center;">${safeId}</code><p style="font-size:13px;color:var(--muted);margin:10px 0;">יש להעתיק את ה־ID של ההזמנה. הוא משמש לפניות, החזרים ובדיקת פרטי הרכישה.</p><div style="display:grid;gap:8px;"><button type="button" class="btn btn-ghost retzef-copy-order-id" style="justify-content:center;">העתקת מזהה ההזמנה</button><button type="button" class="btn btn-ghost retzef-copy-refund" style="justify-content:center;">העתק הודעה להחזר כספי</button><button type="button" class="btn btn-primary retzef-copy-purchased" style="justify-content:center;">העתק הודעה שקניתי משהו</button></div></div>`;
+      const item=String(itemName||'מוצר');
+      paypalButtonContainer.querySelector('.retzef-copy-order-id')?.addEventListener('click',e=>retzefCopyPurchaseText(id,e.currentTarget));
+      paypalButtonContainer.querySelector('.retzef-copy-refund')?.addEventListener('click',e=>retzefCopyPurchaseText(`שלום, אני מבקש/ת החזר כספי עבור הרכישה של ${item}. מזהה ההזמנה שלי: ${id}`,e.currentTarget));
+      paypalButtonContainer.querySelector('.retzef-copy-purchased')?.addEventListener('click',e=>retzefCopyPurchaseText(`שלום, קניתי משהו באתר רצף. המוצר: ${item}. מזהה ההזמנה שלי: ${id}`,e.currentTarget));
+      return;
+    }
+    paypalButtonContainer.innerHTML=`<p style="color:#15803d;font-weight:700;text-align:center;">✅ התשלום התקבל! תודה על "${retzefEscapeHtml(itemName)}".<br><small>מזהה הזמנה: ${retzefEscapeHtml(id)}</small></p>`;
+  }
 function openPaypalModal(itemName, price){
     paypalItemName.textContent = itemName;
     loadCoinPayment(itemName, price);
@@ -2308,7 +2328,7 @@ function openPaypalModal(itemName, price){
           });
           const details = await res.json();
           if (details.status === 'COMPLETED') {
-            paypalButtonContainer.innerHTML = `<p style="color:#15803d; font-weight:700; text-align:center;">✅ התשלום התקבל! תודה על "${itemName}".</p>`;
+            showRetzefPurchaseSuccess(data.orderID || details.id, itemName);
           } else {
             console.error('PayPal capture did not complete. Server response:', details, 'HTTP status:', res.status);
             paypalButtonContainer.innerHTML = '<p style="color:#b91c1c; text-align:center;">התשלום לא הושלם. נסו שוב.</p>';
@@ -2357,7 +2377,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              paypalButtonContainer.innerHTML = `<p style="color:#15803d; font-weight:700; text-align:center;">✅ התשלום התקבל! תודה על "${itemName}".</p>`;
+              showRetzefPurchaseSuccess(data.orderID || details.id, itemName);
               applePayButtonContainer.innerHTML = '';
             } else {
               console.error('Apple Pay capture did not complete. Server response:', details, 'HTTP status:', res.status);
@@ -2402,7 +2422,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              paypalButtonContainer.innerHTML = `<p style="color:#15803d; font-weight:700; text-align:center;">✅ התשלום התקבל! תודה על "${itemName}".</p>`;
+              showRetzefPurchaseSuccess(data.orderID || details.id, itemName);
               applePayButtonContainer.innerHTML = '';
               googlePayButtonContainer.innerHTML = '';
             } else {
