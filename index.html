@@ -555,6 +555,9 @@
   #retzefLegalAccept:disabled{cursor:not-allowed;}
   @media(max-width:420px){.retzef-legal-card{padding:25px 18px}.retzef-legal-links{grid-template-columns:1fr;}}
 
+  #accountSettingsCard{max-height:calc(100vh - 190px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable;padding-inline-end:18px;}
+  #accountSettingsCard>h3{position:sticky;top:-1px;z-index:2;padding:4px 0 12px;background:var(--bg2);}
+  @media(max-width:640px){#accountSettingsCard{max-height:calc(100vh - 145px);padding:18px 16px;}}
 </style>
 
 <style id="retzef-version-mode-styles">
@@ -2258,18 +2261,27 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     if(!copied){try{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.focus();area.select();copied=document.execCommand('copy');area.remove();}catch(_){ }}
     if(button){const original=button.textContent;button.textContent=copied?'✅ הועתק':'❌ לא ניתן להעתיק';setTimeout(()=>{button.textContent=original;},1800);}
   }
+  async function getRetzefPaymentId(providerOrderId,itemName,price){
+    const fallback=`RZ-GUEST-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
+    if(!window.__retzefProfile) return fallback;
+    try{
+      const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'recordPayment',providerOrderId,name:itemName,amount:Number(price)||0,method:'paypal'})});
+      const d=await r.json();
+      return r.ok&&d.paymentId?d.paymentId:fallback;
+    }catch(_){return fallback;}
+  }
   function showRetzefPurchaseSuccess(orderId,itemName){
     const id=String(orderId||'לא זמין');
     if(!window.__retzefProfile){
       const safeId=retzefEscapeHtml(id);
-      paypalButtonContainer.innerHTML=`<div class="retzef-guest-purchase-success" dir="rtl" style="text-align:right;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.08);border-radius:14px;padding:16px;color:var(--text);"><p style="color:#15803d;font-weight:800;text-align:center;margin-bottom:10px;">✅ הקנייה הוצלחה בהצלחה</p><p style="margin:6px 0;"><strong>ה־ID של ההזמנה:</strong></p><code style="display:block;direction:ltr;word-break:break-all;background:var(--bg);border:1px solid var(--glass-border);border-radius:8px;padding:9px;text-align:center;">${safeId}</code><p style="font-size:13px;color:var(--muted);margin:10px 0;">יש להעתיק את ה־ID של ההזמנה. הוא משמש לפניות, החזרים ובדיקת פרטי הרכישה.</p><div style="display:grid;gap:8px;"><button type="button" class="btn btn-ghost retzef-copy-order-id" style="justify-content:center;">העתקת מזהה ההזמנה</button><button type="button" class="btn btn-ghost retzef-copy-refund" style="justify-content:center;">העתק הודעה להחזר כספי</button><button type="button" class="btn btn-primary retzef-copy-purchased" style="justify-content:center;">העתק הודעה שקניתי משהו</button></div></div>`;
+      paypalButtonContainer.innerHTML=`<div class="retzef-guest-purchase-success" dir="rtl" style="text-align:right;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.08);border-radius:14px;padding:16px;color:var(--text);"><p style="color:#15803d;font-weight:800;text-align:center;margin-bottom:10px;">✅ הקנייה הוצלחה בהצלחה</p><p style="margin:6px 0;"><strong>מזהה הרכישה של רצף:</strong></p><code style="display:block;direction:ltr;word-break:break-all;background:var(--bg);border:1px solid var(--glass-border);border-radius:8px;padding:9px;text-align:center;">${safeId}</code><p style="font-size:13px;color:var(--muted);margin:10px 0;">יש להעתיק את המזהה של רצף. הוא נשמר בחשבון ומשמש לפניות, החזרים ובדיקת פרטי הרכישה.</p><div style="display:grid;gap:8px;"><button type="button" class="btn btn-ghost retzef-copy-order-id" style="justify-content:center;">העתקת מזהה הרכישה של רצף</button><button type="button" class="btn btn-ghost retzef-copy-refund" style="justify-content:center;">העתק הודעה להחזר כספי</button><button type="button" class="btn btn-primary retzef-copy-purchased" style="justify-content:center;">העתק הודעה שקניתי משהו</button></div></div>`;
       const item=String(itemName||'מוצר');
       paypalButtonContainer.querySelector('.retzef-copy-order-id')?.addEventListener('click',e=>retzefCopyPurchaseText(id,e.currentTarget));
-      paypalButtonContainer.querySelector('.retzef-copy-refund')?.addEventListener('click',e=>retzefCopyPurchaseText(`שלום, אני מבקש/ת החזר כספי עבור הרכישה של ${item}. מזהה ההזמנה שלי: ${id}`,e.currentTarget));
-      paypalButtonContainer.querySelector('.retzef-copy-purchased')?.addEventListener('click',e=>retzefCopyPurchaseText(`שלום, קניתי משהו באתר רצף. המוצר: ${item}. מזהה ההזמנה שלי: ${id}`,e.currentTarget));
+      paypalButtonContainer.querySelector('.retzef-copy-refund')?.addEventListener('click',e=>retzefCopyPurchaseText(`שלום, אני מבקש/ת החזר כספי עבור הרכישה של ${item}. מזהה הרכישה שלי ברצף: ${id}`,e.currentTarget));
+      paypalButtonContainer.querySelector('.retzef-copy-purchased')?.addEventListener('click',e=>retzefCopyPurchaseText(`שלום, קניתי משהו באתר רצף. המוצר: ${item}. מזהה הרכישה שלי ברצף: ${id}`,e.currentTarget));
       return;
     }
-    paypalButtonContainer.innerHTML=`<p style="color:#15803d;font-weight:700;text-align:center;">✅ התשלום התקבל! תודה על "${retzefEscapeHtml(itemName)}".<br><small>מזהה הזמנה: ${retzefEscapeHtml(id)}</small></p>`;
+    paypalButtonContainer.innerHTML=`<p style="color:#15803d;font-weight:700;text-align:center;">✅ התשלום התקבל! תודה על "${retzefEscapeHtml(itemName)}".<br><small>מזהה רכישה של רצף: ${retzefEscapeHtml(id)}</small></p>`;
   }
 function openPaypalModal(itemName, price){
     paypalItemName.textContent = itemName;
@@ -2329,7 +2341,7 @@ function openPaypalModal(itemName, price){
           });
           const details = await res.json();
           if (details.status === 'COMPLETED') {
-            showRetzefPurchaseSuccess(data.orderID || details.id, itemName);
+            const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
           } else {
             console.error('PayPal capture did not complete. Server response:', details, 'HTTP status:', res.status);
             paypalButtonContainer.innerHTML = '<p style="color:#b91c1c; text-align:center;">התשלום לא הושלם. נסו שוב.</p>';
@@ -2378,7 +2390,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              showRetzefPurchaseSuccess(data.orderID || details.id, itemName);
+              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
               applePayButtonContainer.innerHTML = '';
             } else {
               console.error('Apple Pay capture did not complete. Server response:', details, 'HTTP status:', res.status);
@@ -2423,7 +2435,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              showRetzefPurchaseSuccess(data.orderID || details.id, itemName);
+              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
               applePayButtonContainer.innerHTML = '';
               googlePayButtonContainer.innerHTML = '';
             } else {

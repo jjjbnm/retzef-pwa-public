@@ -226,6 +226,22 @@ module.exports = async (req, res) => {
       return res.status(200).json(result);
     }
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
+    if (action === 'recordPayment') {
+      const providerOrderId = String(input.providerOrderId || '').trim().slice(0, 180);
+      const name = String(input.name || 'רכישה').trim().slice(0, 160) || 'רכישה';
+      const amount = Number(input.amount);
+      const method = ['paypal', 'applepay', 'googlepay'].includes(String(input.method || '').toLowerCase()) ? String(input.method).toLowerCase() : 'paypal';
+      if (!providerOrderId || !Number.isFinite(amount) || amount < 0) return res.status(400).json({ error: 'invalid_payment_details' });
+      const history = Array.isArray(mine.paymentHistory) ? mine.paymentHistory : [];
+      const duplicate = history.find(x => String(x.providerOrderId || '') === providerOrderId);
+      if (duplicate) return res.status(200).json({ paymentId: duplicate.id, payment: duplicate, alreadyRecorded: true });
+      const crypto = require('crypto');
+      const paymentId = `RZ-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+      const payment = { id: paymentId, name, method, amount: Number(amount.toFixed(2)), currency: 'ILS', providerOrderId, createdAt: new Date().toISOString() };
+      mine.paymentHistory = [payment, ...history].slice(0, 50);
+      await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+      return res.status(201).json({ paymentId, payment, savedToAccount: true });
+    }
     if (action === 'privacy') {
       mine.privacy = { statusVisible: input.statusVisible !== false, subscriptionVisible: input.subscriptionVisible === true };
       await redis('set', `${PREFIX}${me}`, JSON.stringify(mine)); return res.status(200).json({ privacy: mine.privacy });
