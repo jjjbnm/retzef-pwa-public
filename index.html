@@ -785,18 +785,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   <div class="menu-user" id="profileMenuUser">החשבון שלי</div><button type="button" id="profileWallet" data-profile-target="wallet" style="width:calc(100% - 26px);margin:8px 13px;padding:10px 12px;border:0;border-radius:12px;background:linear-gradient(135deg,#fff7d6,#ffe9a8);color:#5b4300;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer"><span>🪙 מטבעות רצף</span><b id="profileWalletBalance">0</b></button><button type="button" id="syncWalletCoins" style="width:calc(100% - 26px);margin:4px 13px;padding:9px 12px;border:1px solid var(--glass-border);border-radius:12px;background:rgba(255,255,255,.7);color:inherit;font-size:13px;cursor:pointer">🔄 סנכרן מטבעות: <b id="syncWalletCoinsValue">בדיקה...</b></button><div id="syncWalletCoinsStatus" style="text-align:center;font-size:11px;min-height:16px;padding:0 13px 4px"></div>
   <button type="button" data-profile-target="settings">⚙️ הגדרות חשבון</button>
   <button type="button" id="syncTikTokProfile">🔄 סנכרן פרופיל TikTok</button>
-  <button type="button" id="profileDevicePreferences">📱 Device Preferences</button>
-  <div id="profileDevicePreferencesPanel" style="display:none;padding:8px 13px;border-top:1px solid var(--glass-border);border-bottom:1px solid var(--glass-border);font-size:12px;">
-    <label style="display:flex;align-items:center;gap:8px;margin:7px 0;"><input type="checkbox" id="profileReduceMotion"> הפחתת אנימציות</label>
-    <label style="display:flex;align-items:center;gap:8px;margin:7px 0;"><input type="checkbox" id="profileBrowserNotifications"> התראות בדפדפן</label>
-    <button type="button" id="saveProfileDevicePreferences" style="font-size:12px;padding:7px;">שמירה</button>
-  </div>
-  <button type="button" id="profileDevicePerformance">⚡ Device Performance</button>
-  <div id="profileDevicePerformancePanel" style="display:none;padding:8px 13px;border-bottom:1px solid var(--glass-border);font-size:12px;white-space:pre-line;"><button type="button" id="runProfileDevicePerformance" style="font-size:12px;padding:7px;">בדיקת ביצועים</button><div id="profileDevicePerformanceResult" style="margin-top:7px;"></div></div>
-  <button type="button" data-profile-target="status">🟢 הסטטוס שלי</button>
-  <button type="button" data-profile-target="subs">💳 מנויים</button>
-  <button type="button" data-profile-target="shop">🛍️ חנות</button>
-  <button type="button" data-profile-target="profile">👤 פרטי משתמש</button>
+  <button type="button" data-profile-target="profile">👤 פרופיל</button>
   <button type="button" id="profileAccounts">🔄 החלפת חשבון</button>
   <button type="button" id="profileUsers">👥 משתמשים וצ׳אט</button>
   <button type="button" id="profileLogout">🚪 התנתקות</button>
@@ -1761,7 +1750,19 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     else if(action==='devicePreferences') { const saved=getDevicePreferences(); quickBody.innerHTML=`<p>העדפות אלה נשמרות בחשבון שלך ונשארות גם במכשיר אחר.</p><label><input type="checkbox" id="quickReduceMotion" ${saved.reduceMotion?'checked':''}> הפחתת אנימציות</label><br><label><input type="checkbox" id="quickBrowserNotifications" ${saved.notifications?'checked':''}> התראות בדפדפן</label><button type="button" class="quick-action" id="saveQuickDevicePreferences">שמירת העדפות מכשיר</button>`; }
     else if(action==='devicePerformance') { quickBody.innerHTML='<p>בדיקת ביצועים מקומית — המידע לא נשלח לשרת.</p><button type="button" class="quick-action" id="runQuickPerformance">⚡ בדיקת ביצועים</button><div id="quickPerformanceResult" style="white-space:pre-line;margin-top:10px;"></div>'; }
     else if(action==='status') quickBody.innerHTML=`<p><b>${displayName}</b> (@${username})</p><p>תפקיד: ${role}</p><p>סטטוס: ${profile.role==='owner'?'בעלים':'הכול טוב'}</p>`;
-    else if(action==='profile') quickBody.innerHTML=`<p>שם תצוגה: <b>${displayName}</b></p><p dir="ltr">Username: @${username}</p><p>תפקיד: ${role}</p>`;
+    else if(action==='profile') {
+      const normalizedUsername=String(username).replace(/^@/,'').toLowerCase();
+      const ages={'ban.original':'10','oobbn98':'12','dahan324':'11','albinocapybara':'12','user1691117561269':'13'};
+      const age=profile.age||ages[normalizedUsername]||'לא נמסר';
+      const status=profile.status||((typeof ACCOUNT_STATUSES!=='undefined'&&ACCOUNT_STATUSES[normalizedUsername])||'פעיל');
+      const joinedRaw=profile.createdAt||profile.created_at||profile.joinedAt||profile.joined_at;
+      const joined=joinedRaw&&!Number.isNaN(new Date(joinedRaw).getTime())?new Date(joinedRaw).toLocaleDateString('he-IL'):'לא ידוע';
+      const balance=Number(String(profile.wallet?.balance??0).replace(/[,_\s]/g,''))||0;
+      const tags=Array.isArray(profile.tags)?profile.tags:(Array.isArray(profile.badges)?profile.badges:[]);
+      const avatar=profile.avatarUrl||document.getElementById('profileAvatarImg')?.src||'';
+      const avatarHtml=avatar?`<img src="${avatar}" alt="תמונת הפרופיל של ${displayName}" style="width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);box-shadow:0 8px 24px #0003">`:'<div style="width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:var(--glass);font-size:42px">👤</div>';
+      quickBody.innerHTML=`<div style="text-align:center;padding:4px 0 12px">${avatarHtml}<h3 style="margin:10px 0 2px">${displayName}</h3><p dir="ltr" style="margin:0;color:var(--muted)">@${username}</p></div><div style="display:grid;gap:9px;text-align:right"><div class="glass" style="padding:10px 12px;border-radius:12px">🟢 <b>סטטוס:</b> ${status}</div><div class="glass" style="padding:10px 12px;border-radius:12px">🎂 <b>גיל:</b> ${age}</div><div class="glass" style="padding:10px 12px;border-radius:12px">📅 <b>תאריך הצטרפות:</b> ${joined}</div><div class="glass" style="padding:10px 12px;border-radius:12px">🪙 <b>מטבעות:</b> ${balance.toLocaleString('he-IL')}</div><div class="glass" style="padding:10px 12px;border-radius:12px">🏷️ <b>תגים:</b> ${tags.length?tags.map(tag=>`<span style="display:inline-block;margin:3px 0 0 4px;padding:3px 8px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px">${tag}</span>`).join(''):'אין תגים'}</div></div>`;
+    }
     else quickBody.innerHTML=`<p>${localStorage.getItem('retzef_subscription_name')||'אין כרגע מנוי שמור בחשבון.'}</p><p>אפשר לבדוק ולנהל מנויים דרך האפליקציה.</p>`;
     if(action==='wallet') {
       const redeemBtn=document.getElementById('walletRedeemBtn'); const redeemMsg=document.getElementById('walletGiftMessage');
@@ -1777,10 +1778,6 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   document.getElementById('profileQuickUp').addEventListener('click',()=>{quickModal.classList.remove('open');profileMenu.classList.add('open');});
   quickModal.addEventListener('click',e=>{if(e.target===quickModal)quickModal.classList.remove('open');});
   document.getElementById('profileAccounts').addEventListener('click',openAccountManager);
-  document.getElementById('profileDevicePreferences').addEventListener('click',()=>{const panel=document.getElementById('profileDevicePreferencesPanel');const saved=getDevicePreferences();panel.style.display=panel.style.display==='none'?'block':'none';document.getElementById('profileReduceMotion').checked=saved.reduceMotion===true;document.getElementById('profileBrowserNotifications').checked=saved.notifications===true;});
-  document.getElementById('saveProfileDevicePreferences').addEventListener('click',async()=>{const reduceMotion=document.getElementById('profileReduceMotion').checked;const notifications=document.getElementById('profileBrowserNotifications').checked;await saveDevicePreferencesToDatabase(reduceMotion,notifications);document.documentElement.dataset.reduceMotion=reduceMotion?'true':'false';if(notifications&&'Notification' in window&&Notification.permission==='default')await Notification.requestPermission();document.getElementById('saveProfileDevicePreferences').textContent='נשמר ✅';setTimeout(()=>document.getElementById('saveProfileDevicePreferences').textContent='שמירה',1500);});
-  document.getElementById('profileDevicePerformance').addEventListener('click',()=>{document.getElementById('profileDevicePerformancePanel').style.display=document.getElementById('profileDevicePerformancePanel').style.display==='none'?'block':'none';});
-  document.getElementById('runProfileDevicePerformance').addEventListener('click',async()=>{const lines=['חיבור לאינטרנט: '+(navigator.onLine?'✅ מחובר':'❌ לא מחובר'),'JavaScript: ✅ פעיל','מסך: '+screen.width+'×'+screen.height,'ליבות מעבד: '+(navigator.hardwareConcurrency||'לא נמסר'),'זיכרון משוער: '+(navigator.deviceMemory?navigator.deviceMemory+'GB':'לא נמסר')];try{const battery=await navigator.getBattery?.();if(battery)lines.push('סוללה: '+Math.round(battery.level*100)+'%'+(battery.charging?' · בטעינה':''));}catch(_){}document.getElementById('profileDevicePerformanceResult').textContent=lines.join('\n');});
   document.getElementById('profileLogout').addEventListener('click',()=>{try{localStorage.removeItem('retzef_current_profile');localStorage.setItem('retzef_logged_out','1');}catch(_){} document.cookie='retzef_profile_id=; Path=/; Max-Age=0; SameSite=Lax; Secure';document.cookie='retzef_profile_id=; Path=/; Max-Age=0; SameSite=Lax';window.__retzefProfile=null;profileMenu.classList.remove('open');location.replace(window.location.pathname);});
   const hubModal=document.getElementById('userHubModal'), hubUsers=document.getElementById('hubUsers'), hubRequests=document.getElementById('hubRequests'), hubChat=document.getElementById('hubChat'), hubChatTitle=document.getElementById('hubChatTitle'), hubChatMessages=document.getElementById('hubChatMessages'), hubChatInput=document.getElementById('hubChatInput');
   let activeChatUser='';
