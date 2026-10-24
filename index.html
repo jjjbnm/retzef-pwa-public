@@ -478,12 +478,13 @@
 
   #profileQuickModal{display:none;position:fixed;inset:0;z-index:1300;background:#0005;align-items:center;justify-content:center;padding:20px;direction:rtl}
   #profileQuickModal.open{display:flex}
-  #profileQuickModal .quick-card{width:min(390px,100%);background:var(--bg2);color:var(--text);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:0 18px 60px #0004;position:relative}
+  #profileQuickModal .quick-card{width:min(390px,100%);max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable;background:var(--bg2);color:var(--text);border:1px solid var(--glass-border);border-radius:22px;padding:22px 22px 30px;box-shadow:0 18px 60px #0004;position:relative}
   #profileQuickModal h3{margin:0 0 12px;font-size:20px}
   #profileQuickModal .quick-body{color:var(--muted);line-height:1.8;font-size:14px}
   #profileQuickModal .quick-close{position:absolute;left:14px;top:12px;border:0;background:transparent;color:var(--muted);font-size:22px;cursor:pointer}
   #profileQuickModal .quick-up{position:absolute;right:14px;top:12px;border:0;background:var(--accent);color:#fff;border-radius:9px;width:32px;height:32px;font-size:21px;line-height:28px;cursor:pointer}
   #profileQuickModal .quick-action{width:100%;margin-top:12px;border:0;border-radius:11px;background:var(--accent);color:#fff;padding:11px;font:700 14px Assistant,sans-serif;cursor:pointer}
+  @media(max-width:520px){#profileQuickModal{padding:10px}#profileQuickModal .quick-card{max-height:calc(100vh - 20px);padding:20px 16px 30px}}
 
 
   #userHubModal{display:none;position:fixed;inset:0;z-index:1350;background:#0006;align-items:center;justify-content:center;padding:16px;direction:rtl}
