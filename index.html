@@ -1042,12 +1042,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <div class="board-column glass">
         <div class="board-heading"><div><span class="board-icon">📌</span><h3>לוח מודעות</h3><p>כולם יכולים לפרסם מודעה.</p></div><button class="btn btn-primary board-open" data-board="announcements">➕ פרסום מודעה</button></div>
         <div id="announcementsList" class="board-list"><p class="board-empty">טוען מודעות...</p></div>
-        <div class="board-card glass" id="micoApplicationCard" style="margin-top:16px;overflow:hidden;">
-          <h4>📝 הגשת מועמדות</h4>
-          <p class="board-meta" style="display:block;">התחברו עם Discord ישירות באתר. שם המשתמש נשמר פרטי כברירת מחדל ורק אתם והבעלים יכולים לראות אותו.</p>
-          <button type="button" class="btn btn-primary" onclick="window.location.href='https://chi-liart-74.vercel.app/api/callback?provider=discord&start=1&account='+encodeURIComponent(String(window.__retzefProfile?.username||''))+'&return_to='+encodeURIComponent(location.origin+location.pathname)" style="width:100%;margin-top:10px;">🔗 התחברות עם Discord להגשת מועמדות</button>
-        </div>
-      </div>
+</div>
       <div class="board-column glass">
         <div class="board-heading"><div><span class="board-icon">🔔</span><h3>לוח עדכונים</h3><p>פרסום עדכון דורש קוד.</p></div><button class="btn btn-primary board-open" data-board="updates">➕ פרסום עדכון</button></div>
         <div id="updatesList" class="board-list"><p class="board-empty">טוען עדכונים...</p></div>
