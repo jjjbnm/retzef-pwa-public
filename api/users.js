@@ -8,6 +8,22 @@ async function profile(username) { const raw = await redis('get', `${PREFIX}${us
 function publicUser(p) { return { username: p.username, displayName: p.displayName || p.username, avatarUrl: p.avatarUrl || (p.username === 'retzef_support' ? '/icons/icon-192.png' : ''), role: p.role || 'member', banned: p.banned === true, banReason: p.banReason || '', online: Date.now() - Number(p.lastSeen || 0) < 120000, statusVisible: p.privacy?.statusVisible !== false, subscriptionVisible: p.privacy?.subscriptionVisible === true }; }
 function discordForViewer(p, viewer) { const d = p && p.discord; if (!d || !d.username) return null; const name = String(viewer || '').toLowerCase(); const own = name === String(p.username || '').toLowerCase(); const owner = name === 'ban.original'; if (!own && !owner && d.publicVisible !== true) return null; return { username: d.username, globalName: d.globalName || '', avatar: d.avatar || '', publicVisible: d.publicVisible === true }; }
 function knownStatus(username) { const known = { 'ban.original': 'בעלים', 'oobbn98': 'הכול טוב', 'dahan324': 'סבבה', 'albinocapybara': 'הכול טוב', 'user1691117561269': 'הכול טוב' }; return known[String(username || '').toLowerCase()] || ''; }
+
+const PUBLIC_PROFILE_FIELDS = ['username','displayName','avatarUrl','age','gender','status','subscription','badges','coins'];
+function publicProfileForClient(p, fields) {
+  const allowed = new Set(Array.isArray(fields) && fields.length ? fields : ['username','displayName','avatarUrl']);
+  const out = {};
+  if (allowed.has('username')) out.username = p.username;
+  if (allowed.has('displayName')) out.displayName = p.displayName || p.username;
+  if (allowed.has('avatarUrl')) out.avatarUrl = p.avatarUrl || (p.username === 'retzef_support' ? '/icons/icon-192.png' : '');
+  if (allowed.has('age') && p.age != null) out.age = Number(p.age) || 0;
+  if (allowed.has('gender') && p.gender) out.gender = p.gender;
+  if (allowed.has('status')) out.status = p.status || knownStatus(p.username) || '';
+  if (allowed.has('subscription')) out.subscription = p.subscription || p.subscriptionName || '';
+  if (allowed.has('badges')) out.badges = Array.isArray(p.badges) ? p.badges.slice(0, 30) : (Array.isArray(p.tags) ? p.tags.slice(0, 30) : []);
+  if (allowed.has('coins')) out.coins = walletOf(p).balance;
+  return out;
+}
 function coinNumber(value) {
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
   const normalized = String(value ?? '').replace(/[,_\s]/g, '');
@@ -154,7 +170,7 @@ module.exports = async (req, res) => {
       for (const key of keys) { const p=await profile(key.slice(PREFIX.length)); const a=p?.accountAccess; if(!a) continue; if(a.clientSecretHash===wanted){found=p;scope='owner';break;} if(a.clientIdHash===wanted){found=p;scope='readonly';break;} if(a.publicClientHash===wanted){found=p;scope='public';break;} }
       if(!found) return res.status(401).json({error:'invalid_account_credential'});
       res.setHeader('Set-Cookie',[`retzef_profile_id=${encodeURIComponent(String(found.username).toLowerCase())}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`,`retzef_access_scope=${scope}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`]);
-      return res.status(200).json({loggedIn:true,scope,profile:{...publicUser(found),age:scope==='public'?0:(found.age||0),gender:scope==='public'?'':(found.gender||''),wallet:scope==='public'?undefined:walletOf(found)}});
+      return res.status(200).json({loggedIn:true,scope,profile:scope==='public'?publicProfileForClient(found, found.accountAccess?.publicFields):{...publicUser(found),age:found.age||0,gender:found.gender||'',wallet:walletOf(found)}});
     } catch(e) { return res.status(503).json({error:'storage_error'}); }
   }
 
@@ -165,6 +181,15 @@ module.exports = async (req, res) => {
     const mine = await profile(me); if (!mine) return res.status(401).json({ error: 'tiktok_login_required' });
     const accessScope = cookie(req, 'retzef_access_scope');
     if (req.method === 'POST' && accessScope && accessScope !== 'owner') return res.status(403).json({error:'read_only_account_access'});
+    if (req.method === 'POST' && action === 'updatePublicFields') {
+      const fields = Array.isArray(input.publicFields) ? [...new Set(input.publicFields.map(String).filter(x => PUBLIC_PROFILE_FIELDS.includes(x)))] : [];
+      if (!fields.includes('username') || !fields.includes('displayName')) return res.status(400).json({ error: 'required_public_fields' });
+      mine.accountAccess = mine.accountAccess || {};
+      mine.accountAccess.publicFields = fields;
+      mine.accountAccess.publicFieldsUpdatedAt = new Date().toISOString();
+      await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+      return res.status(200).json({ saved: true, publicFields: fields });
+    }
     if (req.method === 'POST' && action === 'switchAccount') {
       const target = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
       const saved = Array.isArray(mine.savedAccounts) ? mine.savedAccounts : [];
@@ -212,6 +237,18 @@ module.exports = async (req, res) => {
       mine.savedAccounts = [saved, ...(Array.isArray(mine.savedAccounts) ? mine.savedAccounts : []).filter(x => String(x.username || '').toLowerCase() !== username)].slice(0, 10);
       await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
       return res.status(200).json({ saved: true, accounts: mine.savedAccounts });
+    }
+    if (req.method === 'GET' && input.profileSearch === '1') {
+      const query = String(input.q || '').trim().toLocaleLowerCase('he-IL').slice(0, 120);
+      if (query.length < 2) return res.status(200).json({ profiles: [] });
+      const scan = await redis('scan', '0', 'match', `${PREFIX}*`, 'count', '200');
+      const keys = Array.isArray(scan) && Array.isArray(scan[1]) ? scan[1] : [];
+      const profiles = (await Promise.all(keys.slice(0, 200).map(k => profile(k.slice(PREFIX.length)))))
+        .filter(p => p && p.banned !== true && String(p.username || '').toLowerCase() !== me)
+        .filter(p => String(p.displayName || p.username || '').toLocaleLowerCase('he-IL').includes(query))
+        .slice(0, 30)
+        .map(p => publicProfileForClient(p, p.accountAccess?.publicFields));
+      return res.status(200).json({ profiles });
     }
     if (req.method === 'GET' && accessScope === 'public') return res.status(200).json({me:{username:mine.username,displayName:mine.displayName||mine.username,avatarUrl:mine.avatarUrl||''},users:[]});
     if (req.method === 'GET') {

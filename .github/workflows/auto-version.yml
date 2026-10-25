@@ -1,13 +1,9 @@
 name: Auto bump version
-
 on:
   push:
-    branches:
-      - main
-
+    branches: [main]
 permissions:
   contents: write
-
 jobs:
   bump-version:
     runs-on: ubuntu-latest
@@ -16,25 +12,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump patch version and push
+      - name: Classify and bump version
         shell: bash
         run: |
           message=$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")
-          if [[ "$message" == "chore: auto-bump version [skip version]" ]]; then
-            echo "Skipping the generated version commit"
-            exit 0
-          fi
-          node scripts/bump-version.js patch
-          if git diff --quiet -- index.html; then
-            echo "No version change needed"
-            exit 0
-          fi
+          if [[ "$message" == "chore: auto-bump version [skip version]" ]]; then exit 0; fi
+          node scripts/bump-version.js auto "$message"
           git add index.html
           git commit -m "chore: auto-bump version [skip version]"
           git push
