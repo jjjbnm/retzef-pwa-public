@@ -180,7 +180,7 @@ module.exports = async (req, res) => {
   try {
     const mine = await profile(me); if (!mine) return res.status(401).json({ error: 'tiktok_login_required' });
     const accessScope = cookie(req, 'retzef_access_scope');
-    if (req.method === 'POST' && accessScope && accessScope !== 'owner') return res.status(403).json({error:'read_only_account_access'});
+    if (req.method === 'POST' && action !== 'switchAccount' && accessScope && accessScope !== 'owner') return res.status(403).json({error:'read_only_account_access'});
     if (req.method === 'POST' && action === 'updatePublicFields') {
       const fields = Array.isArray(input.publicFields) ? [...new Set(input.publicFields.map(String).filter(x => PUBLIC_PROFILE_FIELDS.includes(x)))] : [];
       if (!fields.includes('username') || !fields.includes('displayName')) return res.status(400).json({ error: 'required_public_fields' });
@@ -202,7 +202,7 @@ module.exports = async (req, res) => {
         mine.savedAccounts = [{ username: target, displayName: targetProfile.displayName || target, avatarUrl: targetProfile.avatarUrl || '', role: targetProfile.role || 'member' }, ...saved].slice(0, 10);
         await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
       }
-      res.setHeader('Set-Cookie', `retzef_profile_id=${encodeURIComponent(target)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`);
+      res.setHeader('Set-Cookie', [`retzef_profile_id=${encodeURIComponent(target)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`, 'retzef_access_scope=; Path=/; Max-Age=0; SameSite=Lax; Secure']);
       return res.status(200).json({ switched: true, profile: { ...publicUser(targetProfile), wallet: walletOf(targetProfile) } });
     }
 
