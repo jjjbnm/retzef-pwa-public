@@ -402,7 +402,10 @@ module.exports = async (req, res) => {
       const targetProfile = await profile(target); if ((targetProfile.blockedUsers || []).includes(me)) return res.status(403).json({ error: 'user_blocked' });
       const existingRows = await redis('lrange', `retzef:chat:requests:${target}`, '0', '49');
       if ((existingRows || []).some(row => { try { return JSON.parse(row).from === me; } catch (_) { return false; } })) return res.status(200).json({ sent: true, pending: true });
-      const item = JSON.stringify({ from: me, createdAt: new Date().toISOString() }); await redis('lpush', `retzef:chat:requests:${target}`, item); await sendTo(target, { title: 'בקשת צ׳אט חדשה', body: `@${me} רוצה להתחיל צ׳אט איתך`, url: '/' }); return res.status(201).json({ sent: true, pending: true });
+      const item = JSON.stringify({ from: me, createdAt: new Date().toISOString() });
+      await redis('lpush', `retzef:chat:requests:${target}`, item);
+      try { await sendTo(target, { title: 'בקשת צ׳אט חדשה', body: `@${me} רוצה להתחיל צ׳אט איתך`, url: '/' }); } catch (notificationError) { console.error('chat request notification:', notificationError.message); }
+      return res.status(201).json({ sent: true, pending: true });
     }
     if (action === 'accept' || action === 'deny') {
       const rows = await redis('lrange', `retzef:chat:requests:${me}`, '0', '99'); const kept = []; let found = false;
