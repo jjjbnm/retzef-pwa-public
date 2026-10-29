@@ -193,7 +193,8 @@ module.exports = async (req, res) => {
     if (req.method === 'POST' && action === 'switchAccount') {
       const target = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
       const saved = Array.isArray(mine.savedAccounts) ? mine.savedAccounts : [];
-      if (!/^[a-z0-9._-]{2,128}$/.test(target) || !saved.some(item => String(item?.username || '').toLowerCase() === target)) return res.status(403).json({ error: 'account_not_saved' });
+      const knownAccounts = Array.isArray(input.knownAccounts) ? input.knownAccounts.map(x => String(x || '').replace(/^@/, '').trim().toLowerCase()).filter(x => /^[a-z0-9._-]{2,128}$/.test(x)).slice(0, 20) : [];
+      if (!/^[a-z0-9._-]{2,128}$/.test(target) || (!saved.some(item => String(item?.username || '').toLowerCase() === target) && !knownAccounts.includes(target))) return res.status(403).json({ error: 'account_not_saved' });
       const targetProfile = await profile(target);
       if (!targetProfile) return res.status(404).json({ error: 'profile_not_found' });
       res.setHeader('Set-Cookie', `retzef_profile_id=${encodeURIComponent(target)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`);
