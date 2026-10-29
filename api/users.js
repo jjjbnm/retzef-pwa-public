@@ -197,6 +197,11 @@ module.exports = async (req, res) => {
       if (!/^[a-z0-9._-]{2,128}$/.test(target) || (!saved.some(item => String(item?.username || '').toLowerCase() === target) && !knownAccounts.includes(target))) return res.status(403).json({ error: 'account_not_saved' });
       const targetProfile = await profile(target);
       if (!targetProfile) return res.status(404).json({ error: 'profile_not_found' });
+      // Keep the selected account in the current account list so it remains available after reload.
+      if (!saved.some(item => String(item?.username || '').toLowerCase() === target)) {
+        mine.savedAccounts = [{ username: target, displayName: targetProfile.displayName || target, avatarUrl: targetProfile.avatarUrl || '', role: targetProfile.role || 'member' }, ...saved].slice(0, 10);
+        await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+      }
       res.setHeader('Set-Cookie', `retzef_profile_id=${encodeURIComponent(target)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`);
       return res.status(200).json({ switched: true, profile: { ...publicUser(targetProfile), wallet: walletOf(targetProfile) } });
     }
