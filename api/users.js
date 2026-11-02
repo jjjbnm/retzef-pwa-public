@@ -234,13 +234,15 @@ module.exports = async (req, res) => {
       const providerOrderId = String(input.providerOrderId || '').trim().slice(0, 180);
       const name = String(input.name || 'רכישה').trim().slice(0, 160) || 'רכישה';
       const amount = Number(input.amount);
-      const method = ['paypal', 'applepay', 'googlepay'].includes(String(input.method || '').toLowerCase()) ? String(input.method).toLowerCase() : 'paypal';
+      const requestedMethod = String(input.method || '').toLowerCase();
+      const method = ['paypal', 'card', 'applepay', 'googlepay'].includes(requestedMethod) ? requestedMethod : 'paypal';
       if (!providerOrderId || !Number.isFinite(amount) || amount < 0) return res.status(400).json({ error: 'invalid_payment_details' });
       const history = Array.isArray(mine.paymentHistory) ? mine.paymentHistory : [];
       const duplicate = history.find(x => String(x.providerOrderId || '') === providerOrderId);
       if (duplicate) return res.status(200).json({ paymentId: duplicate.id, payment: duplicate, alreadyRecorded: true });
       const crypto = require('crypto');
-      const paymentId = `RZ-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+      const paymentPrefix = method === 'paypal' ? 'paypal' : (method === 'card' || method === 'applepay' || method === 'googlepay' ? 'card' : 'paypal');
+      const paymentId = `${paymentPrefix}-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
       const payment = { id: paymentId, name, method, amount: Number(amount.toFixed(2)), currency: 'ILS', providerOrderId, createdAt: new Date().toISOString() };
       mine.paymentHistory = [payment, ...history].slice(0, 50);
       await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));

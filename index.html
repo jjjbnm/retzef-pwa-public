@@ -2269,11 +2269,11 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     if(!copied){try{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.focus();area.select();copied=document.execCommand('copy');area.remove();}catch(_){ }}
     if(button){const original=button.textContent;button.textContent=copied?'✅ הועתק':'❌ לא ניתן להעתיק';setTimeout(()=>{button.textContent=original;},1800);}
   }
-  async function getRetzefPaymentId(providerOrderId,itemName,price){
-    const fallback=`RZ-GUEST-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
+  async function getRetzefPaymentId(providerOrderId,itemName,price,method='paypal'){
+    const fallback=`paypal-guest-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
     if(!window.__retzefProfile) return fallback;
     try{
-      const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'recordPayment',providerOrderId,name:itemName,amount:Number(price)||0,method:'paypal'})});
+      const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'recordPayment',providerOrderId,name:itemName,amount:Number(price)||0,method})});
       const d=await r.json();
       return r.ok&&d.paymentId?d.paymentId:fallback;
     }catch(_){return fallback;}
@@ -2349,7 +2349,7 @@ function openPaypalModal(itemName, price){
           });
           const details = await res.json();
           if (details.status === 'COMPLETED') {
-            const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
+            const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'paypal'); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
           } else {
             console.error('PayPal capture did not complete. Server response:', details, 'HTTP status:', res.status);
             paypalButtonContainer.innerHTML = '<p style="color:#b91c1c; text-align:center;">התשלום לא הושלם. נסו שוב.</p>';
@@ -2398,7 +2398,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
+              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'card'); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
               applePayButtonContainer.innerHTML = '';
             } else {
               console.error('Apple Pay capture did not complete. Server response:', details, 'HTTP status:', res.status);
@@ -2443,7 +2443,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
+              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'card'); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
               applePayButtonContainer.innerHTML = '';
               googlePayButtonContainer.innerHTML = '';
             } else {
