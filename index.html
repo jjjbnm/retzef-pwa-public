@@ -588,7 +588,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='2.0.0';</script>
+<script id="retzef-version">window.RETZEF_VERSION='2.0.1';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';document.querySelectorAll('#profileWalletBalance,#topWalletBalance').forEach(function(el){el.textContent=value;});}
 </script>
@@ -1513,7 +1513,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">2.0.0</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">2.0.1</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1524,6 +1524,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
+        <li>2.0.1 — תוקנו תקלות ושופרה יציבות המערכת.</li>
         <li>2.0.0 — עונה 2: חג המולד מנובמבר עד ינואר; נוסף טפט חג מולד; נוספה מוזיקת רקע חדשה; נוספה הנחת עונה של 75% והנחת Black Friday של 15% — 90% הנחה בסך הכול.</li>
         <li>1.19.6 — תוקנו תקלות ושופרה יציבות המערכת.</li>
         <li>1.19.5 — תוקנו תקלות ושופרה יציבות המערכת.</li>
