@@ -577,6 +577,7 @@
 
   .christmas-banner{position:relative;overflow:hidden;margin:18px auto 24px;padding:24px 20px;max-width:760px;border:2px solid #38bdf8;border-radius:24px;text-align:center;color:#fff;background:radial-gradient(circle at 15% 20%,rgba(56,189,248,.35),transparent 28%),radial-gradient(circle at 85% 10%,rgba(239,68,68,.3),transparent 30%),linear-gradient(135deg,#082f49,#0f172a 55%,#14532d);box-shadow:0 18px 50px rgba(0,0,0,.28)}
   .christmas-banner:before,.christmas-banner:after{content:"🎄";position:absolute;font-size:54px;opacity:.9}.christmas-banner:before{right:18px;top:12px}.christmas-banner:after{left:18px;bottom:8px}.christmas-banner-title{position:relative;z-index:1;margin:0;color:#fff;font-size:clamp(28px,6vw,48px);font-weight:900}.christmas-banner-subtitle{position:relative;z-index:1;margin:6px 0 14px;color:#bae6fd;font-size:16px;font-weight:700}.christmas-banner-note{position:relative;z-index:1;margin-top:10px;color:#e0f2fe;font-size:12px}
+  .christmas-banner-discounts{position:relative;z-index:1;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0}.christmas-banner-discounts span{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);font-size:13px;font-weight:800}.christmas-banner-total{position:relative;z-index:1;display:inline-block;padding:10px 16px;border-radius:999px;color:#fff;background:linear-gradient(135deg,#dc2626,#991b1b);font-size:21px;font-weight:900;box-shadow:0 8px 22px rgba(220,38,38,.35)}
   html[data-wallpaper="christmas"] body{background:radial-gradient(circle at 18% 18%,rgba(56,189,248,.18),transparent 22%),radial-gradient(circle at 82% 72%,rgba(34,197,94,.18),transparent 25%),linear-gradient(135deg,#020617,#0c1f36 48%,#052e16)}
   html[data-wallpaper="christmas"] body:before{content:"❄️   🎄   ❄️   🎁   ❄️";position:fixed;inset:0;z-index:-1;display:flex;align-items:center;justify-content:center;color:rgba(186,230,253,.22);font-size:clamp(34px,8vw,84px);letter-spacing:18px;line-height:2.4;text-align:center;pointer-events:none;transform:rotate(-12deg) scale(1.3)}
   html[data-wallpaper="christmas"] body:after{content:"חג המולד";position:fixed;right:18px;bottom:14px;z-index:0;color:rgba(255,255,255,.12);font-size:clamp(42px,10vw,110px);font-weight:900;pointer-events:none}
@@ -587,7 +588,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='1.19.7';</script>
+<script id="retzef-version">window.RETZEF_VERSION='2.0.0';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';document.querySelectorAll('#profileWalletBalance,#topWalletBalance').forEach(function(el){el.textContent=value;});}
 </script>
@@ -935,7 +936,8 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="christmas-banner" role="status" aria-label="עונת חג המולד פעילה">
       <h2 class="christmas-banner-title">🎄 חג המולד הגיע לרצף</h2>
       <div class="christmas-banner-subtitle">עונה 2 · נובמבר–ינואר</div>
-      <div class="christmas-banner-note">העונה פעילה עכשיו.</div>
+      <div class="christmas-banner-discounts"><span>75% הנחת עונה</span><span>15% Black Friday</span></div>
+      <div class="christmas-banner-total">90% הנחה בסך הכול</div>
     </div>
 <div class="shop-grid" style="margin-bottom:20px;">
       <div class="shop-item glass tab-jump" data-target="status" style="cursor:pointer;">
@@ -1511,7 +1513,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>🧩 גרסה ורכיבים</h3>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">1.19.7</span></span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">2.0.0</span></span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
@@ -1522,7 +1524,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass">
       <h3>📝 יומן שינויים</h3>
       <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
-        <li>1.19.7 — תוקנו תקלות ושופרה יציבות המערכת.</li>
+        <li>2.0.0 — עונה 2: חג המולד מנובמבר עד ינואר; נוסף טפט חג מולד; נוספה מוזיקת רקע חדשה; נוספה הנחת עונה של 75% והנחת Black Friday של 15% — 90% הנחה בסך הכול.</li>
         <li>1.19.6 — תוקנו תקלות ושופרה יציבות המערכת.</li>
         <li>1.19.5 — תוקנו תקלות ושופרה יציבות המערכת.</li>
         <li>1.19.4 — תוקנו תקלות ושופרה יציבות המערכת.</li>
@@ -2230,7 +2232,22 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   // השרת (create-order.js / capture-order.js) רץ על אותו פרויקט Vercel כמו ה-TikTok
   // callback — ראו את התיעוד המלא בהערת ה-HTML בתחתית הקובץ.
   const PAYPAL_API_BASE_URL = "https://chi-liart-74.vercel.app";
-  const formatPrice = value => `₪${(Number(value)||0).toFixed(2)}`;
+  const CHRISTMAS_SEASON_FACTOR = 0.10;
+  const seasonPrice = value => Math.round((Number(value) || 0) * CHRISTMAS_SEASON_FACTOR * 100) / 100;
+  const formatPrice = value => `₪${seasonPrice(value).toFixed(2)}`;
+  function applyChristmasSeasonPrices(){
+    document.querySelectorAll('.buy-btn, .buy-tier, .add-to-cart-btn').forEach(button => {
+      const base = Number(button.dataset.basePrice || button.dataset.price);
+      if (!Number.isFinite(base) || base <= 0) return;
+      button.dataset.basePrice = String(base);
+      button.dataset.price = String(seasonPrice(base));
+      const tierPrice = button.matches('.buy-tier') ? button.querySelector('span:last-child') : null;
+      if (tierPrice) tierPrice.textContent = formatPrice(base);
+      const cardPrice = button.closest('.shop-item')?.querySelector('.price');
+      if (cardPrice && !cardPrice.classList.contains('free')) cardPrice.textContent = formatPrice(base);
+    });
+  }
+  applyChristmasSeasonPrices();
 
   const paypalModal = document.getElementById('paypalModal');
   const paypalItemName = document.getElementById('paypalItemName');
@@ -2493,7 +2510,7 @@ function openPaypalModal(itemName, price){
   const SUBSCRIPTION_PRICES={retzef_plus_day:2.95,retzef_plus_week:4.95,retzef_plus_month:12.45,retzef_plus_year:18,retzef_premium_day:5.95,retzef_premium_week:9.95,retzef_premium_month:18,retzef_premium_year:20};
   function openSubscriptionModal(itemName,planKey){
     subItemName.textContent=itemName; subButtonContainer.innerHTML=''; subModal.classList.add('open');
-    const price=Number(SUBSCRIPTION_PRICES[planKey]||0); const period=/שנה/.test(itemName)?'שנה':/שבוע/.test(itemName)?'שבוע':/3 ימים|יום/.test(itemName)?'3 ימים':'חודש';
+    const price=seasonPrice(SUBSCRIPTION_PRICES[planKey]||0); const period=/שנה/.test(itemName)?'שנה':/שבוע/.test(itemName)?'שבוע':/3 ימים|יום/.test(itemName)?'3 ימים':'חודש';
     subButtonContainer.innerHTML=`<div style="text-align:center;margin-bottom:12px"><strong>סכום: ₪${price.toFixed(2)} · תקופה: ${period}</strong><p style="font-size:12px;color:var(--muted);margin:6px 0">בחרו חיוב חד־פעמי או חיוב חוזר. הסכום והתקופה מוצגים לפני האישור.</p></div><div style="display:grid;gap:8px"><button type="button" id="subOneTimeBtn" class="btn btn-primary">תשלום חד־פעמי · ₪${price.toFixed(2)}</button><div id="subRecurringArea"></div></div>`;
     document.getElementById('subOneTimeBtn').onclick=()=>{closeSubscriptionModal();openPaypalModal(itemName.replace(/\s*\(מתחדש\)/,'')+' (חד־פעמי)',price.toFixed(2));};
     const area=document.getElementById('subRecurringArea'),planId=PLAN_IDS[planKey];
@@ -2929,7 +2946,7 @@ function openPaypalModal(itemName, price){
 
 
 <audio id="retzefBackgroundMusic" loop preload="auto" playsinline aria-hidden="true">
-  <source src="/audio/retzef-background.mp3" type="audio/mpeg">
+  <source src="/audio/christmas-background.mp3" type="audio/mpeg">
 </audio>
 <script>
 (function(){
