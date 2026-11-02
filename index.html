@@ -654,9 +654,9 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 <div id="retzefLegalUpdates" role="dialog" aria-modal="true" aria-labelledby="retzefLegalUpdatesTitle">
   <div class="retzef-updates-card">
     <h2 id="retzefLegalUpdatesTitle">המסמכים המשפטיים עודכנו</h2>
-    <p>עדכנו את תוכן המסמכים כדי לשקף את כללי הקהילה, סמכויות המנהלים, תהליך הערעורים והטיפול בפניות התמיכה. הנה כל המסמכים שהשתנו:</p>
+    <p>עדכנו את תנאי השימוש ואת תנאי השירות לתמיכה ב־2 בנובמבר 2026. נוסף כי חייבים ליצור חשבון רצף כדי להשתמש בשירותים הפעילים, והובהרו כללי החשבון, האבטחה, הערעורים והתמיכה. הנה כל המסמכים שהשתנו:</p>
     <ul class="retzef-updates-list">
-      <li><a href="/terms-of-service/">תנאי שימוש</a><br>נוסף איסור לצרף אנשים ללא אישור הבעלים, והובהרו ההשלכות והסמכות לאישור באנים.</li>
+      <li><a href="/terms-of-service/">תנאי שימוש</a><br>נוסף כי חייבים ליצור חשבון רצף לשימוש בשירותים הפעילים, והובהרו כללי הצירוף, החסימות והערעורים.</li>
       <li><a href="/privacy-policy/">מדיניות פרטיות</a><br>נוסף הסבר על שמירת בקשות הצטרפות, ראיות, סיבות באן ותכתובות ערעור.</li>
       <li><a href="/cookie-policy/">מדיניות עוגיות</a><br>נוספה הבהרה לגבי שמירת העדפות ממשק ורשומות תפעוליות הקשורות לסטטוס, תמיכה וערעורים.</li>
       <li><a href="/refund-and-cancellation/">ביטולים והחזרים</a><br>הובהר שהפרת איסור צירוף אנשים אינה מזכה בדרך כלל בהחזר ושמנוי אינו עוקף באן.</li>
@@ -672,7 +672,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 <script id="retzef-legal-updates">
 (function(){
   const CONSENT_KEY='retzef_legal_consent_v1';
-  const UPDATE_KEY='retzef_legal_update_20261010_seen';
+  const UPDATE_KEY='retzef_legal_update_20261102_seen';
   const modal=document.getElementById('retzefLegalUpdates');
   const close=document.getElementById('retzefLegalUpdatesClose');
   if(!modal||!close)return;
