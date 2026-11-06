@@ -600,7 +600,26 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 #retzef-engine-splash .retzef-engine-spinner{width:28px;height:28px;margin-top:24px;border:3px solid #e5e7eb;border-top-color:#111;border-radius:50%;animation:retzefEngineSpin .8s linear infinite}
 @keyframes retzefEngineSpin{to{transform:rotate(360deg)}}
 @media(prefers-color-scheme:dark){#retzef-engine-splash{background:#0b0d12;color:#fff}#retzef-engine-splash .retzef-engine-spinner{border-color:#30343d;border-top-color:#fff}}
-</style></head>
+</style><style>
+/* Google Play-inspired one-time checkout sheet */
+.one-time-checkout-sheet{background:#151515;border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:0;overflow:hidden;color:#f5f5f5;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+.one-time-checkout-head{padding:20px 18px 16px;background:linear-gradient(180deg,#202020,#151515);text-align:right}
+.one-time-checkout-kicker{font-size:12px;color:#b9b9b9;margin-bottom:12px}
+.one-time-checkout-title{font-size:24px;font-weight:800;margin:0 0 8px;line-height:1.25}
+.one-time-checkout-price{font-size:30px;font-weight:900;margin:0;color:#fff;direction:ltr;text-align:right}
+.one-time-checkout-account{font-size:13px;color:#c8c8c8;margin-top:10px;word-break:break-all}
+.one-time-checkout-body{padding:16px 18px 20px;background:#171717}
+.one-time-payment-label{font-size:14px;font-weight:800;margin:0 0 10px;color:#f1f1f1}
+.one-time-payment-method{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.13);border-radius:12px;background:#202020;padding:13px 14px;margin:8px 0;color:#f5f5f5;text-align:right}
+.one-time-payment-method .payment-method-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:#303030;font-weight:900;font-size:17px;flex:0 0 30px}
+.one-time-payment-method strong{display:block;font-size:15px}.one-time-payment-method small{display:block;color:#aaa;margin-top:3px;font-size:11px}
+.one-time-payment-method.paypal-method{border-color:rgba(255,193,7,.32)}
+.one-time-payment-method.google-method{display:none}
+.one-time-payment-actions{margin-top:12px}.one-time-payment-actions:empty{display:none}
+.one-time-secure-note{font-size:11px;color:#aaa;text-align:center;margin:14px 0 0}
+@media(max-width:520px){.one-time-checkout-title{font-size:22px}.one-time-checkout-price{font-size:28px}.one-time-checkout-body{padding:14px 14px 18px}}
+</style>
+</head>
 <body>
 <div id="retzefLegalGate" role="dialog" aria-modal="true" aria-labelledby="retzefLegalTitle">
   <div class="retzef-legal-card">
@@ -838,16 +857,22 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 
 
 <div class="modal-overlay" id="paypalModal">
-  <div class="modal-card" style="text-align:right;">
-    <button type="button" id="paypalModalClose" style="position:absolute; top:14px; left:14px; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer;">✕</button>
-    <div style="text-align:center;">
-      <h3 id="paypalItemName" style="margin-bottom:2px;"></h3>
-      <p id="paypalItemPrice" style="font-family:'Rubik'; font-weight:800; font-size:22px; color:var(--accent); margin-bottom:18px;"></p>
+  <div class="modal-card one-time-checkout-sheet" style="text-align:right;">
+    <button type="button" id="paypalModalClose" style="position:absolute; top:14px; left:14px; z-index:3; background:none; border:none; color:#ddd; font-size:22px; cursor:pointer;">✕</button>
+    <div class="one-time-checkout-head" dir="rtl">
+      <div class="one-time-checkout-kicker">רכישה חד־פעמית · תשלום מאובטח</div>
+      <h3 id="paypalItemName" class="one-time-checkout-title"></h3>
+      <p id="paypalItemPrice" class="one-time-checkout-price"></p>
+      <div id="oneTimeCheckoutAccount" class="one-time-checkout-account">חשבון: אורח</div>
     </div>
-    <div id="coinPaymentBox" style="margin:0 0 14px;padding:14px;border:1px solid var(--glass-border);border-radius:14px;background:rgba(255,211,77,.12);text-align:center"><div style="font-weight:800;margin-bottom:4px">🪙 תשלום במטבעות רצף</div><div id="coinPaymentBalance" style="font-size:13px;color:var(--muted);margin-bottom:10px">יתרה: טוען...</div><div style="display:flex;gap:8px;justify-content:center"><button type="button" id="coinBuyBtn" class="btn btn-primary" style="font-size:13px;padding:9px 16px">קנה במטבעות</button><button type="button" id="coinBackBtn" class="btn btn-ghost glass" style="font-size:13px;padding:9px 16px">ביטול / אחורה</button></div><div id="coinPaymentMessage" style="font-size:12px;margin-top:8px"></div></div><div id="paypalButtonContainer"></div>
+    <div class="one-time-checkout-body" dir="rtl">
+      <div class="one-time-payment-label">אמצעי תשלום</div>
+      <div class="one-time-payment-method paypal-method"><span class="payment-method-icon">P</span><span><strong>PayPal או כרטיס אשראי</strong><small>אפשר לשלם דרך חשבון PayPal או בכרטיס</small></span></div>
+      <div id="coinPaymentBox" style="margin:0 0 14px;padding:14px;border:1px solid var(--glass-border);border-radius:14px;background:rgba(255,211,77,.12);text-align:center"><div style="font-weight:800;margin-bottom:4px">🪙 תשלום במטבעות רצף</div><div id="coinPaymentBalance" style="font-size:13px;color:var(--muted);margin-bottom:10px">יתרה: טוען...</div><div style="display:flex;gap:8px;justify-content:center"><button type="button" id="coinBuyBtn" class="btn btn-primary" style="font-size:13px;padding:9px 16px">קנה במטבעות</button><button type="button" id="coinBackBtn" class="btn btn-ghost glass" style="font-size:13px;padding:9px 16px">ביטול / אחורה</button></div><div id="coinPaymentMessage" style="font-size:12px;margin-top:8px"></div></div>
+    <div class="one-time-payment-actions" id="paypalPaymentLabel"><div class="one-time-payment-label" style="margin-top:14px;">המשך לתשלום</div><div id="paypalButtonContainer"></div></div>
     <div id="applePayButtonContainer" style="margin-top:10px;"></div>
     <div id="googlePayButtonContainer" style="margin-top:10px;"></div>
-    <p style="font-size:11.5px; color:var(--muted); margin-top:14px; text-align:center;">התשלום מאובטח דרך PayPal.</p>
+    <p class="one-time-secure-note">התשלום מעובד באופן מאובטח דרך PayPal. פרטי הכרטיס אינם נשמרים באתר רצף.</p>
   </div>
 </div>
 
@@ -2299,6 +2324,8 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   }
 function openPaypalModal(itemName, price){
     paypalItemName.textContent = itemName;
+    const accountLabel = document.getElementById('oneTimeCheckoutAccount');
+    if (accountLabel) { const p = window.__retzefProfile; accountLabel.textContent = p?.email ? `חשבון: ${p.email}` : (p?.username ? `חשבון: @${p.username}` : 'חשבון: אורח'); }
     loadCoinPayment(itemName, price);
     paypalItemPrice.textContent = `₪${price}`;
     paypalButtonContainer.innerHTML = '';
