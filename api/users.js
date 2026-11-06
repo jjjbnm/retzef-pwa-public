@@ -297,7 +297,7 @@ module.exports = async (req, res) => {
       const recipient = String(input.username || '').replace(/^@/, '').trim().toLowerCase();
       const amount = Math.floor(Number(input.amount));
       const reason = String(input.reason || 'תרומה').trim().slice(0, 160) || 'תרומה';
-      if (!/^[a-z0-9._-]{2,128}$/.test(recipient) || recipient === me) return res.status(400).json({ error: 'invalid_recipient' });
+      if (!/^[a-z0-9._-]{2,128}$/.test(recipient) || recipient === me) return res.status(400).json({ error: 'invalid_recipient', message: 'שם המשתמש של המקבל אינו תקין.' });
       if (!Number.isInteger(amount) || amount < 1 || amount > 100000) return res.status(400).json({ error: 'invalid_amount' });
       const targetProfile = await profile(recipient);
       if (!targetProfile || targetProfile.banned === true) return res.status(404).json({ error: 'recipient_not_found', message: 'ה־Trade התבטל — המשתמש לא נמצא.' });
