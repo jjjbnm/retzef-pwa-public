@@ -559,6 +559,16 @@
   #accountSettingsCard{max-height:calc(100vh - 190px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable;padding-inline-end:18px;}
   #accountSettingsCard>h3{position:sticky;top:-1px;z-index:2;padding:4px 0 12px;background:var(--bg2);}
   @media(max-width:640px){#accountSettingsCard{max-height:calc(100vh - 145px);padding:18px 16px;}}
+
+
+/* Retzef release notes / updates page */
+.release-page{display:grid;gap:18px;text-align:right;direction:rtl}
+.release-hero{position:relative;overflow:hidden;padding:26px 24px 22px;border:1px solid rgba(56,189,248,.35);border-radius:24px;background:radial-gradient(circle at 8% 0%,rgba(56,189,248,.24),transparent 34%),linear-gradient(135deg,rgba(8,47,73,.92),rgba(15,23,42,.95) 58%,rgba(20,83,45,.9));color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.22)}
+.release-hero:after{content:'✦';position:absolute;left:20px;bottom:-20px;font-size:110px;line-height:1;color:rgba(255,255,255,.07);transform:rotate(18deg)}
+.release-breadcrumb{font-size:12px;color:rgba(255,255,255,.68);margin-bottom:14px}.release-hero h3{position:relative;z-index:1;margin:0 0 8px;font-size:clamp(23px,5vw,34px);line-height:1.2;color:#fff}.release-summary{position:relative;z-index:1;margin:0 0 18px;max-width:720px;color:rgba(255,255,255,.84);line-height:1.7;font-size:14px}.release-meta{position:relative;z-index:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:rgba(255,255,255,.72);font-size:12px}.release-pill{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);color:#fff;font-weight:800}.release-version{direction:ltr;font-family:'Rubik',sans-serif;font-size:14px}
+.release-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.release-card{padding:20px;border-radius:18px;border:1px solid var(--glass-border);background:var(--bg2);box-shadow:0 8px 24px rgba(20,23,40,.06)}.release-card h4{margin:0 0 12px;font-size:18px}.release-card ul{margin:0;padding-inline-start:20px;color:var(--muted);line-height:1.75;font-size:13.5px}.release-card li+li{margin-top:7px}.release-card.new h4{color:#16a34a}.release-card.fixed h4{color:#2563eb}.release-card.small h4{color:#a16207}.release-tech{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.release-tech span{padding:10px;border-radius:12px;background:var(--glass);font-size:12px;color:var(--muted);text-align:center}.release-tech b{display:block;color:var(--text);font-size:13px;margin-bottom:2px}.release-history{padding:0;border:1px solid var(--glass-border);border-radius:18px;background:var(--bg2);overflow:hidden}.release-history summary{cursor:pointer;list-style:none;padding:17px 20px;font-weight:800}.release-history summary::-webkit-details-marker{display:none}.release-history summary:before{content:'＋';display:inline-block;margin-inline-end:8px;color:var(--accent)}.release-history[open] summary:before{content:'−'}.release-history-body{padding:0 20px 20px;max-height:460px;overflow:auto}.release-history-body ul{margin:0;padding-inline-start:20px;color:var(--muted);font-size:13px;line-height:1.7}.release-history-body li+li{margin-top:5px}.release-note{font-size:12px;color:var(--muted);text-align:center;line-height:1.6}
+@media(max-width:640px){.release-grid{grid-template-columns:1fr}.release-hero{padding:22px 18px 20px}.release-card{padding:17px}.release-tech{grid-template-columns:1fr}.release-history-body{max-height:380px;padding-inline:16px}}
+
 </style>
 
 <style id="retzef-version-mode-styles">
@@ -589,7 +599,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='2.1.4';</script>
+<script id="retzef-version">window.RETZEF_VERSION='2.1.3';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';document.querySelectorAll('#profileWalletBalance,#topWalletBalance').forEach(function(el){el.textContent=value;});}
 </script>
@@ -1529,30 +1539,19 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <span class="eyebrow" data-i18n="about_eyebrow">מידע כללי</span>
     <h2 class="sec-title" data-i18n="about_title">אודות וגרסה</h2>
     <p class="sec-sub" data-i18n="about_sub">כל מה שקשור לאפליקציה עצמה — לא לקבוצה.</p>
-
-    <div class="settings-card glass">
-      <h3>ℹ️ על האפליקציה</h3>
-      <p style="font-size:13.5px; color:var(--muted); line-height:1.7;">
-        בית התמיכה הרשמי של קהילת רצף ב-TikTok — חוקים, סטטוס, מנויים, חנות, לוחות מודעות, התחברות ותשלומים במקום אחד. האפליקציה פועלת ב-Vercel ומחובר ל-GitHub.
-      </p>
-    </div>
-
-    <div class="settings-card glass">
-      <h3>🧩 גרסה ורכיבים</h3>
-      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">גרסה</span><span style="font-weight:700;"><span id="retzef-version-value">2.1.4</span></span></div>
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">אחסון</span><span style="font-weight:700;">Vercel + GitHub</span></div>
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">תשלומים</span><span style="font-weight:700;">PayPal · Apple Pay · Google Pay</span></div>
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">התחברות</span><span style="font-weight:700;">TikTok Login Kit</span></div>
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted);">עוזר</span><span style="font-weight:700;">AI בעברית + fallback</span></div>
+    <div class="release-page">
+      <article class="release-hero">
+        <div class="release-breadcrumb">אודות וגרסה  /  עדכון מערכת</div>
+        <h3>רצף 2.1.3: עמוד גרסאות ועדכונים חדש</h3>
+        <p class="release-summary">ריכזנו במקום אחד את השינויים החשובים ברצף: מה נוסף, מה תוקן ואילו שיפורים קטנים נכנסו למערכת. העדכונים נפרדים מהחוקים ומהתוכן הקבוע של הקבוצה.</p>
+        <div class="release-meta"><span class="release-pill">שיפור מערכת</span><span class="release-version">v2.1.3</span><span>7 בנובמבר 2026</span><span>צוות רצף</span></div>
+      </article>
+      <div class="release-grid">
+        <article class="release-card new"><h4>✅ מה חדש</h4><ul><li>נוסף עמוד עדכונים חדש בתוך „אודות וגרסה”, עם חלוקה ברורה לפי סוגי שינוי.</li><li>חלון הרכישה החד־פעמית קיבל עיצוב חדש בסגנון חנות אפליקציות, כולל מוצר, מחיר, חשבון ואמצעי תשלום.</li><li>הפרטים על עונת חג המולד, ההנחה והמערכת מופיעים בצורה ברורה יותר.</li><li>נוספה היסטוריית גרסאות מתקפלת כדי שאפשר יהיה למצוא עדכונים ישנים בלי לגלול על פני רשימה ארוכה.</li></ul></article>
+        <article class="release-card fixed"><h4>🛠️ תוקן</h4><ul><li>תוקנה בעיית מבנה בחלון התשלום שעלולה הייתה להסתיר את כל תוכן האתר במובייל.</li><li>שופרה התצוגה במסכים צרים, כולל כרטיסי העדכון והטקסט בעברית.</li><li>נשמרו מסלולי PayPal, תשלום בכרטיס, Apple Pay, Google Pay ותשלום במטבעות.</li><li>מסלול המנויים והחיוב החוזר נשאר נפרד ולא השתנה.</li></ul></article>
       </div>
-    </div>
-
-    <div class="settings-card glass">
-      <h3>📝 יומן שינויים</h3>
-      <ul data-retzef-changelog style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
-        <li>2.1.4 — תוקנו תקלות ושופרה יציבות המערכת.</li>
-        <li>2.1.3 — תוקנו תקלות ושופרה יציבות המערכת.</li>
+      <article class="release-card small"><h4>🔧 שיפורים קטנים</h4><ul><li>הכותרות והתגיות קיבלו היררכיה ברורה יותר.</li><li>נוסף תאריך עדכון ומחבר לכל גרסה.</li><li>העיצוב מתאים למסך טלפון, טאבלט ומחשב.</li></ul><div class="release-tech"><span><b>גרסה</b>2.1.3</span><span><b>אחסון</b>Vercel + GitHub</span><span><b>שפה</b>עברית</span></div></article>
+      <details class="release-history"><summary>הצגת גרסאות קודמות</summary><div class="release-history-body"><ul><li>2.1.3 — תוקנו תקלות ושופרה יציבות המערכת.</li>
         <li>2.1.2 — תוקנו תקלות ושופרה יציבות המערכת.</li>
         <li>2.1.1 — תוקנו תקלות ושופרה יציבות המערכת.</li>
         <li>2.1.0 — נוספה יכולת חדשה במערכת.</li>
@@ -1631,17 +1630,10 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
         <li>נוספה התחברות TikTok עם display name, username, תמונת פרופיל ותפקיד.</li>
         <li>נוספו לוחות מודעות ועדכונים עם שמירת מידע בשרת.</li>
         <li>נוספו סקרים, אירועים, קישורים וקבצים עם הגבלת APK ו-100MB.</li>
-        <li>תוקנו העגלה, חלונות התשלום וכפתורי הסגירה.</li>
-      </ul>
-      <ul style="font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px; padding-inline-start:18px;">
-        <li>הוספת PWA — התקנה למסך הבית</li>
-        <li>הוספת חנות ומחשבון מחיר</li>
-        <li>הוספת התחברות TikTok + תשלומי PayPal</li>
-        <li>הוספת טאבים, הגדרות עיצוב, ותמיכה דו-לשונית</li>
-      </ul>
+        <li>תוקנו העגלה, חלונות התשלום וכפתורי הסגירה.</li></ul></div></details>
+      <p class="release-note">הערה: עדכונים קטנים ותיקוני אבטחה יכולים להיכנס בין גרסאות. אם משהו נראה לא תקין, אפשר לפנות דרך טאב התמיכה.</p>
     </div>
   </section>
-
   <!-- SUPPORT -->
   <section id="support" class="tab-panel">
     <div class="contact-card glass">
