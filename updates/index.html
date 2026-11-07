@@ -39,7 +39,7 @@
       if(!source)throw new Error('release_notes_missing');
       target.className='';
       target.appendChild(document.importNode(source,true));
-      const title=(doc.querySelector('[data-retzef-current-version]')?.textContent?.trim().replace(/^v/,'')) || (doc.querySelector('#retzef-version')?.textContent?.match(/RETZEF_VERSION=['\"]([^'\"]+)/)?.[1]);
+      const title=(doc.querySelector('#retzef-version')?.textContent?.match(/RETZEF_VERSION=['\"]([^'\"]+)/)?.[1]) || (doc.querySelector('[data-retzef-current-version]')?.textContent?.trim().replace(/^v/,''));
       const banner=target.querySelector('.release-banner');
       if(banner && title){
         const number=banner.querySelector('.release-banner-version');
@@ -50,6 +50,10 @@
       }
       if(title){
         document.title='רצף '+title+' | עדכוני גרסה';
+        const current=target.querySelector('[data-retzef-current-version]');
+        if(current)current.textContent='v'+title;
+        const heading=target.querySelector('.release-hero h3');
+        if(heading)heading.textContent='רצף '+title+': עמוד גרסאות ועדכונים חדש';
         const link=target.querySelector('.release-version-link');
         if(link){link.href='/updates/v'+encodeURIComponent(title)+'/';link.textContent='/updates/v'+title+'/';}
       }
