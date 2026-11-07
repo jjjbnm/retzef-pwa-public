@@ -42,14 +42,14 @@
       const requested=(location.pathname.match(/\/updates\/v([^\/]+)\/?$/)||[])[1];
       const currentSource=(doc.querySelector('#retzef-version')?.textContent?.match(/RETZEF_VERSION=['\"]([^'\"]+)/)||[])[1] || (doc.querySelector('[data-retzef-current-version]')?.textContent?.trim().replace(/^v/,''));
       const title=requested || currentSource;
-      const historyEntries=[...doc.querySelectorAll('.release-history-body li')];
-      const historyItem=historyEntries.find(function(item){const version=item.textContent.trim().split(' — ')[0];return version===title || (/^\d+$/.test(title)&&version.startsWith(title+'.'));});
-      const historyText=historyItem?historyItem.textContent.trim().replace(/^[^—]+ —\s*/, ''):'';
       const releaseNotes={
         '2.1.7':{new:['נוסף עמוד עדכונים ישיר בסגנון Release Notes.','נוסף באנר גרסה עם מספר העדכון, תאריך וקישור ישיר.','נוספה חלוקה ברורה בין מה חדש, מה תוקן ושיפורים קטנים.'],fixed:['תוקנה בעיית מבנה בחלון התשלום שעלולה להסתיר את תוכן האתר במובייל.','שופרה התאמת העמוד למסכים צרים.','נשמרו מסלולי התשלום והמנויים הקיימים.']},
         '2.2.1':{new:['נוסף קישור ישיר לכל גרסה מתוך באנר העדכון.','נוסף סנכרון אוטומטי של מספר הגרסה, הבאנר והקישור.','עמוד העדכונים מציג את „מה חדש” ו„תוקן” לפי הגרסה הפעילה.'],fixed:['תוקנה הצגת גרסה ישנה בבאנר כאשר מקור הגרסה השתנה.','תוקן נתיב הגרסה הישיר עם לוכסן בסוף.','תוקן הסנכרון בין האתר הראשי לעמוד העדכונים הישיר.']}
       };
       function renderNotes(root, version, historyText){const explicit=releaseNotes[version];const isFix=/תוקנ|שופ|תקל|תיקון|תיקונים/.test(historyText||'');const data=explicit||{new:isFix?['העדכון לגרסה '+version+' מתועד באזור „אודות וגרסה”.']:[historyText||'נוסף עדכון חדש למערכת בגרסה '+version+'.'],fixed:isFix?[historyText]:['לא צוין תיקון נפרד עבור גרסה זו.']};const lists=root.querySelectorAll('.release-card.new ul,.release-card.fixed ul');[data.new,data.fixed].forEach((items,i)=>{if(lists[i])lists[i].innerHTML=items.filter(Boolean).map(item=>'<li>'+item+'</li>').join('');});}
+      const historyEntries=[...target.querySelectorAll('.release-history-body li')];
+      const historyItem=historyEntries.find(function(item){const version=item.textContent.trim().split(' — ')[0];return version===title || (/^\d+$/.test(title)&&version.startsWith(title+'.'));});
+      const historyText=historyItem?historyItem.textContent.trim().replace(/^[^—]+ —\s*/, ''):'';
       const banner=target.querySelector('.release-banner');
       if(banner && title){
         const number=banner.querySelector('.release-banner-version');
