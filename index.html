@@ -603,7 +603,7 @@
 window.retzefCacheProfile=window.retzefCacheProfile||function(profile){try{if(profile&&profile.username)localStorage.setItem('retzef_current_profile',JSON.stringify(profile));}catch(_){}};
 </script>
 
-<script id="retzef-version">window.RETZEF_VERSION='2.3.0';</script>
+<script id="retzef-version">window.RETZEF_VERSION='2.1.7';</script>
 <script>
 function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Number(String(raw??0).replace(/[,_\s]/g,''))||0)+' 🪙';document.querySelectorAll('#profileWalletBalance,#topWalletBalance').forEach(function(el){el.textContent=value;});}
 </script>
@@ -1547,13 +1547,13 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <article class="release-hero">
         <div class="release-breadcrumb">אודות וגרסה  /  עדכון מערכת</div>
         <div style="margin-top:14px;position:relative;z-index:1;"><a href="/updates/" class="release-pill" style="text-decoration:none;">פתיחת עמוד העדכונים המלא ↗</a></div>
-        <h3>רצף 2.1.3: עמוד גרסאות ועדכונים חדש</h3>
+        <h3>רצף 2.1.7: עמוד גרסאות ועדכונים חדש</h3>
         <p class="release-summary">ריכזנו במקום אחד את השינויים החשובים ברצף: מה נוסף, מה תוקן ואילו שיפורים קטנים נכנסו למערכת. העדכונים נפרדים מהחוקים ומהתוכן הקבוע של הקבוצה.</p>
-        <div class="release-meta"><span class="release-pill">שיפור מערכת</span><span class="release-version">v2.1.3</span><span>7 בנובמבר 2026</span><span>צוות רצף</span></div>
+        <div class="release-meta"><span class="release-pill">שיפור מערכת</span><span class="release-version" data-retzef-current-version>v2.1.7</span><span>7 בנובמבר 2026</span><span>צוות רצף</span></div>
       </article>
-      <div class="release-banner" aria-label="באנר עדכון גרסה 2.1.6">
+      <div class="release-banner" aria-label="באנר עדכון גרסה 2.1.7">
         <div class="release-banner-top"><span class="release-banner-brand">רצף · עדכוני מערכת</span><span class="release-banner-tag">עדכון</span></div>
-        <div class="release-banner-content"><div class="release-banner-copy">רצף 2.1.6<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small></div><div class="release-banner-version">2.1.6</div></div>
+        <div class="release-banner-content"><div class="release-banner-copy">רצף 2.1.7<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small></div><div class="release-banner-version">2.1.7</div></div>
         <div class="release-banner-bottom"><span>retzef / updates</span><span>7 בנובמבר 2026</span></div>
       </div>
       <div class="release-grid">
@@ -3110,5 +3110,18 @@ function openPaypalModal(itemName, price){
 })();
 </script>
 <script src="https://aiticketbot.com/widget/w.js" data-key="wgt_ae1796028567fc39ac458116453a3774" async></script>
+
+<script id="retzef-release-banner-sync">
+(function(){
+  function sync(){
+    var value=document.getElementById('retzef-version-value')?.textContent?.trim() || window.RETZEF_VERSION || '2.1.7';
+    document.querySelectorAll('.release-banner-version').forEach(function(el){el.textContent=value;});
+    document.querySelectorAll('.release-banner-copy').forEach(function(el){el.innerHTML='רצף '+value+'<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small>';});
+    document.querySelectorAll('.release-banner').forEach(function(el){el.setAttribute('aria-label','באנר עדכון גרסה '+value);});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+})();
+</script>
+
 </body>
   </html>

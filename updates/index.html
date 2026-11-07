@@ -39,7 +39,15 @@
       if(!source)throw new Error('release_notes_missing');
       target.className='';
       target.appendChild(document.importNode(source,true));
-      const title=doc.querySelector('#retzef-version-value')?.textContent?.trim();
+      const title=(doc.querySelector('[data-retzef-current-version]')?.textContent?.trim().replace(/^v/,'')) || (doc.querySelector('#retzef-version')?.textContent?.match(/RETZEF_VERSION=['\"]([^'\"]+)/)?.[1]);
+      const banner=target.querySelector('.release-banner');
+      if(banner && title){
+        const number=banner.querySelector('.release-banner-version');
+        const copy=banner.querySelector('.release-banner-copy');
+        if(number)number.textContent=title;
+        if(copy)copy.innerHTML='רצף '+title+'<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small>';
+        banner.setAttribute('aria-label','באנר עדכון גרסה '+title);
+      }
       if(title)document.title='רצף '+title+' | עדכוני גרסה';
     }catch(error){
       target.className='error';
