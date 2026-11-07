@@ -1547,18 +1547,18 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <article class="release-hero">
         <div class="release-breadcrumb">אודות וגרסה  /  עדכון מערכת</div>
         <div style="margin-top:14px;position:relative;z-index:1;"><a href="/updates/" class="release-pill" style="text-decoration:none;">פתיחת עמוד העדכונים המלא ↗</a></div>
-        <h3>רצף 2.2.0: עמוד גרסאות ועדכונים חדש</h3>
+        <h3>רצף 2.2.1: עמוד גרסאות ועדכונים חדש</h3>
         <p class="release-summary">ריכזנו במקום אחד את השינויים החשובים ברצף: מה נוסף, מה תוקן ואילו שיפורים קטנים נכנסו למערכת. העדכונים נפרדים מהחוקים ומהתוכן הקבוע של הקבוצה.</p>
-        <div class="release-meta"><span class="release-pill">שיפור מערכת</span><span class="release-version" data-retzef-current-version>v2.2.0</span><span>7 בנובמבר 2026</span><span>צוות רצף</span></div>
+        <div class="release-meta"><span class="release-pill">שיפור מערכת</span><span class="release-version" data-retzef-current-version>v2.2.1</span><span>7 בנובמבר 2026</span><span>צוות רצף</span></div>
       </article>
-      <div class="release-banner" aria-label="באנר עדכון גרסה 2.2.0">
+      <div class="release-banner" aria-label="באנר עדכון גרסה 2.2.1">
         <div class="release-banner-top"><span class="release-banner-brand">רצף · עדכוני מערכת</span><span class="release-banner-tag">עדכון</span></div>
-        <div class="release-banner-content"><div class="release-banner-copy">רצף 2.2.0<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small></div><div class="release-banner-version">2.2.0</div></div>
-        <div class="release-banner-bottom"><a class="url release-version-link" href="/updates/v2.2.0/">/updates/v2.2.0/</a><span>7 בנובמבר 2026</span></div>
+        <div class="release-banner-content"><div class="release-banner-copy">רצף 2.2.1<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small></div><div class="release-banner-version">2.2.1</div></div>
+        <div class="release-banner-bottom"><a class="url release-version-link" href="/updates/v2.2.1/">/updates/v2.2.1/</a><span>7 בנובמבר 2026</span></div>
       </div>
       <div class="release-grid">
-        <article class="release-card new"><h4>✅ מה חדש</h4><ul><li>נוספו קישורים ישירים לכל גרסה בפורמט <code>/updates/vמספר-גרסה/</code>.</li><li>נוסף סנכרון אוטומטי של מספר הגרסה בבאנר, בכותרת ובקישור הישיר.</li><li>עמוד העדכונים הישיר ממשיך לקרוא את „מה חדש” ו„תוקן” מאזור „אודות וגרסה”.</li></ul></article>
-        <article class="release-card fixed"><h4>🛠️ תוקן</h4><ul><li>תוקנה אי־התאמה שבה הבאנר והקישור הציגו גרסה ישנה יותר ממקור הגרסה.</li><li>תוקן נתיב הגרסה הישיר כך ש־<code>/updates/v2.2.0/</code> נפתח דרך Vercel.</li><li>תוקן הסנכרון בעמוד העדכונים כך שכותרת, באנר, קישור ורשימות השינויים מתעדכנים יחד.</li></ul></article>
+        <article class="release-card new"><h4>✅ מה חדש</h4><ul><li>נוסף קישור ישיר לכל גרסה מתוך באנר העדכון.</li><li>נוסף סנכרון אוטומטי של מספר הגרסה, הבאנר והקישור.</li><li>עמוד העדכונים מציג את „מה חדש” ו„תוקן” לפי הגרסה הפעילה.</li></ul></article>
+        <article class="release-card fixed"><h4>🛠️ תוקן</h4><ul><li>תוקנה הצגת גרסה ישנה בבאנר כאשר מקור הגרסה השתנה.</li><li>תוקן נתיב הגרסה הישיר עם לוכסן בסוף.</li><li>תוקן הסנכרון בין האתר הראשי לעמוד העדכונים הישיר.</li></ul></article>
       </div>
       <article class="release-card small"><h4>🔧 שיפורים קטנים</h4><ul><li>הכותרות והתגיות קיבלו היררכיה ברורה יותר.</li><li>נוסף תאריך עדכון ומחבר לכל גרסה.</li><li>העיצוב מתאים למסך טלפון, טאבלט ומחשב.</li></ul><div class="release-tech"><span><b>גרסה</b>2.1.3</span><span><b>אחסון</b>Vercel + GitHub</span><span><b>שפה</b>עברית</span></div></article>
       <details class="release-history"><summary>הצגת גרסאות קודמות</summary><div class="release-history-body"><ul><li>2.1.3 — תוקנו תקלות ושופרה יציבות המערכת.</li>
@@ -3114,7 +3114,17 @@ function openPaypalModal(itemName, price){
 <script id="retzef-release-banner-sync">
 (function(){
   function sync(){
-    var value=document.getElementById('retzef-version-value')?.textContent?.trim() || window.RETZEF_VERSION || '2.2.0';
+    var value=document.getElementById('retzef-version-value')?.textContent?.trim() || window.RETZEF_VERSION || '2.2.1';
+    var releaseNotes={
+      '2.2.1':{new:['נוסף קישור ישיר לכל גרסה מתוך באנר העדכון.','נוסף סנכרון אוטומטי של מספר הגרסה, הבאנר והקישור.','עמוד העדכונים מציג את „מה חדש” ו„תוקן” לפי הגרסה הפעילה.'],fixed:['תוקנה הצגת גרסה ישנה בבאנר כאשר מקור הגרסה השתנה.','תוקן נתיב הגרסה הישיר כך שהוא נפתח גם עם כתובת הכוללת לוכסן בסוף.','תוקן הסנכרון בין האתר הראשי לעמוד העדכונים הישיר.']},
+      '2.2.0':{new:['נוספו קישורים ישירים לכל גרסה.','נוסף סנכרון אוטומטי של מספר הגרסה בבאנר, בכותרת ובקישור.','נוסף עמוד עדכונים ישיר שמסונכרן מאזור „אודות וגרסה”.'],fixed:['תוקנה אי־התאמה בין הבאנר למקור הגרסה.','תוקן נתיב הגרסה הישיר דרך Vercel.','תוקן סנכרון רשימות השינויים בעמוד העדכונים.']}
+    };
+    var releaseData=releaseNotes[value]||{new:['נוסף עדכון חדש למערכת בגרסה '+value+'.','פרטי השינויים מסונכרנים מאזור „אודות וגרסה”.'],fixed:['תוקנו תקלות ושופרה יציבות המערכת בגרסה '+value+'.']};
+    function renderNotes(root){
+      var lists=root.querySelectorAll('.release-card.new ul,.release-card.fixed ul');
+      [releaseData.new,releaseData.fixed].forEach(function(items,index){if(lists[index])lists[index].innerHTML=items.map(function(item){return '<li>'+item+'</li>';}).join('');});
+    }
+    renderNotes(document);
     document.querySelectorAll('.release-banner-version').forEach(function(el){el.textContent=value;});
     document.querySelectorAll('[data-retzef-current-version]').forEach(function(el){el.textContent='v'+value;});
     document.querySelectorAll('.release-hero h3').forEach(function(el){el.textContent='רצף '+value+': עמוד גרסאות ועדכונים חדש';});

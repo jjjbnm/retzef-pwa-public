@@ -40,6 +40,10 @@
       target.className='';
       target.appendChild(document.importNode(source,true));
       const title=(doc.querySelector('#retzef-version')?.textContent?.match(/RETZEF_VERSION=['\"]([^'\"]+)/)?.[1]) || (doc.querySelector('[data-retzef-current-version]')?.textContent?.trim().replace(/^v/,''));
+      const releaseNotes={
+        '2.2.1':{new:['נוסף קישור ישיר לכל גרסה מתוך באנר העדכון.','נוסף סנכרון אוטומטי של מספר הגרסה, הבאנר והקישור.','עמוד העדכונים מציג את „מה חדש” ו„תוקן” לפי הגרסה הפעילה.'],fixed:['תוקנה הצגת גרסה ישנה בבאנר כאשר מקור הגרסה השתנה.','תוקן נתיב הגרסה הישיר עם לוכסן בסוף.','תוקן הסנכרון בין האתר הראשי לעמוד העדכונים הישיר.']}
+      };
+      function renderNotes(root, version){const data=releaseNotes[version]||{new:['נוסף עדכון חדש למערכת בגרסה '+version+'.'],fixed:['תוקנו תקלות ושופרה יציבות המערכת בגרסה '+version+'.']};const lists=root.querySelectorAll('.release-card.new ul,.release-card.fixed ul');[data.new,data.fixed].forEach((items,i)=>{if(lists[i])lists[i].innerHTML=items.map(item=>'<li>'+item+'</li>').join('');});}
       const banner=target.querySelector('.release-banner');
       if(banner && title){
         const number=banner.querySelector('.release-banner-version');
@@ -49,6 +53,7 @@
         banner.setAttribute('aria-label','באנר עדכון גרסה '+title);
       }
       if(title){
+        renderNotes(target,title);
         document.title='רצף '+title+' | עדכוני גרסה';
         const current=target.querySelector('[data-retzef-current-version]');
         if(current)current.textContent='v'+title;
