@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>עדכוני רצף | אודות וגרסה</title>
+  <meta name="description" content="עדכוני גרסאות, מה חדש ותיקונים במערכת רצף.">
+  <link rel="icon" href="../icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:dark;--bg:#050b16;--panel:#101b2c;--border:rgba(148,163,184,.2);--text:#f7fbff;--muted:#b7c3d4;--blue:#38bdf8;--green:#4ade80}
+    *{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% 0%,rgba(56,189,248,.18),transparent 30%),radial-gradient(circle at 92% 75%,rgba(34,197,94,.12),transparent 25%),linear-gradient(145deg,#050b16,#0b1728 55%,#09251d);color:var(--text);font:16px/1.65 Assistant,Arial,sans-serif}
+    a{color:inherit}.updates-shell{width:min(900px,calc(100% - 32px));margin:0 auto;padding:28px 0 60px}.updates-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:34px}.brand{font-family:Rubik,sans-serif;font-weight:900;font-size:22px}.back{color:var(--muted);text-decoration:none;font-size:14px}.back:hover{color:#fff}.loading,.error{padding:26px;border:1px solid var(--border);border-radius:20px;background:rgba(16,27,44,.78);text-align:center;color:var(--muted)}
+    .release-page{display:grid;gap:18px;text-align:right}.release-hero{position:relative;overflow:hidden;padding:30px 26px 24px;border:1px solid rgba(56,189,248,.38);border-radius:26px;background:radial-gradient(circle at 8% 0%,rgba(56,189,248,.26),transparent 34%),linear-gradient(135deg,rgba(8,47,73,.96),rgba(15,23,42,.97) 58%,rgba(20,83,45,.92));box-shadow:0 20px 60px #0005}.release-hero:after{content:'✦';position:absolute;left:20px;bottom:-20px;font-size:110px;color:#fff1;transform:rotate(18deg)}.release-breadcrumb{font-size:12px;color:#ffffffad;margin-bottom:14px}.release-hero h3{position:relative;z-index:1;margin:0 0 8px;font:900 clamp(25px,5vw,38px)/1.2 Rubik,sans-serif}.release-summary{position:relative;z-index:1;margin:0 0 18px;max-width:740px;color:#fffc;line-height:1.75}.release-meta{position:relative;z-index:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:#ffffffb8;font-size:13px}.release-pill{display:inline-flex;border-radius:999px;padding:5px 11px;background:#ffffff24;border:1px solid #ffffff38;color:#fff;font-weight:800}.release-version{direction:ltr;font:700 15px Rubik,sans-serif}.release-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.release-card{padding:21px;border-radius:19px;border:1px solid var(--border);background:rgba(16,27,44,.88);box-shadow:0 10px 30px #0002}.release-card h4{margin:0 0 12px;font-size:19px}.release-card ul{margin:0;padding-inline-start:20px;color:var(--muted);line-height:1.8;font-size:14px}.release-card li+li{margin-top:7px}.release-card.new h4{color:var(--green)}.release-card.fixed h4{color:#60a5fa}.release-card.small h4{color:#fbbf24}.release-tech{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}.release-tech span{padding:10px;border-radius:12px;background:#ffffff0d;text-align:center;color:var(--muted);font-size:12px}.release-tech b{display:block;color:#fff;font-size:13px}.release-history{padding:0;border:1px solid var(--border);border-radius:19px;background:rgba(16,27,44,.88);overflow:hidden}.release-history summary{cursor:pointer;list-style:none;padding:17px 20px;font-weight:800}.release-history summary::-webkit-details-marker{display:none}.release-history summary:before{content:'＋';margin-inline-end:8px;color:var(--blue)}.release-history[open] summary:before{content:'−'}.release-history-body{padding:0 20px 20px;max-height:460px;overflow:auto}.release-history-body ul{margin:0;padding-inline-start:20px;color:var(--muted);font-size:13px;line-height:1.75}.release-history-body li+li{margin-top:5px}.release-note{font-size:12px;color:var(--muted);text-align:center}.sync-note{margin:28px 0 0;text-align:center;color:#93a4b9;font-size:12px}
+    @media(max-width:640px){.updates-shell{width:min(100% - 20px,900px);padding-top:18px}.updates-top{margin-bottom:20px}.release-grid{grid-template-columns:1fr}.release-hero{padding:23px 18px 20px}.release-card{padding:17px}.release-tech{grid-template-columns:1fr}.release-history-body{max-height:380px;padding-inline:16px}}
+  </style>
+</head>
+<body>
+  <main class="updates-shell">
+    <div class="updates-top"><a class="brand" href="../">רצף</a><a class="back" href="../">← חזרה לאתר הראשי</a></div>
+    <div id="updatesContent" class="loading">טוען את עדכון הגרסה האחרון...</div>
+    <p class="sync-note">העמוד מסונכרן אוטומטית עם „אודות וגרסה” באתר הראשי.</p>
+  </main>
+  <script>
+  (async function(){
+    const target=document.getElementById('updatesContent');
+    try{
+      const response=await fetch('../?updates_source='+Date.now(),{cache:'no-store'});
+      if(!response.ok)throw new Error('load_failed');
+      const html=await response.text();
+      const doc=new DOMParser().parseFromString(html,'text/html');
+      const source=doc.querySelector('#about .release-page');
+      if(!source)throw new Error('release_notes_missing');
+      target.className='';
+      target.appendChild(document.importNode(source,true));
+      const title=doc.querySelector('#retzef-version-value')?.textContent?.trim();
+      if(title)document.title='רצף '+title+' | עדכוני גרסה';
+    }catch(error){
+      target.className='error';
+      target.textContent='לא ניתן לטעון את עדכון הגרסה כרגע. נסו לרענן את הדף.';
+      console.error(error);
+    }
+  })();
+  </script>
+</body>
+</html>
