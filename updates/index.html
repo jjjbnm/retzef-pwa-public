@@ -48,7 +48,11 @@
         if(copy)copy.innerHTML='רצף '+title+'<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small>';
         banner.setAttribute('aria-label','באנר עדכון גרסה '+title);
       }
-      if(title)document.title='רצף '+title+' | עדכוני גרסה';
+      if(title){
+        document.title='רצף '+title+' | עדכוני גרסה';
+        const link=target.querySelector('.release-version-link');
+        if(link){link.href='/updates/v'+encodeURIComponent(title)+'/';link.textContent='/updates/v'+title+'/';}
+      }
     }catch(error){
       target.className='error';
       target.textContent='לא ניתן לטעון את עדכון הגרסה כרגע. נסו לרענן את הדף.';

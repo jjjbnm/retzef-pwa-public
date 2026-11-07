@@ -1547,14 +1547,14 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <article class="release-hero">
         <div class="release-breadcrumb">אודות וגרסה  /  עדכון מערכת</div>
         <div style="margin-top:14px;position:relative;z-index:1;"><a href="/updates/" class="release-pill" style="text-decoration:none;">פתיחת עמוד העדכונים המלא ↗</a></div>
-        <h3>רצף 2.1.7: עמוד גרסאות ועדכונים חדש</h3>
+        <h3>רצף 2.1.8: עמוד גרסאות ועדכונים חדש</h3>
         <p class="release-summary">ריכזנו במקום אחד את השינויים החשובים ברצף: מה נוסף, מה תוקן ואילו שיפורים קטנים נכנסו למערכת. העדכונים נפרדים מהחוקים ומהתוכן הקבוע של הקבוצה.</p>
-        <div class="release-meta"><span class="release-pill">שיפור מערכת</span><span class="release-version" data-retzef-current-version>v2.1.7</span><span>7 בנובמבר 2026</span><span>צוות רצף</span></div>
+        <div class="release-meta"><span class="release-pill">שיפור מערכת</span><span class="release-version" data-retzef-current-version>v2.1.8</span><span>7 בנובמבר 2026</span><span>צוות רצף</span></div>
       </article>
-      <div class="release-banner" aria-label="באנר עדכון גרסה 2.1.7">
+      <div class="release-banner" aria-label="באנר עדכון גרסה 2.1.8">
         <div class="release-banner-top"><span class="release-banner-brand">רצף · עדכוני מערכת</span><span class="release-banner-tag">עדכון</span></div>
-        <div class="release-banner-content"><div class="release-banner-copy">רצף 2.1.7<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small></div><div class="release-banner-version">2.1.7</div></div>
-        <div class="release-banner-bottom"><span>retzef / updates</span><span>7 בנובמבר 2026</span></div>
+        <div class="release-banner-content"><div class="release-banner-copy">רצף 2.1.8<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small></div><div class="release-banner-version">2.1.8</div></div>
+        <div class="release-banner-bottom"><a class="url release-version-link" href="/updates/v2.1.8/">/updates/v2.1.8/</a><span>7 בנובמבר 2026</span></div>
       </div>
       <div class="release-grid">
         <article class="release-card new"><h4>✅ מה חדש</h4><ul><li>נוסף עמוד עדכונים חדש בתוך „אודות וגרסה”, עם חלוקה ברורה לפי סוגי שינוי.</li><li>חלון הרכישה החד־פעמית קיבל עיצוב חדש בסגנון חנות אפליקציות, כולל מוצר, מחיר, חשבון ואמצעי תשלום.</li><li>הפרטים על עונת חג המולד, ההנחה והמערכת מופיעים בצורה ברורה יותר.</li><li>נוספה היסטוריית גרסאות מתקפלת כדי שאפשר יהיה למצוא עדכונים ישנים בלי לגלול על פני רשימה ארוכה.</li></ul></article>
@@ -3118,6 +3118,7 @@ function openPaypalModal(itemName, price){
     document.querySelectorAll('.release-banner-version').forEach(function(el){el.textContent=value;});
     document.querySelectorAll('.release-banner-copy').forEach(function(el){el.innerHTML='רצף '+value+'<small>עמוד גרסאות, מה חדש ותיקוני מערכת</small>';});
     document.querySelectorAll('.release-banner').forEach(function(el){el.setAttribute('aria-label','באנר עדכון גרסה '+value);});
+    document.querySelectorAll('.release-version-link').forEach(function(link){link.href='/updates/v'+encodeURIComponent(value)+'/';link.textContent='/updates/v'+value+'/';});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
 })();

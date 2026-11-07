@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/updates/v:version",
+      "destination": "/updates/"
+    },
+    {
+      "source": "/updates/v:version/",
+      "destination": "/updates/"
+    }
+  ]
+}
