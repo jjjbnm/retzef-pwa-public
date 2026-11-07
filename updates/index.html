@@ -46,7 +46,9 @@
         '2.1.7':{new:['נוסף עמוד עדכונים ישיר בסגנון Release Notes.','נוסף באנר גרסה עם מספר העדכון, תאריך וקישור ישיר.','נוספה חלוקה ברורה בין מה חדש, מה תוקן ושיפורים קטנים.'],fixed:['תוקנה בעיית מבנה בחלון התשלום שעלולה להסתיר את תוכן האתר במובייל.','שופרה התאמת העמוד למסכים צרים.','נשמרו מסלולי התשלום והמנויים הקיימים.']},
         '2.2.1':{new:['נוסף קישור ישיר לכל גרסה מתוך באנר העדכון.','נוסף סנכרון אוטומטי של מספר הגרסה, הבאנר והקישור.','עמוד העדכונים מציג את „מה חדש” ו„תוקן” לפי הגרסה הפעילה.'],fixed:['תוקנה הצגת גרסה ישנה בבאנר כאשר מקור הגרסה השתנה.','תוקן נתיב הגרסה הישיר עם לוכסן בסוף.','תוקן הסנכרון בין האתר הראשי לעמוד העדכונים הישיר.']}
       };
-      function renderNotes(root, version){const data=releaseNotes[version]||{new:['נוסף עדכון חדש למערכת בגרסה '+version+'.'],fixed:['תוקנו תקלות ושופרה יציבות המערכת בגרסה '+version+'.']};const lists=root.querySelectorAll('.release-card.new ul,.release-card.fixed ul');[data.new,data.fixed].forEach((items,i)=>{if(lists[i])lists[i].innerHTML=items.map(item=>'<li>'+item+'</li>').join('');});}
+      function renderNotes(root, version, historyText){const explicit=releaseNotes[version];const isFix=/תוקנ|שופ|תקל|תיקון|תיקונים/.test(historyText||'');const data=explicit||{new:isFix?['העדכון לגרסה '+version+' מתועד באזור „אודות וגרסה”.']:[historyText||'נוסף עדכון חדש למערכת בגרסה '+version+'.'],fixed:isFix?[historyText]:['לא צוין תיקון נפרד עבור גרסה זו.']};const lists=root.querySelectorAll('.release-card.new ul,.release-card.fixed ul');[data.new,data.fixed].forEach((items,i)=>{if(lists[i])lists[i].innerHTML=items.filter(Boolean).map(item=>'<li>'+item+'</li>').join('');});}
+      const historyItem=[...doc.querySelectorAll('.release-history-body li')].find(function(item){return item.textContent.trim().startsWith(title+' —');});
+      const historyText=historyItem?historyItem.textContent.trim().replace(/^'+title+' —\s*/, ''):'';
       const banner=target.querySelector('.release-banner');
       if(banner && title){
         const number=banner.querySelector('.release-banner-version');
@@ -56,7 +58,7 @@
         banner.setAttribute('aria-label','באנר עדכון גרסה '+title);
       }
       if(title){
-        renderNotes(target,title);
+        renderNotes(target,title,historyText);
         document.title='רצף '+title+' | עדכוני גרסה';
         const current=target.querySelector('[data-retzef-current-version]');
         if(current)current.textContent='v'+title;
