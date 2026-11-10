@@ -224,7 +224,7 @@ module.exports = async (req, res) => {
       const users = (await Promise.all(keys.slice(0, 100).map(k => profile(k.slice(PREFIX.length))))).filter(Boolean).filter(p => String(p.username || '').toLowerCase() !== me);
       const visibleUsers = await Promise.all(users.map(async p => { const targetUsername = String(p.username).toLowerCase(); const approved = await redis('sismember', `retzef:chat:accepted:${me}`, targetUsername); const pendingRows = await redis('lrange', `retzef:chat:requests:${targetUsername}`, '0', '49'); const chatPending = (pendingRows || []).some(row => { try { return JSON.parse(row).from === me; } catch (_) { return false; } }); const result = { ...publicUser(p), chatApproved: String(approved) === '1' || approved === true, chatPending, safeRelationship: (mine.safeContacts || {})[targetUsername] || null, blockedByMe: (mine.blockedUsers || []).includes(targetUsername), mutedByMe: (mine.mutedUsers || []).includes(targetUsername) }; const discord = discordForViewer(p, me); if (discord) result.discord = discord; if (result.chatApproved && result.statusVisible) result.status = p.status || knownStatus(p.username); if (result.chatApproved && result.subscriptionVisible) result.subscription = p.subscription || p.subscriptionName || ''; return result; }));
       const requests = await redis('lrange', `retzef:chat:requests:${me}`, '0', '49'); const safeRequests = await relationshipRequests(me);
-      const result = { me: { ...publicUser(mine), age: mine.age || 0, gender: mine.gender || '', pendingAgeChange: mine.pendingAgeChange || null, devicePreferences: mine.devicePreferences || {}, wallet: walletOf(mine), payments: Array.isArray(mine.paymentHistory) ? mine.paymentHistory.slice(0, 50) : [] }, users: visibleUsers, requests: (requests || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean), relationshipRequests: safeRequests };
+      const result = { me: { ...publicUser(mine), premium: mine.premium === true, subscription: mine.subscription || mine.subscriptionName || '', age: mine.age || 0, gender: mine.gender || '', pendingAgeChange: mine.pendingAgeChange || null, devicePreferences: mine.devicePreferences || {}, wallet: walletOf(mine), payments: Array.isArray(mine.paymentHistory) ? mine.paymentHistory.slice(0, 50) : [] }, users: visibleUsers, requests: (requests || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean), relationshipRequests: safeRequests };
       if (['owner', 'admin'].includes(mine.role) || ['retzef_support', 'ban.original', 'shirel'].includes(me)) result.supportRequests = await supportRequests();
       if (me === 'ban.original') { result.joinRequests = await joinRequests(); const ageRows=await redis('lrange','retzef:age:requests','0','99'); result.ageChangeRequests=(ageRows||[]).map(x=>{try{return typeof x==='string'?JSON.parse(x):x}catch(_){return null}}).filter(x=>x&&x.username); }
       return res.status(200).json(result);
@@ -271,6 +271,29 @@ module.exports = async (req, res) => {
       found.status = input.decision === 'approve' ? 'approved' : 'denied'; found.reason = input.decision === 'deny' ? reason : ''; found.decidedAt = new Date().toISOString(); await redis('del', 'retzef:join:requests'); for (let i = rows.length - 1; i >= 0; i--) await redis('rpush', 'retzef:join:requests', JSON.stringify(rows[i]));
       if (found.from) await sendTo(found.from, { title: input.decision === 'approve' ? 'בקשת ההצטרפות אושרה' : 'בקשת ההצטרפות נדחתה', body: input.decision === 'approve' ? 'הבאן המקורי אישר את בקשתך.' : `הבקשה נדחתה: ${reason}`, url: '/' });
       return res.status(200).json({ updated: true, status: found.status });
+    }
+    if (action === 'premiumCodeRedeem') {
+      const code = String(input.code || '').trim().toUpperCase().replace(/\s+/g, '');
+      if (code !== 'FCHGHJSH') return res.status(404).json({ error: 'code_not_found' });
+      if (mine.premium === true && String(mine.premiumCode || '').toUpperCase() === code) {
+        return res.status(200).json({ premium: true, subscription: 'Premium', subscriptionName: 'Premium', alreadyGranted: true });
+      }
+      const claimed = await redis('set', `retzef:premium:redeemed:${code}:${me}`, '1', 'NX', 'EX', '31536000');
+      if (!claimed) return res.status(409).json({ error: 'already_redeemed' });
+      const now = new Date().toISOString();
+      mine.premium = true;
+      mine.premiumCode = code;
+      mine.premiumSource = 'code';
+      mine.premiumGrantedAt = now;
+      mine.subscription = 'Premium';
+      mine.subscriptionName = 'Premium';
+      mine.subscriptionSource = 'code';
+      mine.paymentHistory = Array.isArray(mine.paymentHistory) ? mine.paymentHistory : [];
+      mine.paymentHistory.unshift({ id: `premium-${Date.now().toString(36).toUpperCase()}`, name: 'Premium', method: 'code', amount: 0, currency: 'ILS', code, createdAt: now });
+      mine.paymentHistory = mine.paymentHistory.slice(0, 50);
+      await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+      try { await sendTo(me, { title: 'פרימיום הושג', body: 'קיבלת Premium בהצלחה.', url: '/' }); } catch (_) {}
+      return res.status(200).json({ premium: true, subscription: 'Premium', subscriptionName: 'Premium', grantedAt: now });
     }
     if (action === 'giftCodeRedeem') {
       const code = String(input.code || '').trim().toUpperCase().replace(/\s+/g, '');
