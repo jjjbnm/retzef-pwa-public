@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Retzef · Preview מזל 100%</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#fff;background:#080b18}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 0,#3346a4 0,#141936 38%,#080b18 100%);padding:18px}
+    .shell{width:min(900px,100%);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.brand{font-weight:900;font-size:22px}.preview{color:#ffd66b;font-weight:800;font-size:13px;padding:8px 12px;border-radius:999px;background:#f59e0b22;border:1px solid #f59e0b66}
+    .hero,.panel{background:#151b33dd;border:1px solid #ffffff22;border-radius:24px;box-shadow:0 18px 60px #0006}.hero{padding:24px;margin-bottom:14px}.hero h1{margin:0 0 8px;font-size:30px}.hero p{margin:0;color:#ccd2ea;line-height:1.65}.hero strong{color:#ffd66b}
+    .active{padding:18px;margin-bottom:14px}.active h2,.shop h2{margin:0 0 12px;font-size:20px}.total{padding:14px;border-radius:16px;background:linear-gradient(135deg,#f59e0b33,#7c3aed33);font-size:21px;font-weight:900;color:#ffe08a;margin-bottom:10px}.empty{color:#9da6c4;padding:10px 0}.active-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin-top:8px;border-radius:14px;background:#ffffff0d}.active-row b{color:#fff}.timer{color:#ffd66b;font-variant-numeric:tabular-nums;font-weight:800}
+    .shop{padding:18px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}.product{padding:14px;border-radius:17px;background:#ffffff0b;border:1px solid #ffffff17}.product h3{margin:0 0 5px;font-size:17px}.product .chance{font-size:13px;color:#8ff0bd}.product .duration{font-size:12px;color:#aab3d0;margin:7px 0 10px}.btn{width:100%;border:0;border-radius:12px;padding:10px;color:#fff;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#5369ff,#7b3ed0)}.btn:active{transform:scale(.98)}.note{color:#97a1c0;font-size:12px;text-align:center;margin:16px 0 0}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="top"><div class="brand">רצף · מערכת מזל</div><div class="preview">PREVIEW · 100% הצלחה</div></div>
+    <section class="hero"><h1>Preview של האתר עם מזל מלא</h1><p>זהו מצב בדיקה בלבד. כאן לכל מכפיל יש <strong>100% סיכוי</strong> להתקבל. אין כאן חיובים, אין שינוי בחשבון ואין השפעה על האתר האמיתי.</p></section>
+    <section class="panel active"><h2>🍀 המכפילים הפעילים שלי</h2><div id="activeBox" class="empty">עדיין אין מכפילים פעילים.</div></section>
+    <section class="panel shop"><h2>🛍️ חנות מזל · Preview</h2><div id="grid" class="grid"></div><p class="note">ב־Preview כל לחיצה מצליחה ב־100% ונותנת 10 דקות לבדיקה. בקנייה האמיתית משך הקנייה הוא 5 דקות.</p></section>
+  </main>
+  <script>
+    const multipliers=[2,4,8,12,15,20,40,100,1000,999999999999999];
+    const active=[];
+    const grid=document.getElementById('grid'), activeBox=document.getElementById('activeBox');
+    function fmt(n){return Number(n).toLocaleString('he-IL')+'×';}
+    function time(ms){const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+    function render(){
+      const now=Date.now();
+      for(let i=active.length-1;i>=0;i--)if(active[i].expiresAt<=now)active.splice(i,1);
+      if(!active.length){activeBox.className='empty';activeBox.textContent='עדיין אין מכפילים פעילים.';return;}
+      activeBox.className='';
+      const total=active.reduce((sum,x)=>sum+x.multiplier,0);
+      activeBox.innerHTML='<div class="total">מכפיל כולל: '+Number(total).toLocaleString('he-IL')+'×</div>'+active.map(x=>'<div class="active-row"><b>'+fmt(x.multiplier)+'</b><span class="timer">נשארו '+time(x.expiresAt-now)+'</span></div>').join('');
+    }
+    multipliers.forEach(mult=>{const card=document.createElement('article');card.className='product';card.innerHTML='<h3>🍀 '+fmt(mult)+'</h3><div class="chance">סיכוי: 100%</div><div class="duration">Preview: 10 דקות</div><button class="btn">קבל מכפיל</button>';card.querySelector('button').onclick=()=>{const now=Date.now();const found=active.find(x=>x.multiplier===mult);if(found)found.expiresAt=Math.max(now,found.expiresAt)+600000;else active.push({multiplier:mult,expiresAt:now+600000});render();};grid.appendChild(card);});
+    render();setInterval(render,1000);
+  </script>
+</body>
+</html>
