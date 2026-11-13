@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Retzef · Preview צלצולים</title>
+  <style>
+    :root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#0c1020;color:#fff}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 10%,#32459a 0,#11162d 38%,#080a13 100%)}
+    .card{width:min(520px,100%);padding:28px;border:1px solid #ffffff22;border-radius:28px;background:#151a2be8;box-shadow:0 24px 80px #0008;text-align:center}
+    h1{margin:0 0 8px;font-size:28px}p{color:#c4c9de;line-height:1.6}.badge{display:inline-block;padding:6px 12px;border-radius:999px;background:#5b6cff33;color:#aeb7ff;font-size:13px}
+    .buttons{display:grid;gap:12px;margin:24px 0}.btn{border:0;border-radius:16px;padding:15px 18px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#5267ff,#7b43d7);box-shadow:0 8px 22px #0004}.btn.secondary{background:#ffffff12;border:1px solid #ffffff22}.btn:active{transform:scale(.98)}
+    #result{min-height:28px;margin-top:16px;color:#dfe4ff;font-weight:700}.hint{font-size:13px;color:#8e96b4;margin-bottom:0}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <span class="badge">Preview בלבד · לא משנה את השיחות</span>
+    <h1>בדיקת הצלצולים הנדירים</h1>
+    <p>הצליל של 0.1% והצליל של 0.01% מקבלים כאן סיכוי שווה של 50% בכל הפעלה.</p>
+    <div class="buttons">
+      <button class="btn" id="randomBtn">▶ הפעל צליל אקראי 50/50</button>
+      <button class="btn secondary" id="stopBtn">■ עצור צליל</button>
+    </div>
+    <div id="result" aria-live="polite">עדיין לא נבחר צליל</div>
+    <p class="hint">הצליל חוזר בלופ עד שלוחצים על עצור.</p>
+  </main>
+  <script>
+    const rare = new Audio('/assets/retzef-rare-call-ringtone.mp3');
+    const ultra = new Audio('/assets/retzef-ultra-rare-call-ringtone.mp3');
+    [rare, ultra].forEach(audio => { audio.loop = true; audio.preload = 'auto'; audio.volume = .82; });
+    const result = document.getElementById('result');
+    function stop() { [rare, ultra].forEach(audio => { audio.pause(); audio.currentTime = 0; }); }
+    document.getElementById('randomBtn').addEventListener('click', () => {
+      stop();
+      const isUltra = Math.random() < .5;
+      const audio = isUltra ? ultra : rare;
+      result.textContent = isUltra ? 'נבחר הצליל של 0.01% · 50%' : 'נבחר הצליל של 0.1% · 50%';
+      const play = audio.play();
+      if (play && play.catch) play.catch(() => { result.textContent += ' · יש ללחוץ שוב כדי לאפשר שמע'; });
+    });
+    document.getElementById('stopBtn').addEventListener('click', () => { stop(); result.textContent = 'הצליל נעצר'; });
+  </script>
+</body>
+</html>
