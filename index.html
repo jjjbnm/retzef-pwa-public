@@ -1302,6 +1302,88 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <button type="button" class="btn btn-ghost glass shop-category-btn" data-shop-category="badges" role="tab" aria-selected="false" style="padding:10px 18px">🏷️ תגים</button>
       <button type="button" class="btn btn-ghost glass shop-category-btn" data-shop-category="other" role="tab" aria-selected="false" style="padding:10px 18px">📦 אחר</button>
     </div>
+    <div id="luckShopPanel" class="settings-card glass" style="margin:18px 0;border:1px solid rgba(245,158,11,.35);">
+      <h3>🍀 מערכת מזל</h3>
+      <p style="color:var(--muted);line-height:1.7;margin-top:6px;">קנו מכפיל מזל. כל קנייה מוסיפה 5 דקות; מכפיל שהתקבל בהגרלת מזל פעיל 10 דקות. מכפילים שונים מצטברים.</p>
+      <div id="activeLuckMultipliers" style="display:grid;gap:8px;margin:12px 0;"><div style="color:var(--muted);">טוען מכפילים פעילים...</div></div>
+      <div class="luck-products" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 2×</span>
+          <span class="price"><strong>₪4.00</strong></span>
+          <span class="note">סיכוי מזל: 80% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 2×" data-price="4.00">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 4×</span>
+          <span class="price"><strong>₪6.00</strong></span>
+          <span class="note">סיכוי מזל: 60% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 4×" data-price="6.00">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 8×</span>
+          <span class="price"><strong>₪10</strong></span>
+          <span class="note">סיכוי מזל: 40% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 8×" data-price="10">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 12×</span>
+          <span class="price"><strong>₪20</strong></span>
+          <span class="note">סיכוי מזל: 35% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 12×" data-price="20">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 15×</span>
+          <span class="price"><strong>₪23</strong></span>
+          <span class="note">סיכוי מזל: 23% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 15×" data-price="23">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 20×</span>
+          <span class="price"><strong>₪39</strong></span>
+          <span class="note">סיכוי מזל: 11% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 20×" data-price="39">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 40×</span>
+          <span class="price"><strong>₪76</strong></span>
+          <span class="note">סיכוי מזל: 3% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 40×" data-price="76">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 100×</span>
+          <span class="price"><strong>₪150</strong></span>
+          <span class="note">סיכוי מזל: 1% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 100×" data-price="150">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 1,000×</span>
+          <span class="price"><strong>₪700</strong></span>
+          <span class="note">סיכוי מזל: 0.1% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 1,000×" data-price="700">🛒 קנה</button>
+        </div>
+        <div class="shop-item glass" data-category="luck" style="padding:14px;">
+          <span class="name">🍀 מזל 999,999,999,999,999×</span>
+          <span class="price"><strong>₪1572</strong></span>
+          <span class="note">סיכוי מזל: 0.00000000000000000000990000000000000001% · 5 דקות</span>
+          <button type="button" class="buy-btn" data-item="מזל 999,999,999,999,999×" data-price="1572">🛒 קנה</button>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin:12px 0 0;">מכפיל שכבר פעיל לא מתקבל שוב בהגרלה באותו סבב. קנייה נוספת של אותו מכפיל מאריכה את הטיימר ב־5 דקות.</p>
+    </div>
+    <script>
+      (function(){
+        const box=document.getElementById('activeLuckMultipliers');
+        function formatTime(ms){const sec=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
+        function render(items){
+          const active=(Array.isArray(items)?items:[]).filter(x=>Number(x.expiresAt)>Date.now());
+          const total=active.reduce((sum,x)=>sum+Number(x.multiplier||0),0);
+          if(!active.length){box.innerHTML='<div style="color:var(--muted);">אין מכפילי מזל פעילים כרגע.</div>';return;}
+          box.innerHTML='<div style="font-weight:800;color:#f59e0b;">🍀 מכפיל פעיל כולל: '+total.toLocaleString('he-IL')+'×</div>'+active.map(x=>'<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(245,158,11,.1);"><strong>'+Number(x.multiplier).toLocaleString('he-IL')+'×</strong><span>נשארו <b data-luck-expiry="'+Number(x.expiresAt)+'">'+formatTime(Number(x.expiresAt)-Date.now())+'</b></span></div>').join('');
+        }
+        async function refresh(){try{const r=await fetch('/api/profile?luck=1',{credentials:'include',cache:'no-store'});const d=await r.json();render(d.profile?.luckMultipliers||d.me?.luckMultipliers||[]);}catch(_){}}
+        window.refreshLuckMultipliers=refresh; refresh(); setInterval(()=>{box.querySelectorAll('[data-luck-expiry]').forEach(el=>{const left=Number(el.dataset.luckExpiry)-Date.now();if(left<=0){refresh();}else el.textContent=formatTime(left);});},1000);
+      })();
+    </script>
     <div class="shop-grid">
       <div class="shop-item glass" data-category="coins">
         <span class="name">🪙 מטבע אחד</span>
@@ -2428,7 +2510,7 @@ function openPaypalModal(itemName, price){
           });
           const details = await res.json();
           if (details.status === 'COMPLETED') {
-            const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'paypal'); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
+            const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'paypal'); showRetzefPurchaseSuccess(retzefPaymentId, itemName); if(window.refreshLuckMultipliers)window.refreshLuckMultipliers();
           } else {
             console.error('PayPal capture did not complete. Server response:', details, 'HTTP status:', res.status);
             paypalButtonContainer.innerHTML = '<p style="color:#b91c1c; text-align:center;">התשלום לא הושלם. נסו שוב.</p>';
@@ -2477,7 +2559,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'card'); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
+              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'card'); showRetzefPurchaseSuccess(retzefPaymentId, itemName); if(window.refreshLuckMultipliers)window.refreshLuckMultipliers();
               applePayButtonContainer.innerHTML = '';
             } else {
               console.error('Apple Pay capture did not complete. Server response:', details, 'HTTP status:', res.status);
@@ -2522,7 +2604,7 @@ function openPaypalModal(itemName, price){
             });
             const details = await res.json();
             if (details.status === 'COMPLETED') {
-              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'card'); showRetzefPurchaseSuccess(retzefPaymentId, itemName);
+              const retzefPaymentId = await getRetzefPaymentId(data.orderID || details.id, itemName, price, 'card'); showRetzefPurchaseSuccess(retzefPaymentId, itemName); if(window.refreshLuckMultipliers)window.refreshLuckMultipliers();
               applePayButtonContainer.innerHTML = '';
               googlePayButtonContainer.innerHTML = '';
             } else {
