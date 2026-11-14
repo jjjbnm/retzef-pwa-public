@@ -573,6 +573,15 @@
 .release-banner{position:relative;overflow:hidden;min-height:190px;padding:24px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:radial-gradient(circle at 78% 60%,rgba(245,158,11,.42),transparent 31%),radial-gradient(circle at 18% 12%,rgba(56,189,248,.24),transparent 34%),linear-gradient(135deg,#111827,#171923 58%,#241b12);box-shadow:0 16px 42px rgba(0,0,0,.25);color:#fff;display:flex;flex-direction:column;justify-content:space-between;direction:rtl}.release-banner:before{content:'';position:absolute;width:240px;height:240px;right:48%;top:-120px;border-radius:50%;background:rgba(255,255,255,.06);filter:blur(2px)}.release-banner-top,.release-banner-bottom,.release-banner-content{position:relative;z-index:1}.release-banner-top{display:flex;justify-content:space-between;align-items:center;gap:10px;color:rgba(255,255,255,.7);font-size:12px}.release-banner-brand{font-weight:800;letter-spacing:.02em}.release-banner-tag{padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);font-weight:700}.release-banner-content{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:22px 0 18px}.release-banner-copy{font-size:clamp(17px,3vw,25px);font-weight:800;line-height:1.3;max-width:58%}.release-banner-copy small{display:block;margin-top:7px;color:rgba(255,255,255,.68);font-size:12px;font-weight:500}.release-banner-version{direction:ltr;font:900 clamp(48px,10vw,84px)/1 Rubik,sans-serif;letter-spacing:-.06em;color:#f59e0b;text-shadow:0 0 32px rgba(245,158,11,.35)}.release-banner-bottom{display:flex;justify-content:space-between;gap:10px;color:rgba(255,255,255,.55);font-size:11px}
 @media(max-width:520px){.release-banner{min-height:165px;padding:18px}.release-banner-content{margin:18px 0 15px;gap:10px}.release-banner-copy{font-size:16px}.release-banner-version{font-size:52px}.release-banner-bottom{font-size:10px}}
 
+
+  /* Developer Mode */
+  #developer-mode-tab-btn{display:none}
+  #developerModePanel{border:1px solid rgba(168,85,247,.45);background:linear-gradient(145deg,rgba(30,20,55,.92),rgba(15,23,42,.92));color:#fff}
+  #developerModePanel .dev-card{padding:16px;border:1px solid rgba(196,181,253,.25);border-radius:16px;background:rgba(255,255,255,.08);margin:12px 0}
+  #developerModePanel .dev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+  #developerModePanel input,#developerModePanel select{width:100%;box-sizing:border-box;padding:10px;border-radius:10px;border:1px solid rgba(196,181,253,.35);background:rgba(15,23,42,.8);color:#fff}
+  #developerModePanel .dev-status{font-size:13px;line-height:1.7;color:#ddd6fe;white-space:pre-line}
+  #developerModePanel .dev-badge{display:inline-block;padding:5px 10px;border-radius:999px;background:#7c3aed;color:#fff;font-weight:800;font-size:12px}
 </style>
 
 <style id="retzef-version-mode-styles">
@@ -965,6 +974,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <button class="tab-btn protected-tab" data-target="shop" data-i18n="nav_shop">🛍️ חנות</button>
     <button class="tab-btn" data-target="settings" data-i18n="nav_settings">⚙️ הגדרות</button>
     <button class="tab-btn" data-target="about" data-i18n="nav_about">ℹ️ אודות וגרסה</button>
+    <button class="tab-btn" id="developer-mode-tab-btn" data-target="developer-mode">🛠️ Developer Mode</button>
     <button class="tab-btn" data-target="contact" data-i18n="nav_contact">📩 יצירת קשר</button>
     <button class="tab-btn" data-target="support">🆘 תמיכה</button>
       <button class="tab-btn protected-tab" data-target="boards">📢 מודעות</button>
@@ -1503,6 +1513,30 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
         </div>
         <div style="font-family:'Rubik'; font-weight:900; font-size:22px; color:var(--accent);" id="tsCalcResult">—</div>
       </div>
+    </div>
+  </section>
+
+
+  <!-- DEVELOPER MODE: local testing only; never changes the real server wallet -->
+  <section id="developerModePanel" class="tab-panel" dir="rtl">
+    <span class="eyebrow">🛠️ Developer Mode</span>
+    <h2 class="sec-title">מצב מפתחים</h2>
+    <p class="sec-sub">כלי בדיקה לחשבון המחובר. מזל, מטבעות וגרסאות בטא כאן הם תצוגת בדיקה מקומית בלבד — הם לא משנים את היתרה האמיתית בשרת.</p>
+    <div class="dev-card"><span class="dev-badge">DEVELOPER MODE ACTIVATED</span><p id="developerModeAccount" class="dev-status" style="margin:10px 0 0">מצב מפתחים פעיל לחשבון המחובר.</p></div>
+    <div class="dev-card">
+      <h3>🍀 מתנת מזל לבדיקה</h3><p class="dev-status">בחרו כל מכפיל שתרצו והפעילו אותו בחינם לצורך בדיקה בלבד.</p>
+      <div class="dev-grid"><select id="developerLuckSelect" aria-label="בחירת מכפיל מזל"><option value="2">מזל 2×</option><option value="4">מזל 4×</option><option value="8">מזל 8×</option><option value="12">מזל 12×</option><option value="15">מזל 15×</option><option value="20">מזל 20×</option><option value="40">מזל 40×</option><option value="100">מזל 100×</option><option value="1000">מזל 1,000×</option><option value="999999999999999">מזל 999,999,999,999,999×</option></select><button type="button" class="btn btn-primary" id="developerGrantLuck">🎁 הפעל מזל בחינם</button></div>
+      <p id="developerLuckStatus" class="dev-status" style="margin:10px 0 0">אין מכפיל בדיקה פעיל.</p>
+    </div>
+    <div class="dev-card">
+      <h3>🪙 Custom Coins</h3><p class="dev-status">הכמות תוצג רק במצב הבדיקה במכשיר הזה. אין כאן הענקת מטבעות אמיתיים.</p>
+      <div class="dev-grid"><input id="developerCoinsInput" type="number" min="0" max="999999999999999" step="1" placeholder="כמות מטבעות לבדיקה"><button type="button" class="btn btn-primary" id="developerSetCoins">הגדר מטבעות בדיקה</button></div>
+      <p id="developerCoinsStatus" class="dev-status" style="margin:10px 0 0">אין יתרת בדיקה.</p>
+    </div>
+    <div class="dev-card">
+      <h3>🧪 גרסאות בטא</h3><p class="dev-status">החלפת תצוגה מקומית בלבד. הגרסה הרשמית של האתר לא משתנה.</p>
+      <div class="dev-grid"><button type="button" class="btn btn-primary" data-developer-beta="2.3.0-beta">2.3.0 Beta</button><button type="button" class="btn btn-ghost glass" data-developer-beta="2.2.8">גרסה יציבה 2.2.8</button><button type="button" class="btn btn-ghost glass" data-developer-beta="reset">איפוס תצוגת בטא</button></div>
+      <p id="developerBetaStatus" class="dev-status" style="margin:10px 0 0">מוצגת הגרסה הרגילה.</p>
     </div>
   </section>
 
@@ -2104,7 +2138,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       const response = await fetch('/api/profile?refresh='+Date.now(), { credentials: 'include', cache: 'no-store' });
       if (!response.ok) return null;
       const data = await response.json();
-      if (data.profile) { updateWalletUI(data.profile?.wallet); window.__retzefProfile = data.profile; if(window.__retzefCloseEntryScreens) window.__retzefCloseEntryScreens(); rememberAccount(data.profile); showTikTokGreeting(data.profile); loadAccountSettingsPanel(); loadDevicePreferencesFromDatabase(); setTimeout(enableWebPush, 0); }
+      if (data.profile) { updateWalletUI(data.profile?.wallet); window.__retzefProfile = data.profile; if(window.refreshDeveloperMode) window.refreshDeveloperMode(); if(window.__retzefCloseEntryScreens) window.__retzefCloseEntryScreens(); rememberAccount(data.profile); showTikTokGreeting(data.profile); loadAccountSettingsPanel(); loadDevicePreferencesFromDatabase(); setTimeout(enableWebPush, 0); }
       return data.profile || null;
     } catch (_) { return null; }
   }
@@ -3317,5 +3351,26 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 </script>
 
 <script src="https://www.paypal.com/web-sdk/v6/core"></script>
+
+<script>
+(function(){
+  const avatar=document.getElementById('profileAvatar'), button=document.getElementById('developer-mode-tab-btn'), panel=document.getElementById('developerModePanel');
+  if(!avatar||!button||!panel)return;
+  const key='retzef_developer_mode', stateKey='retzef_developer_state'; let clicks=0,lastClick=0;
+  const read=()=>{try{return JSON.parse(localStorage.getItem(stateKey)||'{}')}catch(_){return {}}};
+  const write=s=>{try{localStorage.setItem(stateKey,JSON.stringify(s))}catch(_){} };
+  const profileName=()=>String(window.__retzefProfile?.username||'').replace(/^@/,'').toLowerCase();
+  const activeForCurrent=()=>{const s=read();return localStorage.getItem(key)==='1'&&s.username&&s.username===profileName();};
+  const notify=message=>{const box=document.createElement('div');box.textContent=message;box.style.cssText='position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:3000;padding:13px 18px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-weight:800;box-shadow:0 12px 35px #0005;text-align:center';document.body.appendChild(box);setTimeout(()=>box.remove(),4200);};
+  function refresh(){const s=read();const luck=document.getElementById('developerLuckStatus');if(luck)luck.textContent=s.luck?'🍀 מכפיל בדיקה פעיל: '+Number(s.luck).toLocaleString()+'×':'אין מכפיל בדיקה פעיל.';const coins=document.getElementById('developerCoinsStatus');if(coins)coins.textContent=s.coins!==undefined?'🪙 יתרת Custom Coins לבדיקה: '+Number(s.coins).toLocaleString():'אין יתרת בדיקה.';const beta=document.getElementById('developerBetaStatus');if(beta)beta.textContent=s.beta?'🧪 תצוגת בטא פעילה: '+s.beta:'מוצגת הגרסה הרגילה.';}
+  function show(){if(!activeForCurrent())return;button.style.display='inline-block';const account=document.getElementById('developerModeAccount');if(account)account.textContent='מצב מפתחים פעיל עבור @'+profileName()+' · הנתונים כאן מקומיים ובדיקתיים בלבד.';refresh();}
+  avatar.addEventListener('click',()=>{if(!window.__retzefProfile){clicks=0;return;}const now=Date.now();if(now-lastClick>2200)clicks=0;lastClick=now;clicks++;if(clicks===15&&!activeForCurrent()){localStorage.setItem(key,'1');write({username:profileName()});button.style.display='inline-block';notify('Developer mode activated');}});
+  button.addEventListener('click',()=>{if(typeof window.activateTab==='function')window.activateTab('developer-mode');});
+  document.getElementById('developerGrantLuck')?.addEventListener('click',()=>{const s=read();s.username=profileName();s.luck=Number(document.getElementById('developerLuckSelect')?.value||2);write(s);refresh();notify('מזל בדיקה הופעל בחינם');});
+  document.getElementById('developerSetCoins')?.addEventListener('click',()=>{const n=Math.floor(Number(document.getElementById('developerCoinsInput')?.value));if(!Number.isFinite(n)||n<0){notify('יש להזין כמות תקינה');return;}const s=read();s.username=profileName();s.coins=n;write(s);refresh();notify('Custom Coins עודכנו למצב בדיקה בלבד');});
+  document.querySelectorAll('[data-developer-beta]').forEach(btn=>btn.addEventListener('click',()=>{const value=btn.dataset.developerBeta,s=read();s.username=profileName();if(value==='reset')delete s.beta;else s.beta=value;write(s);refresh();notify(value==='reset'?'תצוגת הבטא אופסה':'גרסת בטא הופעלה: '+value);}));
+  window.refreshDeveloperMode=show;if(activeForCurrent())show();
+})();
+</script>
 </body>
   </html>
