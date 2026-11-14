@@ -3356,7 +3356,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 (function(){
   const avatar=document.getElementById('profileAvatar'), button=document.getElementById('developer-mode-tab-btn'), panel=document.getElementById('developerModePanel');
   if(!avatar||!button||!panel)return;
-  const key='retzef_developer_mode', stateKey='retzef_developer_state'; let clicks=0,lastClick=0;
+  const key='retzef_developer_mode', stateKey='retzef_developer_state'; let clicks=0;
   const read=()=>{try{return JSON.parse(localStorage.getItem(stateKey)||'{}')}catch(_){return {}}};
   const write=s=>{try{localStorage.setItem(stateKey,JSON.stringify(s))}catch(_){} };
   const profileName=()=>String(window.__retzefProfile?.username||'').replace(/^@/,'').toLowerCase();
@@ -3364,7 +3364,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   const notify=message=>{const box=document.createElement('div');box.textContent=message;box.style.cssText='position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:3000;padding:13px 18px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-weight:800;box-shadow:0 12px 35px #0005;text-align:center';document.body.appendChild(box);setTimeout(()=>box.remove(),4200);};
   function refresh(){const s=read();const luck=document.getElementById('developerLuckStatus');if(luck)luck.textContent=s.luck?'🍀 מכפיל בדיקה פעיל: '+Number(s.luck).toLocaleString()+'×':'אין מכפיל בדיקה פעיל.';const coins=document.getElementById('developerCoinsStatus');if(coins)coins.textContent=s.coins!==undefined?'🪙 יתרת Custom Coins לבדיקה: '+Number(s.coins).toLocaleString():'אין יתרת בדיקה.';const beta=document.getElementById('developerBetaStatus');if(beta)beta.textContent=s.beta?'🧪 תצוגת בטא פעילה: '+s.beta:'מוצגת הגרסה הרגילה.';}
   function show(){if(!activeForCurrent())return;button.style.display='inline-block';const account=document.getElementById('developerModeAccount');if(account)account.textContent='מצב מפתחים פעיל עבור @'+profileName()+' · הנתונים כאן מקומיים ובדיקתיים בלבד.';refresh();}
-  avatar.addEventListener('click',()=>{if(!window.__retzefProfile){clicks=0;return;}const now=Date.now();if(now-lastClick>2200)clicks=0;lastClick=now;clicks++;if(clicks===15&&!activeForCurrent()){localStorage.setItem(key,'1');write({username:profileName()});button.style.display='inline-block';notify('Developer mode activated');}});
+  avatar.addEventListener('click',()=>{if(!window.__retzefProfile){clicks=0;return;}clicks++;if(clicks===15&&!activeForCurrent()){localStorage.setItem(key,'1');write({username:profileName()});button.style.display='inline-block';notify('Developer mode activated');}});
   button.addEventListener('click',()=>{if(typeof window.activateTab==='function')window.activateTab('developer-mode');});
   document.getElementById('developerGrantLuck')?.addEventListener('click',()=>{const s=read();s.username=profileName();s.luck=Number(document.getElementById('developerLuckSelect')?.value||2);write(s);refresh();notify('מזל בדיקה הופעל בחינם');});
   document.getElementById('developerSetCoins')?.addEventListener('click',()=>{const n=Math.floor(Number(document.getElementById('developerCoinsInput')?.value));if(!Number.isFinite(n)||n<0){notify('יש להזין כמות תקינה');return;}const s=read();s.username=profileName();s.coins=n;write(s);refresh();notify('Custom Coins עודכנו למצב בדיקה בלבד');});
