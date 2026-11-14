@@ -18,6 +18,10 @@ async function accessCheck(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   try {
     const vercelCountry = String(req.headers['x-vercel-ip-country'] || '').toUpperCase();
+    // Vercel's country header is the primary signal. Avoid an unnecessary external
+    // geo lookup for Israeli visitors, which can fail transiently or rate-limit.
+    if (vercelCountry === 'IL') return res.status(200).json({ allowed: true, countryCode: 'IL', vpnDetected: false });
+    if (vercelCountry && vercelCountry !== 'IL') return res.status(403).json({ allowed: false, error: 'region_not_allowed', countryCode: vercelCountry });
     const forwarded = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '';
     const clientIp = String(forwarded).split(',')[0].trim() || String(req.socket?.remoteAddress || '').trim();
     if (!clientIp) return res.status(503).json({ allowed: false, error: 'client_ip_unknown' });
