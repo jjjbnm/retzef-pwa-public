@@ -39,6 +39,19 @@ const LUCK_PRODUCTS = Object.freeze({2:{price:4,chance:0.8},4:{price:6,chance:0.
 function luckMultiplierFromItem(value) { const raw=String(value||'').replace(/,/g,''); const match=raw.match(/מזל\s+([0-9]+)×?/); const multiplier=match?Number(match[1]):0; return Number.isSafeInteger(multiplier)&&LUCK_PRODUCTS[multiplier]?multiplier:0; }
 function activeLuckOf(p) { const now=Date.now(); return (Array.isArray(p?.luckMultipliers)?p.luckMultipliers:[]).map(x=>({multiplier:Number(x.multiplier),expiresAt:Number(x.expiresAt)})).filter(x=>Number.isSafeInteger(x.multiplier)&&LUCK_PRODUCTS[x.multiplier]&&x.expiresAt>now); }
 function addLuck(p,multiplier,durationMs=300000) { const now=Date.now(); const list=activeLuckOf(p); const found=list.find(x=>x.multiplier===multiplier); if(found) found.expiresAt=Math.max(now,found.expiresAt)+durationMs; else list.push({multiplier,expiresAt:now+durationMs}); p.luckMultipliers=list; return list; }
+
+function safePaymentMethods(p) {
+  const rows = Array.isArray(p?.savedPaymentMethods) ? p.savedPaymentMethods : [];
+  return rows.slice(0, 20).map(x => ({
+    id: String(x.id || ''),
+    type: x.type === 'card' ? 'card' : 'paypal',
+    label: String(x.label || (x.type === 'card' ? 'כרטיס אשראי' : 'PayPal')).slice(0, 80),
+    brand: String(x.brand || '').slice(0, 30),
+    last4: /^[0-9]{4}$/.test(String(x.last4 || '')) ? String(x.last4) : '',
+    createdAt: String(x.createdAt || '')
+  })).filter(x => x.id);
+}
+
 async function supportRequests() { const rows = await redis('lrange', 'retzef:support:requests', '0', '99'); return (rows || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean); }
 async function joinRequests() { const rows = await redis('lrange', 'retzef:join:requests', '0', '99'); return (rows || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean); }
 async function relationshipRequests(username) { const rows = await redis('lrange', `retzef:relationship:requests:${username}`, '0', '99'); return (rows || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean); }
@@ -228,12 +241,38 @@ module.exports = async (req, res) => {
       const users = (await Promise.all(keys.slice(0, 100).map(k => profile(k.slice(PREFIX.length))))).filter(Boolean).filter(p => String(p.username || '').toLowerCase() !== me);
       const visibleUsers = await Promise.all(users.map(async p => { const targetUsername = String(p.username).toLowerCase(); const approved = await redis('sismember', `retzef:chat:accepted:${me}`, targetUsername); const pendingRows = await redis('lrange', `retzef:chat:requests:${targetUsername}`, '0', '49'); const chatPending = (pendingRows || []).some(row => { try { return JSON.parse(row).from === me; } catch (_) { return false; } }); const result = { ...publicUser(p), chatApproved: String(approved) === '1' || approved === true, chatPending, safeRelationship: (mine.safeContacts || {})[targetUsername] || null, blockedByMe: (mine.blockedUsers || []).includes(targetUsername), mutedByMe: (mine.mutedUsers || []).includes(targetUsername) }; const discord = discordForViewer(p, me); if (discord) result.discord = discord; if (result.chatApproved && result.statusVisible) result.status = p.status || knownStatus(p.username); if (result.chatApproved && result.subscriptionVisible) result.subscription = p.subscription || p.subscriptionName || ''; return result; }));
       const requests = await redis('lrange', `retzef:chat:requests:${me}`, '0', '49'); const safeRequests = await relationshipRequests(me);
-      const result = { me: { ...publicUser(mine), premium: mine.premium === true, subscription: mine.subscription || mine.subscriptionName || '', age: mine.age || 0, gender: mine.gender || '', pendingAgeChange: mine.pendingAgeChange || null, devicePreferences: mine.devicePreferences || {}, wallet: walletOf(mine), luckMultipliers: activeLuckOf(mine), payments: Array.isArray(mine.paymentHistory) ? mine.paymentHistory.slice(0, 50) : [] }, users: visibleUsers, requests: (requests || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean), relationshipRequests: safeRequests };
+      const result = { me: { ...publicUser(mine), premium: mine.premium === true, subscription: mine.subscription || mine.subscriptionName || '', age: mine.age || 0, gender: mine.gender || '', pendingAgeChange: mine.pendingAgeChange || null, devicePreferences: mine.devicePreferences || {}, wallet: walletOf(mine), luckMultipliers: activeLuckOf(mine), payments: Array.isArray(mine.paymentHistory) ? mine.paymentHistory.slice(0, 50) : [], savedPaymentMethods: safePaymentMethods(mine) }, users: visibleUsers, requests: (requests || []).map(x => { try { return JSON.parse(x); } catch (_) { return null; } }).filter(Boolean), relationshipRequests: safeRequests };
       if (['owner', 'admin'].includes(mine.role) || ['retzef_support', 'ban.original', 'shirel'].includes(me)) result.supportRequests = await supportRequests();
       if (me === 'ban.original') { result.joinRequests = await joinRequests(); const ageRows=await redis('lrange','retzef:age:requests','0','99'); result.ageChangeRequests=(ageRows||[]).map(x=>{try{return typeof x==='string'?JSON.parse(x):x}catch(_){return null}}).filter(x=>x&&x.username); }
       return res.status(200).json(result);
     }
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
+    if (action === 'savePaymentMethod') {
+      const vaultId = String(input.vaultId || '').trim().slice(0, 300);
+      const type = String(input.type || '').toLowerCase() === 'card' ? 'card' : 'paypal';
+      const last4 = String(input.last4 || '').trim();
+      const label = String(input.label || (type === 'card' ? 'כרטיס אשראי' : 'PayPal')).trim().slice(0, 80);
+      const brand = String(input.brand || '').trim().slice(0, 30);
+      const customerId = String(input.customerId || '').trim().slice(0, 160);
+      if (!/^[A-Za-z0-9._:-]{8,300}$/.test(vaultId)) return res.status(400).json({ error: 'invalid_vault_token' });
+      if (last4 && !/^[0-9]{4}$/.test(last4)) return res.status(400).json({ error: 'invalid_last4' });
+      const methods = Array.isArray(mine.savedPaymentMethods) ? mine.savedPaymentMethods : [];
+      const duplicate = methods.find(x => String(x.vaultId || '') === vaultId);
+      if (duplicate) return res.status(200).json({ saved: true, savedPaymentMethods: safePaymentMethods(mine) });
+      const id = `pm-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      mine.savedPaymentMethods = [{ id, vaultId, customerId, type, label, brand, last4, createdAt: new Date().toISOString() }, ...methods].slice(0, 20);
+      await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+      return res.status(201).json({ saved: true, savedPaymentMethods: safePaymentMethods(mine) });
+    }
+    if (action === 'deletePaymentMethod') {
+      const id = String(input.id || '').trim();
+      const methods = Array.isArray(mine.savedPaymentMethods) ? mine.savedPaymentMethods : [];
+      const before = methods.length;
+      mine.savedPaymentMethods = methods.filter(x => String(x.id || '') !== id);
+      if (mine.savedPaymentMethods.length === before) return res.status(404).json({ error: 'payment_method_not_found' });
+      await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+      return res.status(200).json({ deleted: true, savedPaymentMethods: safePaymentMethods(mine) });
+    }
     if (action === 'recordPayment') {
       const providerOrderId = String(input.providerOrderId || '').trim().slice(0, 180);
       const name = String(input.name || 'רכישה').trim().slice(0, 160) || 'רכישה';

@@ -883,6 +883,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       <div class="one-time-payment-label">אמצעי תשלום</div>
       <div class="one-time-payment-method paypal-method"><span class="payment-method-icon">P</span><span><strong>PayPal או כרטיס אשראי</strong><small>אפשר לשלם דרך חשבון PayPal או בכרטיס</small></span></div>
       <div id="coinPaymentBox" style="margin:0 0 14px;padding:14px;border:1px solid var(--glass-border);border-radius:14px;background:rgba(255,211,77,.12);text-align:center"><div style="font-weight:800;margin-bottom:4px">🪙 תשלום במטבעות רצף</div><div id="coinPaymentBalance" style="font-size:13px;color:var(--muted);margin-bottom:10px">יתרה: טוען...</div><div style="display:flex;gap:8px;justify-content:center"><button type="button" id="coinBuyBtn" class="btn btn-primary" style="font-size:13px;padding:9px 16px">קנה במטבעות</button><button type="button" id="coinBackBtn" class="btn btn-ghost glass" style="font-size:13px;padding:9px 16px">ביטול / אחורה</button></div><div id="coinPaymentMessage" style="font-size:12px;margin-top:8px"></div></div>
+    <div id="savedPaymentMethodChooser" style="display:none;margin:12px 0;padding:12px;border:1px solid var(--glass-border);border-radius:14px;background:rgba(255,255,255,.04);" dir="rtl"><div style="font-weight:800;margin-bottom:8px;">תשלום עם אמצעי שמור</div><select id="savedPaymentMethodSelect" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:var(--bg);color:var(--text);"></select><button type="button" id="savedPaymentMethodBuyBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:9px;">אשר לקנות עם אמצעי שמור</button><div id="savedPaymentMethodBuyMessage" style="font-size:12px;margin-top:8px;"></div></div>
     <div class="one-time-payment-actions" id="paypalPaymentLabel"><div class="one-time-payment-label" style="margin-top:14px;">המשך לתשלום</div><div id="paypalButtonContainer"></div></div>
     <div id="applePayButtonContainer" style="margin-top:10px;"></div>
     <div id="googlePayButtonContainer" style="margin-top:10px;"></div>
@@ -1512,7 +1513,18 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <div class="settings-card glass" id="accountSettingsCard">
       <h3>⚙️ הגדרות פרופיל</h3>
       <div id="accountSettingsContent" style="color:var(--muted);">טוען פרטי חשבון...</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+
+      <div class="settings-card glass" id="savedPaymentMethodsCard" style="margin-top:14px;">
+        <h3>💳 אמצעי תשלום שמורים</h3>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.6;">PayPal שומר את פרטי התשלום. באתר רצף נשמר רק טוקן מאובטח ופרטים להצגה.</p>
+        <div id="savedPaymentMethodsList" style="display:grid;gap:8px;margin:12px 0;"><span style="color:var(--muted);font-size:13px;">טוען...</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button type="button" class="btn btn-ghost glass" id="addSavedPaypalBtn">הוספת PayPal</button>
+          <button type="button" class="btn btn-ghost glass" id="addSavedCardBtn">הוספת כרטיס</button>
+        </div>
+        <div id="savedPaymentMethodsMessage" style="font-size:12px;color:var(--muted);margin-top:9px;" aria-live="polite"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;}
         <label class="toggle-row"><span>לאפשר למשתמשים שאושרו לראות את הסטטוס שלי</span><input type="checkbox" id="settingsPrivacyStatus" checked></label>
         <label class="toggle-row"><span>לאפשר למשתמשים שאושרו לראות את המנוי שלי</span><input type="checkbox" id="settingsPrivacySubscription"></label>
         <button type="button" class="btn btn-ghost glass" id="saveAccountSettingsBtn" style="width:100%;justify-content:center;">שמירת הגדרות פרופיל</button>
@@ -2194,13 +2206,39 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   function getDevicePreferences(){return devicePreferences;}
   async function loadDevicePreferencesFromDatabase(){try{const r=await fetch('/api/profile',{credentials:'include',cache:'no-store'});const d=await r.json();devicePreferences=d.profile?.devicePreferences||{};const reduce=document.getElementById('reduceMotionPreference');const notifications=document.getElementById('browserNotificationsPreference');if(reduce)reduce.checked=devicePreferences.reduceMotion===true;if(notifications)notifications.checked=devicePreferences.notifications===true;document.documentElement.dataset.reduceMotion=devicePreferences.reduceMotion?'true':'false';}catch(_){}}
   async function saveDevicePreferencesToDatabase(reduceMotion,notifications){const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'devicePreferences',reduceMotion,notifications})});if(!r.ok)throw new Error('device_preferences_save_failed');devicePreferences={reduceMotion,notifications};return devicePreferences;}
+
+  function paymentMethodText(method){
+    const type = method?.type === 'card' ? 'כרטיס אשראי' : 'PayPal';
+    const suffix = method?.last4 ? ` · •••• ${method.last4}` : '';
+    const brand = method?.brand ? ` · ${method.brand}` : '';
+    return `${method?.label || type}${brand}${suffix}`;
+  }
+  function renderSavedPaymentMethods(methods){
+    const list=document.getElementById('savedPaymentMethodsList'); if(!list)return;
+    if(!Array.isArray(methods)||!methods.length){list.innerHTML='<span style="color:var(--muted);font-size:13px;">אין עדיין אמצעי תשלום שמורים.</span>';return;}
+    list.innerHTML=methods.map(m=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid var(--glass-border);border-radius:12px;background:rgba(255,255,255,.04);"><span style="font-size:13px;">${retzefEscapeHtml(paymentMethodText(m))}</span><button type="button" class="btn btn-ghost glass saved-payment-delete" data-payment-method-id="${retzefEscapeHtml(m.id)}" style="padding:6px 10px;font-size:12px;">מחיקה</button></div>`).join('');
+    list.querySelectorAll('.saved-payment-delete').forEach(btn=>btn.addEventListener('click',async()=>{
+      const id=btn.dataset.paymentMethodId; btn.disabled=true;
+      try{const r=await fetch('/api/users',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'deletePaymentMethod',id})});const d=await r.json();if(!r.ok)throw new Error(d.error||'delete_failed');renderSavedPaymentMethods(d.savedPaymentMethods);const msg=document.getElementById('savedPaymentMethodsMessage');if(msg)msg.textContent='אמצעי התשלום נמחק.';}catch(_){btn.disabled=false;const msg=document.getElementById('savedPaymentMethodsMessage');if(msg)msg.textContent='מחיקת אמצעי התשלום נכשלה.';}}));
+  }
+  async function loadSavedPaymentMethods(){
+    const list=document.getElementById('savedPaymentMethodsList'); if(!list)return;
+    if(!window.__retzefProfile){list.innerHTML='<span style="color:var(--muted);font-size:13px;">יש להתחבר כדי לנהל אמצעי תשלום.</span>';return;}
+    try{const r=await fetch('/api/users',{credentials:'include',cache:'no-store'});const d=await r.json();renderSavedPaymentMethods(d.me?.savedPaymentMethods||[]);}catch(_){list.innerHTML='<span style="color:#b91c1c;font-size:13px;">לא ניתן לטעון את אמצעי התשלום.</span>'; }
+  }
+  function setupSavedPaymentMethodButtons(){
+    const message=document.getElementById('savedPaymentMethodsMessage');
+    document.getElementById('addSavedPaypalBtn')?.addEventListener('click',()=>{if(message)message.textContent='פתיחת PayPal לשמירת חשבון תשלום...'; if(typeof window.startRetzefPayPalVaultSave==='function')window.startRetzefPayPalVaultSave();else if(message)message.textContent='שמירת PayPal תופעל לאחר טעינת PayPal Vault.';});
+    document.getElementById('addSavedCardBtn')?.addEventListener('click',()=>{if(message)message.textContent='שמירת כרטיס תיפתח דרך PayPal Card Fields המאובטח.'; if(typeof window.startRetzefCardVaultSave==='function')window.startRetzefCardVaultSave();});
+  }
+
   function loadAccountSettingsPanel(){
     const profile=window.__retzefProfile; const content=document.getElementById('accountSettingsContent');
     if(!profile){content.innerHTML='<p>כדי לראות את הגדרות הפרופיל, יש להתחבר עם TikTok.</p>';return;}
     const role=profile.role==='owner'?'בעלים 👑':profile.role==='admin'?'מנהל מערכת תמיכה 🔨':'חבר/ה';
     content.innerHTML=`<p dir="ltr">Username: @${profile.username||''}</p><p>תפקיד: ${role}</p><div id="discordAccountSettings" style="margin-top:12px;padding:10px;border:1px solid var(--glass-border);border-radius:12px;"><b>💬 חשבון Discord</b><p style="margin:6px 0;font-size:13px;">${profile.discord?.username?('מחובר ✅ · @'+profile.discord.username):'לא מחובר'}</p>${profile.discord?.globalName?('<p style="margin:4px 0;font-size:12px;">שם תצוגה: '+profile.discord.globalName+'</p>'):''}<button type="button" class="quick-action" id="settingsDiscordConnect">${profile.discord?.username?'חיבור מחדש ל-Discord':'חבר את Discord'}</button></div><label style="display:block;margin:10px 0 5px;font-weight:700;">שם תצוגה בלבד</label><input id="accountDisplayName" maxlength="120" value="${String(profile.displayName||profile.username||'').replace(/"/g,'&quot;')}" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);"><label style="display:block;margin:10px 0 5px;font-weight:700;">תמונת פרופיל</label><input id="accountAvatarFile" type="file" accept="image/*"><label style="display:block;margin:10px 0 5px;font-weight:700;">גיל <small>(שינוי מחייב אישור בעלים)</small></label><input id="accountAge" type="number" min="1" max="120" value="${Number(profile.age||0)||''}" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);"><label style="display:block;margin:10px 0 5px;font-weight:700;">בן או בת</label><select id="accountGender" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);"><option value="">לא צוין</option><option value="בן" ${profile.gender==='בן'?'selected':''}>בן</option><option value="בת" ${profile.gender==='בת'?'selected':''}>בת</option></select><button type="button" class="btn btn-primary" id="saveRetzefProfileBtn" style="width:100%;justify-content:center;margin-top:12px;">שמירת פרטי חשבון רצף</button>`;
     let accountAvatarData=profile.avatarUrl||''; document.getElementById('accountAvatarFile')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>accountAvatarData=String(reader.result||'');reader.readAsDataURL(f);}); document.getElementById('saveRetzefProfileBtn')?.addEventListener('click',async()=>{const b=document.getElementById('saveRetzefProfileBtn');b.disabled=true;b.textContent='שומר...';try{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateAccountProfile',displayName:document.getElementById('accountDisplayName').value,avatarUrl:accountAvatarData,age:Number(document.getElementById('accountAge').value),gender:document.getElementById('accountGender').value})});const d=await r.json();if(!r.ok)throw new Error(d.error||'save_failed');window.__retzefProfile={...window.__retzefProfile,...d.profile};if(window.retzefCacheProfile)window.retzefCacheProfile(window.__retzefProfile);b.textContent=d.profile.pendingAgeChange?'נשמר · הגיל ממתין לאישור הבעלים ✅':'נשמר ✅';loadAccountSettingsPanel();}catch(e){b.textContent='השמירה נכשלה';}setTimeout(()=>b.textContent='שמירת פרטי חשבון רצף',2200);})
-    document.getElementById('settingsPrivacyStatus').checked=profile.privacy?.statusVisible!==false;
+    document.getElementById('settingsPrivacyStatus').checked=profile.privacy?.statusVisible!==false; loadSavedPaymentMethods(); setupSavedPaymentMethodButtons();
     document.getElementById('settingsPrivacySubscription').checked=profile.privacy?.subscriptionVisible===true;
   }
   function loadDevicePreferences(){loadDevicePreferencesFromDatabase();}
@@ -2450,7 +2488,14 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     }
     paypalButtonContainer.innerHTML=`<p style="color:#15803d;font-weight:700;text-align:center;">✅ התשלום התקבל! תודה על "${retzefEscapeHtml(itemName)}".<br><small>מזהה רכישה של רצף: ${retzefEscapeHtml(id)}</small></p>`;
   }
-function openPaypalModal(itemName, price){
+
+  async function loadSavedPaymentChooser(itemName, price){
+    const box=document.getElementById('savedPaymentMethodChooser'); const select=document.getElementById('savedPaymentMethodSelect'); const buy=document.getElementById('savedPaymentMethodBuyBtn'); const msg=document.getElementById('savedPaymentMethodBuyMessage');
+    if(!box||!select||!buy||!window.__retzefProfile){if(box)box.style.display='none';return;}
+    try{const r=await fetch('/api/users',{credentials:'include',cache:'no-store'});const d=await r.json();const methods=Array.isArray(d.me?.savedPaymentMethods)?d.me.savedPaymentMethods:[];if(!methods.length){box.style.display='none';return;}box.style.display='block';select.innerHTML=methods.map(m=>`<option value="${retzefEscapeHtml(m.id)}">${retzefEscapeHtml(paymentMethodText(m))}</option>`).join('');buy.onclick=async()=>{buy.disabled=true;msg.textContent='מאשר את הרכישה...';try{const order=await fetch('/api/paypal/create-vault-order',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({item:itemName,price:Number(price),paymentMethodId:select.value})});const od=await order.json();if(!order.ok||!od.id)throw new Error(od.error||'vault_order_failed');const cap=await fetch('/api/paypal/capture-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderID:od.id})});const cd=await cap.json();if(!cap.ok||cd.status!=='COMPLETED')throw new Error('capture_failed');const id=await getRetzefPaymentId(od.id,itemName,price,methods.find(x=>x.id===select.value)?.type||'paypal');showRetzefPurchaseSuccess(id,itemName);msg.textContent='';}catch(e){console.error(e);msg.textContent='הרכישה באמצעות האמצעי השמור נכשלה. נסו תשלום רגיל.';}finally{buy.disabled=false;}};}catch(_){box.style.display='none';}
+  }
+
+  function openPaypalModal(itemName, price){
     paypalItemName.textContent = itemName;
     const accountLabel = document.getElementById('oneTimeCheckoutAccount');
     if (accountLabel) { const p = window.__retzefProfile; accountLabel.textContent = p?.email ? `חשבון: ${p.email}` : (p?.username ? `חשבון: @${p.username}` : 'חשבון: אורח'); }
@@ -2458,6 +2503,7 @@ function openPaypalModal(itemName, price){
     paypalItemPrice.textContent = `₪${price}`;
     paypalButtonContainer.innerHTML = '';
     paypalModal.classList.add('open');
+    loadSavedPaymentChooser(itemName, price);
 
     function showManualFallback(reasonHtml){
       paypalButtonContainer.innerHTML = reasonHtml;
@@ -3260,5 +3306,6 @@ function openPaypalModal(itemName, price){
 })();
 </script>
 
+<script src="https://www.paypal.com/web-sdk/v6/core"></script>
 </body>
   </html>
