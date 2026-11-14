@@ -301,6 +301,29 @@ module.exports = async (req, res) => {
       mine.devicePreferences = { reduceMotion: input.reduceMotion === true, notifications: input.notifications === true };
       await redis('set', `${PREFIX}${me}`, JSON.stringify(mine)); return res.status(200).json({ devicePreferences: mine.devicePreferences });
     }
+    if (action === 'developerGrant') {
+      if (me !== 'ban.original') return res.status(403).json({ error: 'developer_owner_only', message: 'Developer grants are available only to the owner.' });
+      const kind = String(input.kind || '');
+      if (kind === 'luck') {
+        const multiplier = Number(input.multiplier);
+        if (!Number.isSafeInteger(multiplier) || !LUCK_PRODUCTS[multiplier]) return res.status(400).json({ error: 'invalid_luck_multiplier' });
+        const luckMultipliers = addLuck(mine, multiplier, 10 * 60 * 1000);
+        await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+        return res.status(200).json({ granted: true, kind, multiplier, luckMultipliers });
+      }
+      if (kind === 'coins') {
+        const amount = Math.floor(Number(input.amount));
+        if (!Number.isSafeInteger(amount) || amount < 0 || amount > 1000000000) return res.status(400).json({ error: 'invalid_developer_coins' });
+        const wallet = walletOf(mine);
+        wallet.balance = amount;
+        wallet.transactions.unshift({ type: 'developer_grant', amount, reason: 'Custom Coins · Developer Mode', by: me, createdAt: new Date().toISOString() });
+        wallet.transactions = wallet.transactions.slice(0, 50);
+        mine.wallet = wallet;
+        await redis('set', `${PREFIX}${me}`, JSON.stringify(mine));
+        return res.status(200).json({ granted: true, kind, wallet });
+      }
+      return res.status(400).json({ error: 'invalid_developer_grant' });
+    }
     if (action === 'walletGrant') { if (me !== 'ban.original') return res.status(403).json({ error: 'owner_only' }); const amount = Math.floor(Number(input.amount)); if (!Number.isInteger(amount) || amount < 1 || amount > 100000) return res.status(400).json({ error: 'invalid_amount' }); const targetProfile = await profile(target); const wallet = walletOf(targetProfile); wallet.balance += amount; wallet.transactions.unshift({ type: 'grant', amount, reason: String(input.reason || 'הענקה מהבעלים').trim().slice(0, 160), by: me, createdAt: new Date().toISOString() }); targetProfile.wallet = wallet; await redis('set', `${PREFIX}${target}`, JSON.stringify(targetProfile)); try { await sendTo(target, { title: 'קיבלת מטבעות רצף', body: `נוספו לך ${amount} מטבעות לארנק`, url: '/' }); } catch (_) {} return res.status(200).json({ username: target, wallet }); }
     if (action === 'support') {
       const quote = String(input.quote || '').trim().slice(0, 2000); if (!quote) return res.status(400).json({ error: 'quote_required' });
