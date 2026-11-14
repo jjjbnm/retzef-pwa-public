@@ -1476,9 +1476,11 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
         const buttons=document.querySelectorAll('.shop-category-btn');
         const items=document.querySelectorAll('#shop .shop-grid > .shop-item');
         buttons.forEach(button=>button.addEventListener('click',()=>{
-          const category=button.dataset.shopCategory;
-          buttons.forEach(item=>{const active=item===button;item.classList.toggle('btn-primary',active);item.classList.toggle('btn-ghost',!active);item.setAttribute('aria-selected',String(active));});
-          items.forEach(item=>{item.style.display=category==='all'||item.dataset.category===category?'':'none';});
+          try {
+            const category=button.dataset.shopCategory || 'all';
+            buttons.forEach(item=>{const active=item===button;item.classList.toggle('btn-primary',active);item.classList.toggle('btn-ghost',!active);item.setAttribute('aria-selected',String(active));});
+            items.forEach(item=>{item.style.display=category==='all'||item.dataset.category===category?'':'none';});
+          } catch (error) { console.error('Retzef shop category error', error); }
         }));
       })();
     </script>
@@ -2393,17 +2395,25 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   const panels = document.querySelectorAll('.tab-panel');
   const protectedTabs = new Set(['boards', 'subs', 'shop']);
   function activateTab(target){
-    if (protectedTabs.has(target) && !window.__retzefProfile) {
-      if (target === 'subs' || target === 'shop') {
-        if (typeof openLoginRequiredModal === 'function') openLoginRequiredModal();
-        else alert('חייב להיות מחובר לחשבון TikTok.');
-      } else if (typeof openConsentModal === 'function') openConsentModal();
-      else alert('כדי להיכנס לטאב הזה צריך להתחבר עם TikTok.');
-      return;
+    try {
+      const panel=document.getElementById(String(target || 'home'));
+      if (!panel || !panel.classList.contains('tab-panel')) target='home';
+      if (protectedTabs.has(target) && !window.__retzefProfile) {
+        if (target === 'subs' || target === 'shop') {
+          if (typeof openLoginRequiredModal === 'function') openLoginRequiredModal();
+          else alert('חייב להיות מחובר לחשבון TikTok.');
+        } else if (typeof openConsentModal === 'function') openConsentModal();
+        else alert('כדי להיכנס לטאב הזה צריך להתחבר עם TikTok.');
+        return;
+      }
+      panels.forEach(p => p.classList.toggle('active', p.id === target));
+      tabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
+      try { window.scrollTo({top: 0, behavior:'smooth'}); } catch (_) { window.scrollTo(0, 0); }
+    } catch (error) {
+      console.error('Retzef tab error', error);
+      panels.forEach(p => p.classList.toggle('active', p.id === 'home'));
+      tabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === 'home'));
     }
-    panels.forEach(p => p.classList.toggle('active', p.id === target));
-    tabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
-    window.scrollTo({top: 0, behavior:'smooth'});
   }
   window.activateTab = activateTab;
   tabBtns.forEach(b => b.addEventListener('click', () => activateTab(b.dataset.target)));
