@@ -13,32 +13,45 @@ function normalizedWallet(profile) {
 }
 
 const GEO_TIMEOUT_MS = 5000;
-const VPN_PROVIDER_PATTERN = /proton\\s*vpn|protonvpn|nordvpn|expressvpn|surfshark|cyberghost|private internet access|pia vpn|mullvad|ipvanish|windscribe|hide\\.me|hotspot shield|tunnelbear|hola vpn|hidemyass|purevpn|privatevpn|tor exit|openvpn|wireguard|vpn|proxy|anonymous|datacenter|hosting/i;
+const VPN_PROVIDER_PATTERN = /proton\s*vpn|protonvpn|nordvpn|expressvpn|surfshark|cyberghost|private internet access|pia vpn|mullvad|ipvanish|windscribe|hide\.me|hotspot shield|tunnelbear|hola vpn|hidemyass|purevpn|privatevpn|tor exit|openvpn|wireguard|vpn|proxy|anonymous|datacenter|hosting/i;
+
 async function accessCheck(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   try {
     const vercelCountry = String(req.headers['x-vercel-ip-country'] || '').toUpperCase();
-    // Vercel's country header is the primary signal. Avoid an unnecessary external
-    // geo lookup for Israeli visitors, which can fail transiently or rate-limit.
     if (vercelCountry === 'IL') return res.status(200).json({ allowed: true, countryCode: 'IL', vpnDetected: false });
     if (vercelCountry && vercelCountry !== 'IL') return res.status(403).json({ allowed: false, error: 'region_not_allowed', countryCode: vercelCountry });
+
     const forwarded = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '';
     const clientIp = String(forwarded).split(',')[0].trim() || String(req.socket?.remoteAddress || '').trim();
     if (!clientIp) return res.status(503).json({ allowed: false, error: 'client_ip_unknown' });
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), GEO_TIMEOUT_MS);
-    const response = await fetch(`https://ipwho.is/${encodeURIComponent(clientIp)}`, { headers: { Accept: 'application/json', 'User-Agent': 'retzef-support-access-check/1.0' }, signal: controller.signal });
-    clearTimeout(timeout);
-    if (!response.ok) throw new Error(`geo_provider_${response.status}`);
-    const geo = await response.json();
-    if (geo.success === false) throw new Error('geo_provider_failed');
-    const security = geo.security || {}, connection = geo.connection || {};
-    const networkText = [geo.isp, geo.org, geo.organization, connection.isp, connection.org, connection.organization, geo.asn].filter(Boolean).join(' ');
-    const countryCode = String(geo.country_code || vercelCountry || '').toUpperCase();
-    if (!countryCode) return res.status(503).json({ allowed: false, error: 'country_unknown' });
-    if (countryCode !== 'IL') return res.status(403).json({ allowed: false, error: 'region_not_allowed', countryCode });
-    return res.status(200).json({ allowed: true, countryCode: 'IL', vpnDetected: Boolean(security.vpn || security.proxy || security.tor || security.hosting || security.datacenter || VPN_PROVIDER_PATTERN.test(networkText)) });
-  } catch (_) { return res.status(503).json({ allowed: false, error: 'region_check_failed' }); }
+    try {
+      const response = await fetch(`https://ipwho.is/${encodeURIComponent(clientIp)}`, {
+        headers: { Accept: 'application/json', 'User-Agent': 'retzef-support-access-check/1.0' },
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`geo_provider_${response.status}`);
+      const geo = await response.json();
+      if (geo.success === false) throw new Error('geo_provider_failed');
+      const security = geo.security || {};
+      const connection = geo.connection || {};
+      const networkText = [geo.isp, geo.org, geo.organization, connection.isp, connection.org, connection.organization, geo.asn].filter(Boolean).join(' ');
+      const countryCode = String(geo.country_code || '').toUpperCase();
+      if (!countryCode) return res.status(503).json({ allowed: false, error: 'country_unknown' });
+      if (countryCode !== 'IL') return res.status(403).json({ allowed: false, error: 'region_not_allowed', countryCode });
+      const vpnDetected = Boolean(security.vpn || security.proxy || security.tor || security.hosting || security.datacenter || VPN_PROVIDER_PATTERN.test(networkText));
+      if (vpnDetected) return res.status(403).json({ allowed: false, error: 'vpn_detected', countryCode: 'IL', vpnDetected: true });
+      return res.status(200).json({ allowed: true, countryCode: 'IL', vpnDetected: false });
+    } finally {
+      clearTimeout(timeout);
+    }
+  } catch (error) {
+    console.error('region access check failed:', error.message);
+    return res.status(503).json({ allowed: false, error: 'region_check_failed' });
+  }
 }
 
 function getCookie(req, name) {
