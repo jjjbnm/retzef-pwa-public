@@ -3082,7 +3082,18 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   <script>
     (function registerProgressiveWebApp(){
       if (!('serviceWorker' in navigator)) return;
-      window.addEventListener('load', function(){ navigator.serviceWorker.register('/service-worker.js', {scope:'/', updateViaCache:'none'}).catch(function(error){ console.warn('PWA service worker unavailable', error); }); });
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('/service-worker.js', {scope:'/', updateViaCache:'none'}).then(function(registration){
+          const promptUpdate=function(worker){ if(!worker)return; if(window.__retzefUpdatePromptShown)return; window.__retzefUpdatePromptShown=true; if(window.confirm('גרסה חדשה של רצף זמינה. לעדכן עכשיו?')) worker.postMessage('SKIP_WAITING'); };
+          if(registration.waiting && navigator.serviceWorker.controller) promptUpdate(registration.waiting);
+          registration.addEventListener('updatefound', function(){
+            const worker=registration.installing; if(!worker)return;
+            worker.addEventListener('statechange', function(){ if(worker.state==='installed' && navigator.serviceWorker.controller) promptUpdate(worker); });
+          });
+          registration.update().catch(function(){});
+        }).catch(function(error){ console.warn('PWA service worker unavailable', error); });
+      });
+      navigator.serviceWorker.addEventListener('controllerchange', function(){ if(window.__retzefReloadingForUpdate)return; window.__retzefReloadingForUpdate=true; window.location.reload(); });
       let deferredPrompt = null;
       const prompt = document.getElementById('pwaInstallPrompt');
       const install = document.getElementById('pwaInstallButton');
@@ -3147,6 +3158,41 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     const reset=settingsSection.querySelector('#resetSettingsBtn'); if(reset && reset.parentNode===settingsSection) settingsSection.insertBefore(card,reset); else settingsSection.appendChild(card);
     card.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>applyVersion(button.dataset.version)));
   }
+  // Local demo modes: visual previews only. They never grant server permissions or change wallet data.
+  const MODE_KEY='retzef_demo_mode';
+  const DEMO_MODES={
+    ultra:{label:'⚡ הגדרות אולטרה + מצב מפתחים',desc:'תצוגת מצב מפתחים, טפטים ומוזיקות נוספות כולל Vice City. לא משנה הרשאות אמיתיות ולא משנה את השרת.'},
+    premium:{label:'💎 מצב פרימיום',desc:'תצוגה מקדימה של אפשרויות פרימיום. לא מפעיל מנוי או הרשאות פרימיום אמיתיים.'},
+    owner:{label:'👑 מצב בעלים',desc:'תצוגת הגדרות בעלים, Retzef ID ויתרה מדומה של 500,000,000 מטבעות. הכול תצוגה בלבד ולא ניתן לקנות באמצעותם.'},
+    beta:{label:'🧪 מצב בטא',desc:'תצוגה מקדימה של דברים שעדיין לא נוספו או שהוסרו, כולל קרדיטים, AI, הכפתור הצידי וחשבונות רצף. לא מפעיל שירותים אמיתיים.'}
+  };
+  function applyDemoMode(mode,save=true){
+    const value=Object.prototype.hasOwnProperty.call(DEMO_MODES,mode)?mode:'';
+    document.documentElement.dataset.retzefDemoMode=value||'none';
+    document.querySelectorAll('[data-demo-mode]').forEach(b=>b.classList.toggle('active',b.dataset.demoMode===value));
+    const badge=document.getElementById('retzefDemoModeStatus');
+    if(badge) badge.textContent=value?DEMO_MODES[value].label+' פעיל — תצוגה מקומית בלבד':'אין מצב הדגמה פעיל';
+    const details=document.getElementById('retzefDemoModeDetails');
+    if(details) details.textContent=value?DEMO_MODES[value].desc:'בחרו מצב אחד כדי לראות תצוגה מקדימה.';
+    const devButton=document.getElementById('developer-mode-tab-btn');
+    if(devButton) devButton.style.display=value==='ultra'?'inline-block':'';
+    if(save){ if(value)safeSet(MODE_KEY,value); else try{localStorage.removeItem(MODE_KEY);}catch(_){} }
+    window.__retzefDemoMode=value;
+  }
+  window.retzefApplyDemoMode=applyDemoMode;
+  if(settingsSection && !document.getElementById('retzef-demo-modes')){
+    const card=document.createElement('div'); card.id='retzef-demo-modes'; card.className='settings-card glass';
+    card.innerHTML='<h3>🎛️ מודים</h3><p style="font-size:13px;color:var(--muted);">אפשר להפעיל מוד אחד בלבד. כל המודים הם תצוגה מקדימה מקומית ואינם מעניקים הרשאות, מטבעות או מנויים אמיתיים.</p><div style="display:grid;gap:8px;margin-top:12px">'+Object.entries(DEMO_MODES).map(([key,item])=>'<button type="button" class="btn btn-ghost glass" data-demo-mode="'+key+'">'+item.label+'</button>').join('')+'<button type="button" class="btn btn-ghost glass" data-demo-mode="">כיבוי כל המודים</button></div><p id="retzefDemoModeStatus" style="font-weight:800;margin-top:12px">אין מצב הדגמה פעיל</p><p id="retzefDemoModeDetails" style="font-size:13px;color:var(--muted);margin-top:4px">בחרו מצב אחד כדי לראות תצוגה מקדימה.</p><div id="retzefDemoModePreview" style="display:none;margin-top:12px;padding:12px;border-radius:12px;background:rgba(59,99,224,.1);font-size:13px"></div>';
+    const reset=settingsSection.querySelector('#resetSettingsBtn'); if(reset&&reset.parentNode===settingsSection) settingsSection.insertBefore(card,reset); else settingsSection.appendChild(card);
+    card.querySelectorAll('[data-demo-mode]').forEach(button=>button.addEventListener('click',()=>{
+      applyDemoMode(button.dataset.demoMode||'');
+      const preview=document.getElementById('retzefDemoModePreview');
+      const mode=window.__retzefDemoMode;
+      if(preview){preview.style.display=mode?'block':'none';preview.textContent=mode==='owner'?'👑 Retzef ID · יתרה מדומה: 500,000,000 🪙 · אין גישה אמיתית':mode==='beta'?'🧪 תצוגה: AI, קרדיטים, חשבונות רצף וכפתור AI':mode==='ultra'?'⚡ תצוגה: Developer Mode, Vice City וטפטים/מוזיקות נוספות':mode==='premium'?'💎 תצוגה: אפשרויות פרימיום':' ';}
+    }));
+  }
+  applyDemoMode(safeGet(MODE_KEY,''),false);
+
   applyVersion(safeGet(VERSION_KEY,'regular'),false);
 
   // Replace the blocking offline overlay with a non-destructive state.
