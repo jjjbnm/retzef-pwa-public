@@ -3422,3 +3422,42 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
 </script>
 </body>
   </html>
+
+<script id="retzef-demo-modes-robust">
+(function(){
+  'use strict';
+  var KEY='retzef_demo_mode';
+  var MODES={
+    ultra:{label:'⚡ הגדרות אולטרה + מצב מפתחים',preview:'Developer Mode, Vice City, טפטים ומוזיקות נוספות — תצוגה מקומית בלבד.'},
+    premium:{label:'💎 מצב פרימיום',preview:'אפשרויות פרימיום — תצוגה מקומית בלבד, ללא מנוי אמיתי.'},
+    owner:{label:'👑 מצב בעלים',preview:'Retzef ID ו־500,000,000 מטבעות מדומים — אין הרשאת בעלים ואין רכישות אמיתיות.'},
+    beta:{label:'🧪 מצב בטא',preview:'AI, קרדיטים, חשבונות רצף וכפתור AI — תצוגה מקדימה בלבד.'}
+  };
+  function storageGet(){try{return localStorage.getItem(KEY)||'';}catch(e){return '';}}
+  function storageSet(value){try{if(value)localStorage.setItem(KEY,value);else localStorage.removeItem(KEY);}catch(e){}}
+  function render(mode){
+    if(!MODES[mode]) mode='';
+    document.documentElement.setAttribute('data-retzef-demo-mode',mode||'none');
+    window.__retzefDemoMode=mode;
+    document.querySelectorAll('#retzef-demo-modes-robust [data-demo-mode]').forEach(function(btn){
+      var active=(btn.getAttribute('data-demo-mode')===mode);
+      btn.classList.toggle('active',active); btn.setAttribute('aria-pressed',active?'true':'false');
+    });
+    var status=document.getElementById('retzefDemoModeStatusRobust');
+    var preview=document.getElementById('retzefDemoModePreviewRobust');
+    if(status) status.textContent=mode?MODES[mode].label+' פעיל — תצוגה מקומית בלבד':'אין מצב הדגמה פעיל';
+    if(preview){preview.hidden=!mode; preview.textContent=mode?MODES[mode].preview:'';}
+  }
+  function init(){
+    var settings=document.getElementById('settings'); if(!settings)return;
+    var old=document.getElementById('retzef-demo-modes-robust'); if(old)old.remove();
+    var card=document.createElement('div'); card.id='retzef-demo-modes-robust'; card.className='settings-card glass';
+    card.innerHTML='<h3>🎛️ מודים</h3><p style="font-size:13px;color:var(--muted)">מוד אחד בכל פעם. המודים הם תצוגה מקומית בלבד ואינם מעניקים הרשאות, מטבעות או מנויים אמיתיים.</p><div style="display:grid;gap:8px;margin-top:12px">'+Object.keys(MODES).map(function(k){return '<button type="button" class="btn btn-ghost glass" data-demo-mode="'+k+'" aria-pressed="false">'+MODES[k].label+'</button>';}).join('')+'<button type="button" class="btn btn-ghost glass" data-demo-mode="" aria-pressed="false">כיבוי כל המודים</button></div><p id="retzefDemoModeStatusRobust" style="font-weight:800;margin-top:12px">אין מצב הדגמה פעיל</p><p id="retzefDemoModePreviewRobust" hidden style="font-size:13px;color:var(--muted);margin-top:4px"></p>';
+    settings.appendChild(card);
+    card.addEventListener('click',function(event){var btn=event.target.closest('[data-demo-mode]');if(!btn)return;var mode=btn.getAttribute('data-demo-mode')||'';storageSet(mode);render(mode);});
+    render(storageGet());
+  }
+  window.retzefApplyDemoModeRobust=function(mode){storageSet(MODES[mode]?mode:'');render(MODES[mode]?mode:'');};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
