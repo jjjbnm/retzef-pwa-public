@@ -587,6 +587,16 @@
   .pwa-platform-card p{min-height:42px}
   .pwa-platform-icon{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(245,158,11,.2));font-size:29px;font-family:Arial,sans-serif}
   .pwa-install-platform{margin-top:auto}
+
+  #retzefDeviceSwitchLoader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:22px;background:rgba(8,12,25,.86);backdrop-filter:blur(12px)}
+  #retzefDeviceSwitchLoader[hidden]{display:none}
+  .retzef-device-loader-card{width:min(390px,100%);padding:30px 24px;border:1px solid rgba(255,255,255,.18);border-radius:24px;background:var(--bg2,#fff);color:var(--text,#111);text-align:center;box-shadow:0 24px 80px #0008}
+  .retzef-device-loader-spinner{font-size:48px;line-height:1;margin-bottom:14px;color:var(--accent,#7c3aed);animation:retzefLoaderSpin 1s linear infinite}
+  .retzef-device-loader-card h2{margin:0 0 10px}.retzef-device-loader-card p{min-height:24px;margin:0 0 18px;font-weight:800}.retzef-device-loader-card small{display:block;margin-top:14px;color:var(--muted,#667085)}
+  .retzef-device-loader-bar{height:8px;overflow:hidden;border-radius:99px;background:rgba(127,127,127,.2)}
+  .retzef-device-loader-bar span{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#7c3aed,#f59e0b);animation:retzefLoaderProgress 10s linear forwards}
+  @keyframes retzefLoaderSpin{to{transform:rotate(360deg)}}
+  @keyframes retzefLoaderProgress{to{width:100%}}
 </style>
 
 <style id="retzef-version-mode-styles">
@@ -1601,6 +1611,13 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     </div>
   </section>
 
+
+    <div class="dev-card">
+      <h3>🖥️ גרסת מכשיר</h3>
+      <p class="dev-status">אפשר להחליף לצורכי בדיקה בלבד. לאחר ההחלפה יוצגו רכיבי הגרסה שנבחרה וההגדרה הקודמת תוסר מהמכשיר.</p>
+      <div class="dev-grid"><select id="developerDeviceVersion" aria-label="בחירת גרסת מכשיר"><option value="windows">Windows</option><option value="android">Android</option><option value="ios">iOS</option><option value="macos-apple">macOS Apple Silicon</option><option value="macos-intel">macOS Intel</option><option value="linux">Linux</option></select><button type="button" class="btn btn-primary" id="developerSwitchDevice">החלף גרסת מכשיר</button></div>
+      <p id="developerDeviceStatus" class="dev-status" style="margin:10px 0 0">גרסת המכשיר הנוכחית מזוהה אוטומטית.</p>
+    </div>
   <!-- SETTINGS -->
   <section id="settings" class="tab-panel">
     <span class="eyebrow" data-i18n="settings_eyebrow">התאמה אישית</span>
@@ -3453,7 +3470,82 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   document.getElementById('developerGrantLuck')?.addEventListener('click',async()=>{const btn=document.getElementById('developerGrantLuck');btn.disabled=true;try{const multiplier=Number(document.getElementById('developerLuckSelect')?.value||2);const d=await developerGrant({kind:'luck',multiplier});const s=read();s.username=profileName();s.luck=multiplier;write(s);refresh();if(window.__retzefProfile)window.__retzefProfile.luckMultipliers=d.luckMultipliers||[];notify('מזל '+multiplier.toLocaleString()+'× נוסף לחשבון ל־10 דקות');}catch(e){notify(e.message==='Developer grants are available only to the owner.'?'רק הבעלים יכול להשתמש בהענקות Developer Mode':e.message||'הענקת המזל נכשלה');}finally{btn.disabled=false;}});
   document.getElementById('developerSetCoins')?.addEventListener('click',async()=>{const btn=document.getElementById('developerSetCoins'),n=Math.floor(Number(document.getElementById('developerCoinsInput')?.value));if(!Number.isSafeInteger(n)||n<0||n>1000000000){notify('יש להזין כמות בין 0 ל־1,000,000,000');return;}btn.disabled=true;try{const d=await developerGrant({kind:'coins',amount:n});const s=read();s.username=profileName();s.coins=n;write(s);if(window.__retzefProfile)window.__retzefProfile.wallet=d.wallet;refresh();if(typeof window.updateWalletUI==='function')window.updateWalletUI(d.wallet);notify('יתרת המטבעות האמיתית עודכנה');}catch(e){notify(e.message==='Developer grants are available only to the owner.'?'רק הבעלים יכול להשתמש בהענקות Developer Mode':e.message||'הענקת המטבעות נכשלה');}finally{btn.disabled=false;}});
   document.querySelectorAll('[data-developer-beta]').forEach(btn=>btn.addEventListener('click',()=>{const value=btn.dataset.developerBeta,s=read();s.username=profileName();if(value==='reset')delete s.beta;else s.beta=value;write(s);refresh();notify(value==='reset'?'תצוגת הבטא אופסה':'גרסת בטא הופעלה: '+value);}));
-  window.refreshDeveloperMode=show;if(activeForCurrent())show();
+  const deviceSelect=document.getElementById('developerDeviceVersion');
+  const deviceStatus=document.getElementById('developerDeviceStatus');
+  const updateDeviceStatus=async()=>{const current=await window.retzefCurrentDevice();if(deviceSelect&&window.retzefDeviceLabels[current])deviceSelect.value=current;if(deviceStatus)deviceStatus.textContent='גרסת המכשיר הפעילה: '+(window.retzefDeviceLabels[current]||current)+'.';};
+  document.getElementById('developerSwitchDevice')?.addEventListener('click',()=>window.retzefSwitchDeviceVersion(deviceSelect?.value));
+  window.refreshDeveloperMode=show;if(activeForCurrent()){show();updateDeviceStatus();}
+})();
+</script>
+
+<div id="retzefDeviceSwitchLoader" hidden role="status" aria-live="polite" dir="rtl">
+  <div class="retzef-device-loader-card">
+    <div class="retzef-device-loader-spinner" aria-hidden="true">⟳</div>
+    <h2>מחליפים גרסת מכשיר</h2>
+    <p id="retzefDeviceLoaderText">טוען מטבעות</p>
+    <div class="retzef-device-loader-bar"><span></span></div>
+    <small>נא לא לסגור את האפליקציה</small>
+  </div>
+</div>
+<script id="retzef-device-version-lock">
+(function(){
+  const DEVICE_KEY='retzef_pwa_device_version_v1';
+  const OVERRIDE_KEY='retzef_pwa_device_override_v1';
+  const labels={windows:'Windows',android:'Android',ios:'iOS','macos-apple':'macOS Apple Silicon','macos-intel':'macOS Intel',linux:'Linux'};
+  const safeGet=k=>{try{return localStorage.getItem(k)||'';}catch(_){return '';}};
+  const safeSet=(k,v)=>{try{localStorage.setItem(k,v);return true;}catch(_){return false;}};
+  const safeRemove=k=>{try{localStorage.removeItem(k);}catch(_){}
+  };
+  function baseDevice(){
+    const ua=navigator.userAgent||'', platform=navigator.platform||'';
+    if(/iPhone|iPad|iPod/i.test(ua)||(/Macintosh/i.test(ua)&&navigator.maxTouchPoints>1))return 'ios';
+    if(/Android/i.test(ua))return 'android';
+    if(/Windows/i.test(ua))return 'windows';
+    if(/Linux/i.test(platform)||/Linux/i.test(ua))return 'linux';
+    if(/Macintosh|Mac OS X/i.test(ua)||/^Mac/i.test(platform))return 'macos-unknown';
+    return 'windows';
+  }
+  async function currentDevice(){
+    const overridden=safeGet(OVERRIDE_KEY);if(overridden&&labels[overridden])return overridden;
+    const base=baseDevice();
+    if(base!=='macos-unknown')return base;
+    try{
+      if(navigator.userAgentData?.getHighEntropyValues){
+        const data=await navigator.userAgentData.getHighEntropyValues(['architecture']);
+        if(String(data.architecture||'').toLowerCase().includes('arm'))return 'macos-apple';
+        if(data.architecture)return 'macos-intel';
+      }
+    }catch(_){}
+    return 'macos-intel';
+  }
+  function showDeviceBlocked(expected,actual){
+    if(document.getElementById('retzefDeviceBlocked'))return;
+    const box=document.createElement('div');box.id='retzefDeviceBlocked';box.dir='rtl';box.style.cssText='position:fixed;inset:0;z-index:2147482999;display:grid;place-items:center;padding:22px;background:rgba(8,12,25,.9);backdrop-filter:blur(12px)';
+    box.innerHTML='<div style="max-width:440px;width:100%;padding:30px 24px;border-radius:24px;background:var(--bg2,#fff);color:var(--text,#111);text-align:center;box-shadow:0 24px 80px #0008"><div style="font-size:52px">📱</div><h2>מכשיר זה לא יכול להשתמש בגרסה זאת</h2><p style="line-height:1.7">יש לעדכן את האפליקציה לגרסה של המכשיר שלך.</p><p style="font-size:13px;color:var(--muted,#667085)">גרסה שנבחרה: '+(labels[expected]||expected)+'<br>מכשיר נוכחי: '+(labels[actual]||actual)+'</p><button type="button" class="btn btn-primary" id="retzefDeviceBlockedClose">הבנתי</button></div>';
+    document.body.appendChild(box);document.getElementById('retzefDeviceBlockedClose').onclick=()=>box.remove();
+  }
+  async function checkDevice(){
+    const actual=await currentDevice(), saved=safeGet(DEVICE_KEY);
+    if(!saved){safeSet(DEVICE_KEY,actual);document.documentElement.dataset.deviceVersion=actual;return actual;}
+    document.documentElement.dataset.deviceVersion=saved;
+    if(saved!==actual)showDeviceBlocked(saved,actual);
+    return actual;
+  }
+  function clearPreviousDeviceState(){
+    ['retzef_device_version_payload','retzef_pwa_install_device','retzef_device_features'].forEach(safeRemove);
+  }
+  window.retzefCurrentDevice=checkDevice;
+  window.retzefDeviceLabels=labels;
+  window.retzefSwitchDeviceVersion=async function(target){
+    if(!labels[target])return;
+    const loader=document.getElementById('retzefDeviceSwitchLoader'), text=document.getElementById('retzefDeviceLoaderText');
+    if(loader)loader.hidden=false;
+    const messages=['טוען מטבעות','טוען הגדרות המכשיר','מעדכן רכיבי גרסה','מנקה את הגרסה הקודמת','מסיים החלפה'];
+    let i=0;if(text)text.textContent=messages[0];const timer=setInterval(()=>{i=(i+1)%messages.length;if(text)text.textContent=messages[i];},2000);
+    await new Promise(resolve=>setTimeout(resolve,10000));clearInterval(timer);clearPreviousDeviceState();safeSet(OVERRIDE_KEY,target);safeSet(DEVICE_KEY,target);location.reload();
+  };
+  function installGuard(){document.querySelectorAll('.pwa-install-platform').forEach(button=>{button.addEventListener('click',async function(event){const actual=await currentDevice(),target=button.dataset.pwaPlatform;if(target!==actual){event.preventDefault();event.stopImmediatePropagation();showDeviceBlocked(target,actual);return;}} ,true);});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{checkDevice();installGuard();});else{checkDevice();installGuard();}
 })();
 </script>
 </body>
