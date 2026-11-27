@@ -582,6 +582,11 @@
   #developerModePanel input,#developerModePanel select{width:100%;box-sizing:border-box;padding:10px;border-radius:10px;border:1px solid rgba(196,181,253,.35);background:rgba(15,23,42,.8);color:#fff}
   #developerModePanel .dev-status{font-size:13px;line-height:1.7;color:#ddd6fe;white-space:pre-line}
   #developerModePanel .dev-badge{display:inline-block;padding:5px 10px;border-radius:999px;background:#7c3aed;color:#fff;font-weight:800;font-size:12px}
+
+  .pwa-platform-card{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .pwa-platform-card p{min-height:42px}
+  .pwa-platform-icon{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(245,158,11,.2));font-size:29px;font-family:Arial,sans-serif}
+  .pwa-install-platform{margin-top:auto}
 </style>
 
 <style id="retzef-version-mode-styles">
@@ -984,6 +989,7 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     <button class="tab-btn" data-target="team" data-i18n="nav_team">👥 בעלים ומנהלים</button>
     <button class="tab-btn" data-target="scope" data-i18n="nav_scope">🎂 גיל ותנאים</button>
     <button class="tab-btn protected-tab" data-target="shop" data-i18n="nav_shop">🛍️ חנות</button>
+    <button class="tab-btn" data-target="apps">📱 אפליקציות</button>
     <button class="tab-btn" data-target="settings" data-i18n="nav_settings">⚙️ הגדרות</button>
     <button class="tab-btn" data-target="about" data-i18n="nav_about">ℹ️ אודות וגרסה</button>
     <button class="tab-btn" id="developer-mode-tab-btn" data-target="developerModePanel">🛠️ Developer Mode</button>
@@ -1029,6 +1035,49 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
     </div>
   </section>
 
+  <section id="apps" class="tab-panel">
+    <span class="eyebrow">מרכז האפליקציות</span>
+    <h2 class="sec-title">📱 אפליקציות</h2>
+    <p class="sec-sub">בחרו את המערכת שלכם כדי להתקין את רצף כאפליקציית PWA.</p>
+    <div class="apps-grid"><article class="app-card pwa-platform-card">
+        <div class="pwa-platform-icon" aria-hidden="true">🪟</div>
+        <h3>להוריד PWA Windows</h3>
+        <p>התקנת רצף כאפליקציה במחשב Windows.</p>
+        <button type="button" class="btn btn-primary pwa-install-platform" data-pwa-platform="windows">התקנה ל־Windows</button>
+      </article>
+<article class="app-card pwa-platform-card">
+        <div class="pwa-platform-icon" aria-hidden="true">🤖</div>
+        <h3>להוריד PWA Android</h3>
+        <p>התקנת רצף כאפליקציה במכשיר Android.</p>
+        <button type="button" class="btn btn-primary pwa-install-platform" data-pwa-platform="android">התקנה ל־Android</button>
+      </article>
+<article class="app-card pwa-platform-card">
+        <div class="pwa-platform-icon" aria-hidden="true">📱</div>
+        <h3>להוריד PWA iOS</h3>
+        <p>הוספת רצף למסך הבית ב־iPhone או iPad.</p>
+        <button type="button" class="btn btn-primary pwa-install-platform" data-pwa-platform="ios">הוספה ל־iOS</button>
+      </article>
+<article class="app-card pwa-platform-card">
+        <div class="pwa-platform-icon" aria-hidden="true"></div>
+        <h3>להוריד PWA macOS Apple Silicon</h3>
+        <p>התקנת רצף כאפליקציה ב־Mac עם Apple Silicon.</p>
+        <button type="button" class="btn btn-primary pwa-install-platform" data-pwa-platform="macos-apple">התקנה ל־macOS Apple Silicon</button>
+      </article>
+<article class="app-card pwa-platform-card">
+        <div class="pwa-platform-icon" aria-hidden="true"></div>
+        <h3>להוריד PWA macOS Intel</h3>
+        <p>התקנת רצף כאפליקציה ב־Mac עם מעבד Intel.</p>
+        <button type="button" class="btn btn-primary pwa-install-platform" data-pwa-platform="macos-intel">התקנה ל־macOS Intel</button>
+      </article>
+<article class="app-card pwa-platform-card">
+        <div class="pwa-platform-icon" aria-hidden="true">🐧</div>
+        <h3>להוריד PWA Linux</h3>
+        <p>התקנת רצף כאפליקציה במחשב Linux.</p>
+        <button type="button" class="btn btn-primary pwa-install-platform" data-pwa-platform="linux">התקנה ל־Linux</button>
+      </article>
+    </div>
+    <div class="apps-note">PWA היא אפליקציה אחת שעובדת בכל המערכות. הכפתורים מפעילים את התקנת ה־PWA או מציגים הוראות מתאימות — לא מורידים קובץ APK או EXE נפרד.</div>
+  </section>
   <!-- STATUS LADDER -->
   <section id="status" class="tab-panel">
     <span class="eyebrow" data-i18n="status_eyebrow">מערכת סטטוס</span>
@@ -3112,6 +3161,27 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
       });
       if (dismiss) dismiss.addEventListener('click', function(){ if (prompt) prompt.hidden = true; });
       window.addEventListener('appinstalled', function(){ if (prompt) prompt.hidden = true; deferredPrompt = null; });
+      window.installRetzefPwa = async function(platform){
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice.catch(function(){});
+          deferredPrompt = null;
+          if (prompt) prompt.hidden = true;
+          return;
+        }
+        var instructions = {
+          windows:'ב־Windows פתחו את האתר ב־Chrome או Edge, פתחו את תפריט הדפדפן ובחרו Install app / התקנת אפליקציה.',
+          android:'ב־Android פתחו את האתר ב־Chrome, פתחו את התפריט ובחרו Install app / הוספה למסך הבית.',
+          ios:'ב־iPhone או iPad פתחו את האתר ב־Safari, לחצו על שיתוף ובחרו Add to Home Screen / הוסף למסך הבית.',
+          'macos-apple':'ב־macOS Apple Silicon פתחו את האתר ב־Chrome או Edge ובחרו בתפריט Install app / התקנת אפליקציה.',
+          'macos-intel':'ב־macOS Intel פתחו את האתר ב־Chrome או Edge ובחרו בתפריט Install app / התקנת אפליקציה.',
+          linux:'ב־Linux פתחו את האתר ב־Chrome או Chromium ובחרו בתפריט Install app / התקנת אפליקציה.'
+        };
+        alert((instructions[platform] || 'פתחו את תפריט הדפדפן ובחרו התקנת אפליקציה.') + '\n\nאם אפשרות ההתקנה אינה מופיעה, ודאו שאתם משתמשים בדפדפן תומך ושהאתר נטען ב־HTTPS.');
+      };
+      document.querySelectorAll('.pwa-install-platform').forEach(function(button){
+        button.addEventListener('click', function(){ window.installRetzefPwa(button.dataset.pwaPlatform); });
+      });
     })();
   </script>
 <div id="legalLinks" dir="rtl" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px auto;padding:12px;font-size:13px;"><a href="/terms-of-service/">תנאי שימוש</a><a href="/terms-of-service/">תנאי שירות</a><a href="/privacy-policy/">מדיניות פרטיות</a><a href="/cookie-policy/">מדיניות עוגיות</a><a href="/refund-and-cancellation/">ביטולים והחזרים</a><a href="/subscription-terms/">תנאי מנוי</a><a href="/community-guidelines/">כללי קהילה</a><a href="/managers-terms/">תנאי שימוש למנהלים</a></div>
