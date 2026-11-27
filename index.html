@@ -3472,9 +3472,9 @@ function updateWalletUI(wallet){const raw=wallet&&wallet.balance;const value=(Nu
   document.querySelectorAll('[data-developer-beta]').forEach(btn=>btn.addEventListener('click',()=>{const value=btn.dataset.developerBeta,s=read();s.username=profileName();if(value==='reset')delete s.beta;else s.beta=value;write(s);refresh();notify(value==='reset'?'תצוגת הבטא אופסה':'גרסת בטא הופעלה: '+value);}));
   const deviceSelect=document.getElementById('developerDeviceVersion');
   const deviceStatus=document.getElementById('developerDeviceStatus');
-  const updateDeviceStatus=async()=>{const current=await window.retzefCurrentDevice();if(deviceSelect&&window.retzefDeviceLabels[current])deviceSelect.value=current;if(deviceStatus)deviceStatus.textContent='גרסת המכשיר הפעילה: '+(window.retzefDeviceLabels[current]||current)+'.';};
-  document.getElementById('developerSwitchDevice')?.addEventListener('click',()=>window.retzefSwitchDeviceVersion(deviceSelect?.value));
-  window.refreshDeveloperMode=show;if(activeForCurrent()){show();updateDeviceStatus();}
+  const updateDeviceStatus=async()=>{if(typeof window.retzefCurrentDevice!=='function')return;const current=await window.retzefCurrentDevice();if(deviceSelect&&window.retzefDeviceLabels?.[current])deviceSelect.value=current;if(deviceStatus)deviceStatus.textContent='גרסת המכשיר הפעילה: '+(window.retzefDeviceLabels?.[current]||current)+'.';};
+  document.getElementById('developerSwitchDevice')?.addEventListener('click',()=>{if(typeof window.retzefSwitchDeviceVersion==='function')window.retzefSwitchDeviceVersion(deviceSelect?.value);});
+  window.refreshDeveloperMode=show;if(activeForCurrent()){show();updateDeviceStatus();}window.addEventListener('load',updateDeviceStatus);
 })();
 </script>
 
