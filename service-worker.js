@@ -1,5 +1,5 @@
 self.addEventListener('message', event => { if (event.data === 'SKIP_WAITING') self.skipWaiting(); });
-const CACHE_NAME = 'retzef-pwa-v9-modes-fix';
+const CACHE_NAME = 'retzef-pwa-v10-remove-modes';
 const APP_SHELL = [
   '/',
   '/index.html',
